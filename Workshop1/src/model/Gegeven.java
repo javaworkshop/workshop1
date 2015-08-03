@@ -6,10 +6,12 @@ package model;
 public class Gegeven {
     private int id;
     
-    public Gegeven() {}
+    public Gegeven() {
+        id = 0;
+    }
     
     public Gegeven(int id) {
-        setId(id);
+        this.id = id;
     }
 
     public int getId() {

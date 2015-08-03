@@ -3,7 +3,8 @@ package model;
 /**
  * Klasse om bestellinggegevens in op te slaan.
  */
-public class Bestelling {
+public class Bestelling extends Gegeven {
+    private int klantId; // De klant die de bestelling gedaan heeft
     private int artikelId1;
     private int artikelId2;
     private int artikelId3;
@@ -18,6 +19,7 @@ public class Bestelling {
     private double artikelPrijs3;
     
     public Bestelling() {
+        klantId = 0;
         artikelId1 = 0;
         artikelId2 = 0;
         artikelId3 = 0;
@@ -30,6 +32,22 @@ public class Bestelling {
         artikelPrijs1 = 0;
         artikelPrijs2 = 0;
         artikelPrijs3 = 0;
+    }
+    
+    public int getBestellingId() {
+        return super.getId();
+    }
+    
+    public void setBestellingId(int id) {
+        super.setId(id);
+    }
+
+    public int getKlantId() {
+        return klantId;
+    }
+
+    public void setKlantId(int klantId) {
+        this.klantId = klantId;
     }
 
     public int getArtikelId1() {

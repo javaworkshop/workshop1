@@ -15,11 +15,17 @@ public class Klant extends Gegeven {
     private String toevoeging;
     private String postcode;
     private String woonplaats;
-    
-    private ArrayList<Bestelling> bestellingen;
 
     public Klant() {
-        bestellingen = new ArrayList<>();
+        voornaam = "";
+        tussenvoegsel = "";
+        achternaam = "";
+        email = "";
+        straatnaam = "";
+        huisnummer = 0;
+        toevoeging = "";
+        postcode = "";
+        woonplaats= "";
     }
     
     public int getKlantId() {
@@ -100,10 +106,6 @@ public class Klant extends Gegeven {
 
     public void setWoonplaats(String woonplaats) {
         this.woonplaats = woonplaats;
-    }
-    
-    public ArrayList<Bestelling> getBestellingen() {
-        return bestellingen;
     }
     
 }

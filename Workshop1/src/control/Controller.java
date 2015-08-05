@@ -35,8 +35,6 @@ public class Controller extends Application {
     private DatabaseConnector dbConnector = new DatabaseConnector();
     
     private TableView tableView = new TableView();
-    private Connection connection;
-    private Statement statement;
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
@@ -55,7 +53,7 @@ public class Controller extends Application {
     private Button btVervers = new Button("Ververs tabel");
     private Button btNieuweKlant = new Button("Maak nieuwe klant");
     private Button btMaakKlanten = new Button("maak klanten aan");
-    private Label lblConnectionStatus = new Label("No connection now");
+    private Label lblConnectionStatus = new Label("No connection now ");
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     @Override
@@ -130,12 +128,8 @@ public class Controller extends Application {
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
 	btClearSQLResult.setOnAction(e -> taSQLResult.setText(null));
 	btMaakKlanten.setOnAction(e -> {
-            if(connection == null){
-                taSQLResult.setText("Please connect first");
-		return;
-            }
             new Thread(() -> batchUpdate()).start();
-	});        
+	});
     }
 
     private void batchUpdate() {
@@ -173,6 +167,9 @@ public class Controller extends Application {
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voor een geheel getal in.");
+        }
     }
     
     private void connectToDB() {
@@ -189,6 +186,8 @@ public class Controller extends Application {
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
+        
+        lblConnectionStatus.setText("Connected to database ");
     }    
 
     private void executeSQL() {

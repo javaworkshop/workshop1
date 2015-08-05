@@ -1,5 +1,7 @@
 package control;
 
+import database.*;
+import model.*;
 import java.sql.*;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,6 +32,8 @@ import javafx.util.Callback;
  * verwerkt.
  */
 public class Controller extends Application {
+    private DatabaseConnector dbConnector = new DatabaseConnector();
+    
     private TableView tableView = new TableView();
     private Connection connection;
     private Statement statement;
@@ -55,7 +59,7 @@ public class Controller extends Application {
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {        
     	cboURL.getItems().addAll(FXCollections.observableArrayList(
             "jdbc:Mysql://localhost:3306/mydb",
             "jdbc:mysql://liang.armstrong.edu/mydb",
@@ -65,7 +69,7 @@ public class Controller extends Application {
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
             "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
             "oracle.jdbc.driver.OracleDriver"));
-            cboDriver.getSelectionModel().selectFirst();
+        cboDriver.getSelectionModel().selectFirst();
 
 	GridPane gridPane = new GridPane();
 
@@ -82,8 +86,7 @@ public class Controller extends Application {
 	gridPane.add(tfAantal, 3, 1);
 	gridPane.add(btMaakKlanten, 2, 2);
 	HBox hBoxUpdate = new HBox();
-	hBoxUpdate.getChildren().addAll(btVervers, btNieuweKlant, btVoegArtikel,
-            btVoegBestelling);
+	hBoxUpdate.getChildren().addAll(btVervers, btNieuweKlant, btVoegArtikel, btVoegBestelling);
 
 
 	HBox hBoxConnection = new HBox();
@@ -117,7 +120,7 @@ public class Controller extends Application {
 	borderPane.setCenter(borderPaneExecutionResult);
 
 
-	Scene scene = new Scene(borderPane, 670, 400);
+	Scene scene = new Scene(borderPane, 1400, 700);
 	primaryStage.setTitle("SQLClient"); // Set the stage title
 	primaryStage.setScene(scene); // Place the scene in the stage
 	primaryStage.show(); // Display the stage
@@ -129,59 +132,68 @@ public class Controller extends Application {
 	btMaakKlanten.setOnAction(e -> {
             if(connection == null){
                 taSQLResult.setText("Please connect first");
-		 return;
+		return;
             }
             new Thread(() -> batchUpdate()).start();
 	});        
     }
 
     private void batchUpdate() {
-        if (connection != null) {
-            try {
-		statement = connection.createStatement();
-		String aantalKlanten = tfAantal.getText().trim();
-		int klanten = Integer.parseInt(aantalKlanten);
-		if(klanten<=0)
-                    taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");
-		else{
-                    String[] names = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , "Bo" , "Jan" , "Willem" , " Piet"};
-                    String[] tussenvoegsel = {"van", "de", "el","","van de", "van der" , "ten", "van de", "uit het", "voor den"};
-                    String[] achternaam = {"de Jong", "Bakker", "Visser", "de Boer", "Peters","de Graaf", "Jacobs", "Ali", "Hassan", "Beatrix"};
-                    String[] straatnaam = {"Schoolstraat", "Dorpstraat", "Nieuwstraat", "Kastanjelaan", "Eikenlaan", "Stationsweg","Markt","Beukenlaan","Industrieweg","Molenstraat"};
-                    String[] postcode = {"2001aa" , "2002aa", "2003aa","2003ab","2005aa","2006aa","2007aa","2008aa","2009aa","2010aa"};
-                    for ( int i = 1; i<=klanten ; i++ ){
-			statement.addBatch("INSERT INTO KLANT VALUES(" + Math.random()*100000 + ",'" + names[(int)(Math.random()*10)] + "','" + tussenvoegsel[(int)(Math.random()*10)] + "','"
-                            + achternaam[(int)(Math.random()*10)] + "','email','" + straatnaam[(int)(Math.random()*10)] + "'," + Math.random()*500+",'toev.','"
-                            +postcode[(int)(Math.random()*10)] + "','Amsterdam')");
-                    }
-                    statement.executeBatch();
-		}
-	    }
-	    catch (Exception ex) {
-	        ex.printStackTrace();
-	    }
+        try {
+            String aantalKlanten = tfAantal.getText().trim();
+            int klanten = Integer.parseInt(aantalKlanten);
+            if(klanten<=0)
+                taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");
+            else{
+                String[] names = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , "Bo" , 
+                    "Jan" , "Willem" , " Piet"};
+                String[] tussenvoegsel = {"van", "de", "el","","van de", "van der" , "ten", 
+                    "van de", "uit het", "voor den"};
+                String[] achternaam = {"de Jong", "Bakker", "Visser", "de Boer", "Peters","de " + 
+                        "Graaf", "Jacobs", "Ali", "Hassan", "Beatrix"};
+                String[] straatnaam = {"Schoolstraat", "Dorpstraat", "Nieuwstraat", "Kastanjelaan", 
+                    "Eikenlaan", "Stationsweg","Markt","Beukenlaan", "Industrieweg","Molenstraat"};
+                String[] postcode = {"2001aa" , "2002aa", "2003aa","2003ab","2005aa","2006aa", 
+                    "2007aa","2008aa","2009aa","2010aa"};
+                for ( int i = 1; i<=klanten ; i++ ){
+                    dbConnector.addBatch("INSERT INTO KLANT VALUES(" + Math.random()*100000 + ",'" +
+                        names[(int)(Math.random()*10)] + "','" + 
+                        tussenvoegsel[(int)(Math.random()*10)] + "','" + 
+                        achternaam[(int)(Math.random()*10)] + "','email','" + 
+                        straatnaam[(int)(Math.random()*10)] + "'," + 
+                        Math.random()*500+",'toev.','" + postcode[(int)(Math.random()*10)] 
+                        + "','Amsterdam')");
+                }
+                dbConnector.executeBatch();
+            }
 	}
+	catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
     }
     
     private void connectToDB() {
-	String driver = cboDriver.getSelectionModel().getSelectedItem();
-	String url = cboURL.getSelectionModel().getSelectedItem();
-	String username = tfUsername.getText().trim();
-	String password = pfPassword.getText().trim();
+	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
+	dbConnector.setUrl(cboURL.getSelectionModel().getSelectedItem());
+	dbConnector.setUsername(tfUsername.getText().trim());
+	dbConnector.setPassword(pfPassword.getText().trim());
 	try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, username, password);
-            lblConnectionStatus.setText("Connected to " + url);
-	}
-	catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-	}
-    }
+            dbConnector.connectToDatabase();
+        }
+        catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+    }    
 
     private void executeSQL() {
-	if(connection ==null){
+	if(!dbConnector.isInitialized()) {
             taSQLResult.setText("Please connect first");
-            return;
 	}
         else {
             String sqlCommands = tasqlCommand.getText().trim();
@@ -201,27 +213,35 @@ public class Controller extends Application {
 	borderPaneExecutionResult.getChildren().remove(taSQLResult);
 	borderPaneExecutionResult.setCenter(tableView);
 	try {
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sqlCommand);
-
-            populateTableView(resultSet, tableView);
+            dbConnector.executeCommand(sqlCommand);
+            populateTableView();
 	}
         catch(SQLException ex){
-            ex.printStackTrace();
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
 	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
     }
 
-    private void populateTableView(ResultSet rs, TableView tableView) {
-        ObservableList<ObservableList> data = FXCollections.observableArrayList();
+    private void populateTableView() {
+        tableView.getItems().removeAll();
+        ObservableList<ObservableList> data = FXCollections.observableArrayList();    
+        
         try {
-            for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
+            String[] columnNames = dbConnector.getCurrentColumnNames();
+            
+            for (int i = 0; i < columnNames.length; i++) {
 	        final int j = i;
-	        TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
+	        TableColumn col = new TableColumn(columnNames[i]);
 
                 // col.setCellValueFactory(TextFieldTableCell.forTableColumn());
-		col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
-		    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {
-		        if (param == null || param.getValue() == null || param.getValue().get(j) == null) {
+		col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, 
+                        ObservableValue<String>>() {
+		    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> 
+                            param) {
+		        if (param == null || param.getValue() == null || param.getValue().get(j) == 
+                                null) {
 		            return null;
 		        }
 		        return new SimpleStringProperty(param.getValue().get(j).toString());
@@ -229,13 +249,12 @@ public class Controller extends Application {
 		});
 
                 tableView.getColumns().addAll(col);
-                System.out.println("Column [" + i + "] ");
             }
 
-	    while (rs.next()) {
+	    while (dbConnector.nextRow()) {
 		ObservableList<String> row = FXCollections.observableArrayList();
-		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-		    row.add(rs.getString(i));
+		for (int i = 1; i <= columnNames.length; i++) {
+		    row.add(dbConnector.getCurrentString(i));
 		}
 		System.out.println("Row [1] added " + row);
 		    data.add(row);
@@ -243,10 +262,9 @@ public class Controller extends Application {
 	    
             tableView.setItems(data);
 	} 
-        catch (Exception e) {
-	    e.printStackTrace();
-            System.out.println("Error on Building Data");
-	}
+        catch (SQLException ex) {
+	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+	}        
     }
 
     private void processSQLNonSelect(String sqlCommand) {
@@ -254,13 +272,21 @@ public class Controller extends Application {
 	borderPaneExecutionResult.setCenter(taSQLResult);
 
         try {
-            statement = connection.createStatement();
-	    statement.executeUpdate(sqlCommand);
+            dbConnector.executeCommand(sqlCommand);
             taSQLResult.setText("SQL command executed");
 	}
 	catch (SQLException ex) {
-	    taSQLResult.setText(ex.toString());
+	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
 	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+    }
+    
+    public void showExceptionPopUp(String message) {
+        ErrorScreen es = new ErrorScreen();
+        es.setMessage(message);
+        es.show();
     }
 
     public static void main(String[] args) {

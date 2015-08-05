@@ -1,16 +1,16 @@
 package model;
 
 /**
- * Parent klasse van alle klassendie bedoeld zijn voor opslag van database gegevens.
+ * Parent klasse van alle klassen die bedoeld zijn voor opslag van database gegevens.
  */
-public class Gegeven {
+public class Data {
     private int id;
     
-    public Gegeven() {
+    public Data() {
         id = 0;
     }
     
-    public Gegeven(int id) {
+    public Data(int id) {
         this.id = id;
     }
 

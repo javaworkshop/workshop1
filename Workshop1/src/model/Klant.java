@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Klasse om klantgegevens in op te slaan.
  */
-public class Klant extends Gegeven {
+public class Klant extends Data {
     private String voornaam;
     private String tussenvoegsel;
     private String achternaam;

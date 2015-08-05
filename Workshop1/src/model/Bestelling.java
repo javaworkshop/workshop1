@@ -3,7 +3,7 @@ package model;
 /**
  * Klasse om bestellinggegevens in op te slaan.
  */
-public class Bestelling extends Gegeven {
+public class Bestelling extends Data {
     private int klantId; // De klant die de bestelling gedaan heeft
     private int artikelId1;
     private int artikelId2;

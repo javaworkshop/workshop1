@@ -28,8 +28,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /**
- * Klasse van waaruit het programma draait en wordt aangestuurd. User input wordt via deze klasse
- * verwerkt.
+ * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
     private DatabaseConnector dbConnector = new DatabaseConnector();
@@ -128,10 +127,13 @@ public class Controller extends Application {
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
 	btClearSQLResult.setOnAction(e -> taSQLResult.setText(null));
 	btMaakKlanten.setOnAction(e -> {
-            new Thread(() -> batchUpdate()).start();
+            //new Thread(() -> batchUpdate()).start();
+            batchUpdate();
 	});
     }
-
+    
+    // todo: klantgenerator aanmaken die random klant objecten retourneert en sql commando's
+    // verplaatsen naar databaseconnector methode.
     private void batchUpdate() {
         try {
             String aantalKlanten = tfAantal.getText().trim();
@@ -139,8 +141,8 @@ public class Controller extends Application {
             if(klanten<=0)
                 taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");
             else{
-                String[] names = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , "Bo" , 
-                    "Jan" , "Willem" , " Piet"};
+                String[] voornaam = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , 
+                    "Bo" , "Jan" , "Willem" , " Piet"};
                 String[] tussenvoegsel = {"van", "de", "el","","van de", "van der" , "ten", 
                     "van de", "uit het", "voor den"};
                 String[] achternaam = {"de Jong", "Bakker", "Visser", "de Boer", "Peters","de " + 
@@ -150,13 +152,14 @@ public class Controller extends Application {
                 String[] postcode = {"2001aa" , "2002aa", "2003aa","2003ab","2005aa","2006aa", 
                     "2007aa","2008aa","2009aa","2010aa"};
                 for ( int i = 1; i<=klanten ; i++ ){
-                    dbConnector.addBatch("INSERT INTO KLANT VALUES(" + Math.random()*100000 + ",'" +
-                        names[(int)(Math.random()*10)] + "','" + 
-                        tussenvoegsel[(int)(Math.random()*10)] + "','" + 
-                        achternaam[(int)(Math.random()*10)] + "','email','" + 
-                        straatnaam[(int)(Math.random()*10)] + "'," + 
-                        Math.random()*500+",'toev.','" + postcode[(int)(Math.random()*10)] 
-                        + "','Amsterdam')");
+                    String sqlCommand = "INSERT INTO klant VALUES(NULL, '" +
+                        voornaam[(int)(Math.random()*10)] + "', '" + 
+                        tussenvoegsel[(int)(Math.random()*10)] + "', '" + 
+                        achternaam[(int)(Math.random()*10)] + "', NULL, '" + 
+                        straatnaam[(int)(Math.random()*10)] + "', " + 
+                        (int)(Math.random()*500)+", NULL, '" + postcode[(int)(Math.random()*10)] 
+                        + "', 'Amsterdam')";
+                    dbConnector.addBatch(sqlCommand);
                 }
                 dbConnector.executeBatch();
             }
@@ -168,7 +171,7 @@ public class Controller extends Application {
             showExceptionPopUp(ex.getMessage());
         }
         catch(NumberFormatException ex) {
-            showExceptionPopUp("Voor een geheel getal in.");
+            showExceptionPopUp("Voer een geheel getal in.");
         }
     }
     
@@ -282,7 +285,7 @@ public class Controller extends Application {
         }
     }
     
-    public void showExceptionPopUp(String message) {
+    private void showExceptionPopUp(String message) {
         ErrorScreen es = new ErrorScreen();
         es.setMessage(message);
         es.show();

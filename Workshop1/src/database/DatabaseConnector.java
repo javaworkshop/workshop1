@@ -2,16 +2,19 @@ package database;
 
 import model.*;
 import java.sql.*;
-import javax.sql.RowSet;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import java.util.ArrayList;
 import com.sun.rowset.*;
 
 /**
- * Klasse die verbinding maakt met de database en methoden bevat om gegevens te manipuleren en op te
- * halen.
+ * Class that establishes and maintains a connection with the database and through which all sql
+ * operations are processed.
  */
 public class DatabaseConnector {
-    private RowSet rowSet;
+    private JdbcRowSet rowSet;
+    Statement statement;
     
     private boolean isInitialized;
     
@@ -21,13 +24,13 @@ public class DatabaseConnector {
     private String password;
     
     public DatabaseConnector() {
-        rowSet = new JdbcRowSetImpl();
+        rowSet = null;
         isInitialized = false;
     }
     
     /**
      * Initializes connection to database. Before this method is run driver, url, username, and 
-     * password should be set using the appropiate setter methods.
+     * password should be set using the appropriate setter methods.
      * @throws SQLException
      * @throws DatabaseException thrown if driver could not be loaded
      */
@@ -38,9 +41,18 @@ public class DatabaseConnector {
         catch(Exception ex) {
             throw new DatabaseException("Failed to load driver.", ex);
         }
+        RowSetFactory rowSetFactory = RowSetProvider.newFactory("com.sun.rowset.RowSetFactoryImpl",
+                null);
+        rowSet = rowSetFactory.createJdbcRowSet();
         rowSet.setUrl(url);
         rowSet.setUsername(username);
-        rowSet.setPassword(password);
+        rowSet.setPassword(password);        
+        
+        statement = DriverManager.getConnection(url, username, password).createStatement();
+        //rowSet.setCommand("SHOW COLUMNS FROM klant");
+        //rowSet.execute();
+        //statement = rowSet.getStatement();
+        
         isInitialized = true;
     }
     
@@ -58,6 +70,9 @@ public class DatabaseConnector {
         rowSet.execute();
     }
     
+    // Dit moet eigenlijk een methode zijn die een klant object als parameter krijgt aangeleverd.
+    // Dit klant object kan dan worden gebruikt om sql code te genereren die aan de batch kan worden
+    // toegevoegd.
     /**
      * Adds the given command to the current list of commands for the statement object returned by 
      * rowSet.
@@ -69,7 +84,7 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Not connected to database.");
         
-        rowSet.getStatement().addBatch(command);
+        statement.addBatch(command);
     }
     
     /**
@@ -81,7 +96,7 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Not connected to database.");
         
-        rowSet.getStatement().clearBatch();       
+        statement.clearBatch();       
     }
     
     /**
@@ -94,7 +109,7 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Not connected to database.");
         
-        rowSet.getStatement().executeBatch();
+        statement.executeBatch();
     }
     
     /**

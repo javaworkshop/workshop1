@@ -39,7 +39,7 @@ public class DatabaseConnector {
             Class.forName(driver);
         }
         catch(Exception ex) {
-            throw new DatabaseException("Failed to load driver.", ex);
+            throw new DatabaseException("Driver laden mislukt.", ex);
         }
         RowSetFactory rowSetFactory = RowSetProvider.newFactory("com.sun.rowset.RowSetFactoryImpl",
                 null);
@@ -64,52 +64,53 @@ public class DatabaseConnector {
      */
     public void executeCommand(String command) throws SQLException, DatabaseException {
         if(!isInitialized)
-            throw new DatabaseException("Not connected to database.");
+            throw new DatabaseException("Geen verbinding met database.");
 
         rowSet.setCommand(command);
         rowSet.execute();
     }
     
-    // Dit moet eigenlijk een methode zijn die een klant object als parameter krijgt aangeleverd.
-    // Dit klant object kan dan worden gebruikt om sql code te genereren die aan de batch kan worden
-    // toegevoegd.
     /**
-     * Adds the given command to the current list of commands for the statement object returned by 
-     * rowSet.
-     * @param command               the command to be  added
-     * @throws SQLException 
+     * Inserts an array of klanten into the database using a batch statement.
+     * @param klanten               the array of klanten to be inserted
+     * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public void addBatch(String command) throws SQLException, DatabaseException {
+    public void batchInsertion(Klant[] klanten) throws SQLException, DatabaseException {        
         if(!isInitialized)
-            throw new DatabaseException("Not connected to database.");
-        
-        statement.addBatch(command);
-    }
-    
-    /**
-     * Empties the current list of commands of rowSet's statement object.
-     * @throws SQLException 
-     * @throws DatabaseException thrown if database connection has not been initialized yet
-     */
-    public void clearBatch() throws SQLException, DatabaseException {
-        if(!isInitialized)
-            throw new DatabaseException("Not connected to database.");
-        
-        statement.clearBatch();       
-    }
-    
-    /**
-     * Executes the batch of commands previously added to the rowSet's statement object using the
-     * addBatch(String command) method.
-     * @throws SQLException 
-     * @throws DatabaseException thrown if database connection has not been initialized yet
-     */
-    public void executeBatch() throws SQLException, DatabaseException {
-        if(!isInitialized)
-            throw new DatabaseException("Not connected to database.");
-        
+            throw new DatabaseException("Geen verbinding met database.");
+       
+        for(Klant klant : klanten)
+            statement.addBatch(generateKlantInsertionCode(klant));
         statement.executeBatch();
+    }
+    
+    /**
+     * Generates sql code to insert the given klant into the database.
+     * @param klant klant to be inserted
+     * @return      sql code to insert klant
+     */
+    private String generateKlantInsertionCode(Klant klant) {
+        String sqlCode = "INSERT INTO klant VALUES(NULL, ";
+        sqlCode += (klant.getVoornaam() == null) ? "NULL, " : "'" + 
+            klant.getVoornaam() + "', ";
+        sqlCode += (klant.getTussenvoegsel() == null) ? "NULL, " : "'" + 
+            klant.getTussenvoegsel() + "', ";
+        sqlCode += (klant.getAchternaam() == null) ? "NULL, " : "'" + 
+            klant.getAchternaam() + "', ";
+        sqlCode += (klant.getEmail() == null) ? "NULL, " : "'" + 
+            klant.getEmail() + "', ";
+        sqlCode += (klant.getStraatnaam() == null) ? "NULL, " : "'" + 
+            klant.getStraatnaam() + "', ";
+        sqlCode += (klant.getHuisnummer() == 0) ? "NULL, " : klant.getHuisnummer() + ", ";
+        sqlCode += (klant.getToevoeging() == null) ? "NULL, " : "'" + 
+            klant.getToevoeging() + "', ";    
+        sqlCode += (klant.getPostcode() == null) ? "NULL, " : "'" + 
+            klant.getPostcode() + "', ";            
+        sqlCode += (klant.getWoonplaats() == null) ? "NULL, " : "'" + 
+            klant.getWoonplaats() + "')";
+        
+        return sqlCode;
     }
     
     /**
@@ -122,7 +123,7 @@ public class DatabaseConnector {
      */
     public ArrayList<Klant> readAll() throws SQLException, DatabaseException {
         if(!isInitialized)
-            throw new DatabaseException("Not connected to database.");
+            throw new DatabaseException("Geen verbinding met database.");
         
         return new ArrayList<Klant>();
     }

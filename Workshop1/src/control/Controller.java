@@ -127,43 +127,19 @@ public class Controller extends Application {
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
 	btClearSQLResult.setOnAction(e -> taSQLResult.setText(null));
 	btMaakKlanten.setOnAction(e -> {
-            //new Thread(() -> batchUpdate()).start();
-            batchUpdate();
+            //new Thread(() -> createKlanten()).start();
+            createKlanten();
 	});
     }
     
-    // todo: klantgenerator aanmaken die random klant objecten retourneert en sql commando's
-    // verplaatsen naar databaseconnector methode.
-    private void batchUpdate() {
-        try {
-            String aantalKlanten = tfAantal.getText().trim();
-            int klanten = Integer.parseInt(aantalKlanten);
-            if(klanten<=0)
-                taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");
-            else{
-                String[] voornaam = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , 
-                    "Bo" , "Jan" , "Willem" , " Piet"};
-                String[] tussenvoegsel = {"van", "de", "el","","van de", "van der" , "ten", 
-                    "van de", "uit het", "voor den"};
-                String[] achternaam = {"de Jong", "Bakker", "Visser", "de Boer", "Peters","de " + 
-                        "Graaf", "Jacobs", "Ali", "Hassan", "Beatrix"};
-                String[] straatnaam = {"Schoolstraat", "Dorpstraat", "Nieuwstraat", "Kastanjelaan", 
-                    "Eikenlaan", "Stationsweg","Markt","Beukenlaan", "Industrieweg","Molenstraat"};
-                String[] postcode = {"2001aa" , "2002aa", "2003aa","2003ab","2005aa","2006aa", 
-                    "2007aa","2008aa","2009aa","2010aa"};
-                for ( int i = 1; i<=klanten ; i++ ){
-                    String sqlCommand = "INSERT INTO klant VALUES(NULL, '" +
-                        voornaam[(int)(Math.random()*10)] + "', '" + 
-                        tussenvoegsel[(int)(Math.random()*10)] + "', '" + 
-                        achternaam[(int)(Math.random()*10)] + "', NULL, '" + 
-                        straatnaam[(int)(Math.random()*10)] + "', " + 
-                        (int)(Math.random()*500)+", NULL, '" + postcode[(int)(Math.random()*10)] 
-                        + "', 'Amsterdam')";
-                    dbConnector.addBatch(sqlCommand);
-                }
-                dbConnector.executeBatch();
-            }
-	}
+    private void createKlanten() {
+        try {            
+            int aantalKlanten = Integer.parseInt(tfAantal.getText().trim());
+            /*if(klanten<=0)
+                taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");*/
+            Klant[] klanten = KlantGenerator.generateNKlanten(aantalKlanten);            
+            dbConnector.batchInsertion(klanten);
+        }
 	catch(SQLException ex) {            
             showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
         }
@@ -172,6 +148,9 @@ public class Controller extends Application {
         }
         catch(NumberFormatException ex) {
             showExceptionPopUp("Voer een geheel getal in.");
+        }
+        catch(IllegalArgumentException ex) {
+            showExceptionPopUp("Voer een getal in groter dan 0.");
         }
     }
     
@@ -227,7 +206,7 @@ public class Controller extends Application {
     }
 
     private void populateTableView() {
-        tableView.getItems().removeAll();
+        tableView.getColumns().removeAll(tableView.getColumns());
         ObservableList<ObservableList> data = FXCollections.observableArrayList();    
         
         try {

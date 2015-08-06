@@ -23,9 +23,9 @@ public class Bestelling extends Data {
         artikelId1 = 0;
         artikelId2 = 0;
         artikelId3 = 0;
-        artikelNaam1 = "";
-        artikelNaam2 = "";
-        artikelNaam3 = "";
+        artikelNaam1 = null;
+        artikelNaam2 = null;
+        artikelNaam3 = null;
         artikelAantal1 = 0;
         artikelAantal2 = 0;
         artikelAantal3 = 0;

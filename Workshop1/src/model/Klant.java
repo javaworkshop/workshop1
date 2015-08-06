@@ -17,15 +17,15 @@ public class Klant extends Data {
     private String woonplaats;
 
     public Klant() {
-        voornaam = "";
-        tussenvoegsel = "";
-        achternaam = "";
-        email = "";
-        straatnaam = "";
+        voornaam = null;
+        tussenvoegsel = null;
+        achternaam = null;
+        email = null;
+        straatnaam = null;
         huisnummer = 0;
-        toevoeging = "";
-        postcode = "";
-        woonplaats= "";
+        toevoeging = null;
+        postcode = null;
+        woonplaats= null;
     }
     
     public int getKlantId() {

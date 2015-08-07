@@ -26,12 +26,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
  * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
     private DatabaseConnector dbConnector = new DatabaseConnector();
+    
+    private Stage primaryStage;
     
     private TableView tableView = new TableView();
     private TextArea taSQLResult = new TextArea();
@@ -118,6 +121,7 @@ public class Controller extends Application {
 
 
 	Scene scene = new Scene(borderPane, 1400, 700);
+        this.primaryStage = primaryStage;
 	primaryStage.setTitle("SQLClient"); // Set the stage title
 	primaryStage.setScene(scene); // Place the scene in the stage
 	primaryStage.show(); // Display the stage
@@ -127,8 +131,12 @@ public class Controller extends Application {
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
 	btClearSQLResult.setOnAction(e -> taSQLResult.setText(null));
 	btMaakKlanten.setOnAction(e -> {
-            //new Thread(() -> createKlanten()).start();
-            createKlanten();
+            Thread th = new Thread(() -> createKlanten());
+            th.setUncaughtExceptionHandler((t, ex) -> {
+                taSQLResult.setText("Geen verbinding met database.");
+            });
+            th.start();
+            //createKlanten();
 	});
     }
     
@@ -173,21 +181,14 @@ public class Controller extends Application {
     }    
 
     private void executeSQL() {
-	if(!dbConnector.isInitialized()) {
-            taSQLResult.setText("Please connect first");
-	}
-        else {
-            String sqlCommands = tasqlCommand.getText().trim();
-            String[] commands = sqlCommands.replace('\n', ' ').split(";");
-            for (String aCommand: commands) {
-		if (aCommand.trim().toUpperCase().startsWith("SELECT")) {
-                    processSQLSelect(aCommand);
-		}
-                else {
-                    processSQLNonSelect(aCommand);
-		}
-            }
-	}
+        String sqlCommands = tasqlCommand.getText().trim();
+        String[] commands = sqlCommands.replace('\n', ' ').split(";");
+        for (String aCommand: commands) {
+            if (aCommand.trim().toUpperCase().startsWith("SELECT"))
+                processSQLSelect(aCommand);
+            else
+                processSQLNonSelect(aCommand);
+        }
     }
 
     private void processSQLSelect(String sqlCommand){
@@ -237,8 +238,7 @@ public class Controller extends Application {
 		for (int i = 1; i <= columnNames.length; i++) {
 		    row.add(dbConnector.getCurrentString(i));
 		}
-		System.out.println("Row [1] added " + row);
-		    data.add(row);
+		data.add(row);
             }
 	    
             tableView.setItems(data);
@@ -266,6 +266,7 @@ public class Controller extends Application {
     
     private void showExceptionPopUp(String message) {
         ErrorScreen es = new ErrorScreen();
+        es.initOwner(primaryStage);
         es.setMessage(message);
         es.show();
     }

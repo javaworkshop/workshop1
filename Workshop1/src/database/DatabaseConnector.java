@@ -56,6 +56,37 @@ public class DatabaseConnector {
         isInitialized = true;
     }
     
+    public QueryResult executeQuery(String query) throws SQLException, DatabaseException {
+        executeCommand(query);
+        QueryResult queryResult = createQueryResult();
+        return queryResult;
+    }
+    
+    private QueryResult createQueryResult() throws SQLException {
+        ResultSetMetaData rsMeta = rowSet.getMetaData();
+        String[] columnNames = getCurrentColumnNames();
+        QueryResult queryResult = new QueryResult();        
+        
+        rowSet.next();
+        for(int i = 1; i <= getCurrentColumnCount(); i++) {
+            ArrayList<String> cellValues = new ArrayList<>();
+            int type = rsMeta.getColumnType(i);
+            do {
+                if(type == Types.CHAR || type == Types.VARCHAR)
+                    cellValues.add(rowSet.getString(i));
+                else if(type == Types.INTEGER)
+                    cellValues.add(rowSet.getInt(i) + "");
+                else if(type == Types.NULL)
+                    cellValues.add("");
+            }
+            while(rowSet.next());
+            queryResult.addColumn(columnNames[i - 1], cellValues);
+            rowSet.first();
+        }
+        
+        return queryResult;
+    }
+    
     /**
      * Executes the given command. Results are stored in rowSet if the command is a query.
      * @param command               the command to be executed
@@ -122,8 +153,7 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public ArrayList<Klant> readAll() throws SQLException, DatabaseException {
-        if(!isInitialized)
-            throw new DatabaseException("Geen verbinding met database.");
+        
         
         return new ArrayList<Klant>();
     }
@@ -134,7 +164,7 @@ public class DatabaseConnector {
      * @return              array of String containing the names of all columns in rowSet
      * @throws SQLException 
      */
-    public String[] getCurrentColumnNames() throws SQLException {
+    private String[] getCurrentColumnNames() throws SQLException {
         String[] columnNames = new String[getCurrentColumnCount()];
         for(int i = 0; i < columnNames.length; i ++)
             columnNames[i] = getCurrentColumnName(i + 1);
@@ -148,7 +178,7 @@ public class DatabaseConnector {
      * @return              the name of the specified column
      * @throws SQLException 
      */
-    public String getCurrentColumnName(int column) throws SQLException {
+    private String getCurrentColumnName(int column) throws SQLException {
         return rowSet.getMetaData().getColumnName(column);
     }
     
@@ -158,52 +188,10 @@ public class DatabaseConnector {
      * @return              the number of columns of the current query result
      * @throws SQLException  
      */
-    public int getCurrentColumnCount() throws SQLException {
+    private int getCurrentColumnCount() throws SQLException {
         return rowSet.getMetaData().getColumnCount();
-    }
-    
-    /**
-     * Retrieves String result from the currently selected row in rowSet, which contains the results
-     * from the last executed query. 
-     * @param column        the column from which the result should be obtained
-     * @return              the String at the specified column in the currently selected row
-     * @throws SQLException
-     */
-    public String getCurrentString(int column) throws SQLException {
-        return rowSet.getString(column);
-    }
-    
-    /**
-     * Retrieves integer result from the currently selected row in rowSet, which contains the 
-     * results from the last executed query. 
-     * @param column        the column from which the result should be obtained
-     * @return              the integer at the specified column in the currently selected row
-     * @throws SQLException
-     */
-    public int getCurrentInt(int column) throws SQLException {
-        return rowSet.getInt(column);
-    }
-    
-    /**
-     * Retrieves double result from the currently selected row in rowSet, which contains the results
-     * from the last executed query. 
-     * @param column        the column from which the result should be obtained
-     * @return              the double value at the specified column in the currently selected row
-     * @throws SQLException
-     */
-    public double getCurrentDouble(int column) throws SQLException {
-        return rowSet.getDouble(column);
-    }
-    
-    /**
-     * Moves rowSet cursor to the next row
-     * @return              true if new current row is valid, false if there are no more rows
-     * @throws SQLException
-     */
-    public boolean nextRow() throws SQLException {
-        return rowSet.next();       
-     }
-    
+    }    
+
     public void setDriver(String driver) {
         this.driver = driver;
     }

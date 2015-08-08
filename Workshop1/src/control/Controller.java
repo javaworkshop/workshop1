@@ -195,8 +195,8 @@ public class Controller extends Application {
 	borderPaneExecutionResult.getChildren().remove(taSQLResult);
 	borderPaneExecutionResult.setCenter(tableView);
 	try {
-            dbConnector.executeCommand(sqlCommand);
-            populateTableView();
+            QueryResult queryResult = dbConnector.executeQuery(sqlCommand);
+            populateTableView(queryResult);
 	}
         catch(SQLException ex){
             showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
@@ -206,46 +206,40 @@ public class Controller extends Application {
         }
     }
 
-    private void populateTableView() {
+    private void populateTableView(QueryResult queryResult) {
         tableView.getColumns().removeAll(tableView.getColumns());
         ObservableList<ObservableList> data = FXCollections.observableArrayList();    
         
-        try {
-            String[] columnNames = dbConnector.getCurrentColumnNames();
+        String[] columnNames = queryResult.columnNames();
             
-            for (int i = 0; i < columnNames.length; i++) {
-	        final int j = i;
-	        TableColumn col = new TableColumn(columnNames[i]);
-
-                // col.setCellValueFactory(TextFieldTableCell.forTableColumn());
-		col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, 
-                        ObservableValue<String>>() {
-		    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> 
+        for (int i = 0; i < queryResult.columnCount(); i++) {
+            final int j = i;
+	    TableColumn col = new TableColumn(columnNames[i]);
+            
+            col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, 
+                ObservableValue<String>>() {
+                    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> 
                             param) {
-		        if (param == null || param.getValue() == null || param.getValue().get(j) == 
+                        if (param == null || param.getValue() == null || param.getValue().get(j) == 
                                 null) {
-		            return null;
-		        }
-		        return new SimpleStringProperty(param.getValue().get(j).toString());
-		    }
-		});
+                            return null;
+                        }
+                        return new SimpleStringProperty((String)param.getValue().get(j));
+                    }
+            });
 
-                tableView.getColumns().addAll(col);
+            tableView.getColumns().add(col);
+        }
+        
+        for (int i = 1; i <= queryResult.rowCount(); i++) {
+            ObservableList<String> row = FXCollections.observableArrayList();
+            for(String columnName : columnNames) {           
+                row.add(queryResult.getCellValue(columnName, i));
             }
-
-	    while (dbConnector.nextRow()) {
-		ObservableList<String> row = FXCollections.observableArrayList();
-		for (int i = 1; i <= columnNames.length; i++) {
-		    row.add(dbConnector.getCurrentString(i));
-		}
-		data.add(row);
-            }
+            data.add(row);
+        }
 	    
-            tableView.setItems(data);
-	} 
-        catch (SQLException ex) {
-	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
-	}        
+        tableView.setItems(data);
     }
 
     private void processSQLNonSelect(String sqlCommand) {

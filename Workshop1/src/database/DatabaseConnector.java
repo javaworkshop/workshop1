@@ -6,7 +6,7 @@ import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 import java.util.ArrayList;
-import com.sun.rowset.*;
+//import com.sun.rowset.*;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
@@ -56,12 +56,25 @@ public class DatabaseConnector {
         isInitialized = true;
     }
     
+    /**
+     * Executes the given query. The contents of the resulting ResultSet are transferred to a 
+     * QueryResult object, which is returned to the caller.
+     * @param query                 the query to be executed
+     * @return                      a QueryResult object containining query results
+     * @throws SQLException
+     * @throws DatabaseException     thrown if database connection has not been initialized yet
+     */
     public QueryResult executeQuery(String query) throws SQLException, DatabaseException {
         executeCommand(query);
         QueryResult queryResult = createQueryResult();
         return queryResult;
     }
     
+    /**
+     * 
+     * @return
+     * @throws SQLException 
+     */
     private QueryResult createQueryResult() throws SQLException {
         ResultSetMetaData rsMeta = rowSet.getMetaData();
         String[] columnNames = getCurrentColumnNames();
@@ -161,7 +174,7 @@ public class DatabaseConnector {
     /**
      * Retrieves the names of all the columns in rowSet, which contains the results from the last
      * executed query.    
-     * @return              array of String containing the names of all columns in rowSet
+     * @return              array of Strings containing the names of all columns in rowSet
      * @throws SQLException 
      */
     private String[] getCurrentColumnNames() throws SQLException {
@@ -190,40 +203,102 @@ public class DatabaseConnector {
      */
     private int getCurrentColumnCount() throws SQLException {
         return rowSet.getMetaData().getColumnCount();
-    }    
-
+    }
+    
+    /**
+     * Retrieves the column names of the table of which the given data object represents one entry.
+     * @param dataObject
+     * @return                      An ArrayList containing all the names of the columns
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public ArrayList<String> retrieveColumnNames(Data dataObject) throws SQLException, 
+            DatabaseException {       
+        String table = "";
+        if(dataObject instanceof Klant)
+            table = "klant";
+        else if(dataObject instanceof Bestelling)
+            table = "bestelling";
+        //else if(dataObject instanceof Artikel)
+        //    table = "artikel";
+        
+        ArrayList<String> columnNames = new ArrayList<>();
+        executeCommand("SHOW COLUMNS FROM " + table);
+        while(rowSet.next()) {
+            columnNames.add(rowSet.getString(1));
+        }
+        
+        return columnNames;
+    }
+    
+    /**
+     * 
+     * @param driver 
+     */
     public void setDriver(String driver) {
         this.driver = driver;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public String getDriver() {
         return driver;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * 
+     * @param url 
+     */
     public void setUrl(String url) {
         this.url = url;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * 
+     * @param username 
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * 
+     * @param password 
+     */
     public void setPassword(String password) {
         this.password = password;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public boolean isInitialized() {
         return isInitialized;
     }

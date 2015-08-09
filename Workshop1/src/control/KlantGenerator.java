@@ -1,10 +1,9 @@
 package control;
 
 import model.Klant;
-import java.util.ArrayList;
 
 /**
- *
+ * 
  */
 public class KlantGenerator {
     public static Klant generateKlant() {

@@ -3,23 +3,23 @@ package model;
 /**
  * Parent klasse van alle klassen die bedoeld zijn voor opslag van database gegevens.
  */
-public class Data {
-    private int id;
+public abstract class Data {
+    private int primaryKey;
     
     public Data() {
-        id = 0;
+        primaryKey = 0;
     }
     
-    public Data(int id) {
-        this.id = id;
+    public Data(int primaryKey) {
+        this.primaryKey = primaryKey;
     }
 
-    public int getId() {
-        return id;
+    public int getPrimaryKey() {
+        return primaryKey;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPrimaryKey(int primaryKey) {
+        this.primaryKey = primaryKey;
     }    
     
 }

@@ -28,12 +28,12 @@ public class Klant extends Data {
         woonplaats= null;
     }
     
-    public int getKlantId() {
-        return super.getId();
+    public int getKlant_id() {
+        return super.getPrimaryKey();
     }
     
-    public void setKlantId(int id) {
-        super.setId(id);
+    public void setKlant_id(int id) {
+        super.setPrimaryKey(id);
     }
     
     public String getVoornaam() {

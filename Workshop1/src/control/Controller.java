@@ -18,6 +18,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -26,7 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
 
 /**
  * Class from which the program runs. User input is processed through this class.
@@ -136,7 +137,6 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-            //createKlanten();
 	});
     }
     
@@ -241,6 +241,30 @@ public class Controller extends Application {
 	    
         tableView.setItems(data);
     }
+    
+    private void populateTableView(ArrayList<Data> data) {
+        tableView.getColumns().removeAll(tableView.getColumns());
+        
+        ArrayList<String> columnNames = new ArrayList<>();
+        try {
+            columnNames = dbConnector.retrieveColumnNames(data.get(0));
+        }
+        catch(SQLException ex){
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        
+        for(String columnName : columnNames) {
+                TableColumn<Data, String> tc = new TableColumn<>(columnName);
+                tc.setCellValueFactory(new PropertyValueFactory<Data, String>(
+                        columnName));
+                tableView.getColumns().add(tc);
+            }
+            
+        tableView.setItems(FXCollections.observableArrayList(data));
+    }
 
     private void processSQLNonSelect(String sqlCommand) {
         borderPaneExecutionResult.getChildren().remove(tableView);
@@ -248,7 +272,7 @@ public class Controller extends Application {
 
         try {
             dbConnector.executeCommand(sqlCommand);
-            taSQLResult.setText("SQL command executed");
+            taSQLResult.setText("SQL commando uitgevoerd");
 	}
 	catch (SQLException ex) {
 	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());

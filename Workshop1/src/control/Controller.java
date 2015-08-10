@@ -245,23 +245,45 @@ public class Controller extends Application {
     private void populateTableView(ArrayList<Data> data) {
         tableView.getColumns().removeAll(tableView.getColumns());
         
-        ArrayList<String> columnNames = new ArrayList<>();
-        try {
-            columnNames = dbConnector.retrieveColumnNames(data.get(0));
-        }
-        catch(SQLException ex){
-            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
-	}
-        catch(DatabaseException ex) {
-            showExceptionPopUp(ex.getMessage());
-        }
+        String[] columnNames = Data.getAttributeNames(data.get(0));
         
         for(String columnName : columnNames) {
                 TableColumn<Data, String> tc = new TableColumn<>(columnName);
                 tc.setCellValueFactory(new PropertyValueFactory<Data, String>(
                         columnName));
                 tableView.getColumns().add(tc);
+        }
+        
+        // Misschien is het nodig om het zo te doen, methode moet nog getest worden, dus ben niet 
+        // zeker
+        /*
+        if(data.get(0) instanceof Klant) {
+            for(String columnName : columnNames) {
+                    TableColumn<Klant, String> tc = new TableColumn<>(columnName);
+                    tc.setCellValueFactory(new PropertyValueFactory<Klant, String>(
+                            columnName));
+                    tableView.getColumns().add(tc);
             }
+        }
+        else if(data.get(0) instanceof Bestelling) {
+            for(String columnName : columnNames) {
+                    TableColumn<Bestelling, String> tc = new TableColumn<>(columnName);
+                    tc.setCellValueFactory(new PropertyValueFactory<Bestelling, String>(
+                            columnName));
+                    tableView.getColumns().add(tc);
+            }
+        }
+        */ 
+        /*
+        else if(data.get(0) instanceof Artikel) {
+            for(String columnName : columnNames) {
+                    TableColumn<Klant, String> tc = new TableColumn<>(columnName);
+                    tc.setCellValueFactory(new PropertyValueFactory<Artikel, String>(
+                            columnName));
+                    tableView.getColumns().add(tc);
+            }
+        }
+        */
             
         tableView.setItems(FXCollections.observableArrayList(data));
     }

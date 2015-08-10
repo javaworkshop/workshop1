@@ -203,33 +203,7 @@ public class DatabaseConnector {
      */
     private int getCurrentColumnCount() throws SQLException {
         return rowSet.getMetaData().getColumnCount();
-    }
-    
-    /**
-     * Retrieves the column names of the table of which the given data object represents one entry.
-     * @param dataObject
-     * @return                      An ArrayList containing all the names of the columns
-     * @throws SQLException
-     * @throws DatabaseException    thrown if database connection has not been initialized yet
-     */
-    public ArrayList<String> retrieveColumnNames(Data dataObject) throws SQLException, 
-            DatabaseException {       
-        String table = "";
-        if(dataObject instanceof Klant)
-            table = "klant";
-        else if(dataObject instanceof Bestelling)
-            table = "bestelling";
-        //else if(dataObject instanceof Artikel)
-        //    table = "artikel";
-        
-        ArrayList<String> columnNames = new ArrayList<>();
-        executeCommand("SHOW COLUMNS FROM " + table);
-        while(rowSet.next()) {
-            columnNames.add(rowSet.getString(1));
-        }
-        
-        return columnNames;
-    }
+    }    
     
     /**
      * 

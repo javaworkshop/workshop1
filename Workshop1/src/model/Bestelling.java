@@ -34,11 +34,11 @@ public class Bestelling extends Data {
         artikel_prijs3 = 0;
     }
     
-    public int getBestellingId() {
+    public int getBestelling_id() {
         return super.getPrimaryKey();
     }
     
-    public void setBestellingId(int id) {
+    public void setBestelling_id(int id) {
         super.setPrimaryKey(id);
     }
 

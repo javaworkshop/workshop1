@@ -46,10 +46,11 @@ public class DatabaseConnector {
         rowSet = rowSetFactory.createJdbcRowSet();
         rowSet.setUrl(url);
         rowSet.setUsername(username);
-        rowSet.setPassword(password);        
+        rowSet.setPassword(password);
         
         statement = DriverManager.getConnection(url, username, password).createStatement();
-        //rowSet.setCommand("SHOW COLUMNS FROM klant");
+        //Alternatief:
+        //rowSet.setCommand("SHOW TABLES");
         //rowSet.execute();
         //statement = rowSet.getStatement();
         
@@ -125,41 +126,13 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
        
         for(Klant klant : klanten)
-            statement.addBatch(generateKlantInsertionCode(klant));
+            statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
         statement.executeBatch();
-    }
+    }    
     
     /**
-     * Generates sql code to insert the given klant into the database.
-     * @param klant klant to be inserted
-     * @return      sql code to insert klant
-     */
-    private String generateKlantInsertionCode(Klant klant) {
-        String sqlCode = "INSERT INTO klant VALUES(NULL, ";
-        sqlCode += (klant.getVoornaam() == null) ? "NULL, " : "'" + 
-            klant.getVoornaam() + "', ";
-        sqlCode += (klant.getTussenvoegsel() == null) ? "NULL, " : "'" + 
-            klant.getTussenvoegsel() + "', ";
-        sqlCode += (klant.getAchternaam() == null) ? "NULL, " : "'" + 
-            klant.getAchternaam() + "', ";
-        sqlCode += (klant.getEmail() == null) ? "NULL, " : "'" + 
-            klant.getEmail() + "', ";
-        sqlCode += (klant.getStraatnaam() == null) ? "NULL, " : "'" + 
-            klant.getStraatnaam() + "', ";
-        sqlCode += (klant.getHuisnummer() == 0) ? "NULL, " : klant.getHuisnummer() + ", ";
-        sqlCode += (klant.getToevoeging() == null) ? "NULL, " : "'" + 
-            klant.getToevoeging() + "', ";    
-        sqlCode += (klant.getPostcode() == null) ? "NULL, " : "'" + 
-            klant.getPostcode() + "', ";            
-        sqlCode += (klant.getWoonplaats() == null) ? "NULL, " : "'" + 
-            klant.getWoonplaats() + "')";
-        
-        return sqlCode;
-    }
-    
-    /**
-     * (Unfinished) Reads all customer data currently present in the database and stores them in an
-     * arraylist object.
+     * Reads all customer data currently present in the database and stores them in an arraylist
+     * object.
      * @return                      an arraylist object containing klant objects for all customers 
      *                              stored in the database
      * @throws SQLException
@@ -172,12 +145,53 @@ public class DatabaseConnector {
         executeCommand("SELECT * FROM klant");
         ArrayList<Klant> klanten = new ArrayList<>();
         
-        while(rowSet.next()) {
+        while(rowSet.next())
             klanten.add(retrieveKlant());
-        }
         
         return klanten;
     }
+    
+    /**
+     * Returns the klant stored in the database with the given klant id. Klant data is returned in a
+     * klant object.
+     * @param klant_id              the id of the klant that is to be retrieved
+     * @return                      the klant with the given id
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public Klant read(int klant_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        executeCommand("SELECT * FROM klant WHERE klant_id = " + klant_id);
+        rowSet.next();
+        Klant klant = retrieveKlant();
+        
+        return klant;
+    }
+    
+    /**
+     * Returns all klanten stored in the database of whom the attribute values correspond to 
+     * attribute values of the given klant object. Only the attributes that have been specifically
+     * set in the klant object are used for the query. Klanten are returned in an arraylist object.
+     * @param k                     the klant object that contains query conditions
+     * @return                      klanten that have the same attribute values as the given klant
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public ArrayList<Klant> read(Klant k) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        String sqlcode = SqlCodeGenerator.generateKlantSelectionCode(k);
+        executeCommand(sqlcode);
+        ArrayList<Klant> klanten = new ArrayList<>();
+        
+        while(rowSet.next())
+            klanten.add(retrieveKlant());
+        
+        return klanten;
+    }    
     
     /**
      * 

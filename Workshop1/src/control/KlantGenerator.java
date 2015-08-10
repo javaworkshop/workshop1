@@ -3,9 +3,12 @@ package control;
 import model.Klant;
 
 /**
- * 
+ * Class that contains static methods to generate random klanten. Cannot be instantiated.
  */
 public class KlantGenerator {
+    
+    private KlantGenerator(){}
+    
     public static Klant generateKlant() {
         String[] voornaam = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , 
             "Bo" , "Jan" , "Willem" , " Piet"};

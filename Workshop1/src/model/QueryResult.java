@@ -46,9 +46,8 @@ public class QueryResult {
     
     public void addColumn(String label, String[] cellValues) throws IllegalArgumentException {
         if(columns.isEmpty())
-            rowCount = cellValues.length;
-        
-        if(cellValues.length != rowCount)
+            rowCount = cellValues.length;        
+        else if(cellValues.length != rowCount)
             throw new IllegalArgumentException("The number of rows in the column to be added has "
                     + "to match the number of rows of the column(s) already stored in the current "
                     + "QueryResult object.");
@@ -59,9 +58,8 @@ public class QueryResult {
     public void addColumn(String label, ArrayList<String> cellValues) 
             throws IllegalArgumentException {
         if(columns.isEmpty())
-            rowCount = cellValues.size();
-        
-        if(cellValues.size() != rowCount)
+            rowCount = cellValues.size();        
+        else if(cellValues.size() != rowCount)
             throw new IllegalArgumentException("The number of rows in the column to be added has "
                     + "to match the number of rows of the column(s) already stored in the current "
                     + "QueryResult object.");

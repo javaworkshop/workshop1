@@ -12,6 +12,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
@@ -28,6 +31,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.util.ArrayList;
+import javafx.event.EventHandler;
+import javafx.scene.control.TableColumn.CellEditEvent;
 
 /**
  * Class from which the program runs. User input is processed through this class.
@@ -216,6 +221,7 @@ public class Controller extends Application {
             final int j = i;
 	    TableColumn col = new TableColumn(columnNames[i]);
             
+            // Bepaalt de waarde van een cell
             col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, 
                 ObservableValue<String>>() {
                     public ObservableValue<String> call(CellDataFeatures<ObservableList, String> 
@@ -227,19 +233,88 @@ public class Controller extends Application {
                         return new SimpleStringProperty((String)param.getValue().get(j));
                     }
             });
-
+            
+            // Maakt een cell editable
+            col.setCellFactory(TextFieldTableCell.forTableColumn());
+            col.setOnEditCommit(new EventHandler<CellEditEvent<ObservableList, String>>() {
+                @Override
+                public void handle(CellEditEvent<ObservableList, String> t) {                    
+                    ObservableList<String> cellValues = (ObservableList)tableView.getItems().get(
+                            t.getTablePosition().getRow());
+                    cellValues.set(j, t.getNewValue());
+                }
+            });
+            
             tableView.getColumns().add(col);
-        }
+        }                    
         
+        // Voegt de data uit queryResult toe aan tableView
         for (int i = 1; i <= queryResult.rowCount(); i++) {
             ObservableList<String> row = FXCollections.observableArrayList();
             for(String columnName : columnNames) {           
                 row.add(queryResult.getCellValue(columnName, i));
             }
             data.add(row);
-        }
-	    
+        }	    
         tableView.setItems(data);
+		    
+	TableColumn updateCol = new TableColumn<ObservableList,CheckBox>();
+	updateCol.setText("update");
+	updateCol.setCellValueFactory(new PropertyValueFactory("update"));
+	updateCol.setCellFactory(new Callback<TableColumn<ObservableList, CheckBox>, 
+                TableCell<ObservableList, CheckBox>>() {
+	    public TableCell<ObservableList, CheckBox> call(TableColumn<ObservableList, CheckBox> p) {
+                return new CheckBoxTableCell<ObservableList, CheckBox>();
+            }
+	});
+        
+        tableView.setEditable(true);
+        tableView.getColumns().add(updateCol);
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+        tableView.getSelectionModel().clearSelection();
+        data.removeAll(tableView.getSelectionModel().getSelectedItems());
+    }
+    
+    /**
+     * Finds the indices of the rows in the tableview that have their update cell checked.
+     * @return an array containing all the row numbers that have their update cell checked
+     */
+    private ArrayList<Integer> findUpdateRows() {
+        int columnCount = tableView.getColumns().size();
+        TableColumn<?, ?> updateCol = (TableColumn)tableView.getColumns().get(0);
+        for(int i = 1; i < columnCount; i++) {            
+            if(updateCol.getText().equals("update"))
+                break;
+            updateCol = (TableColumn)tableView.getColumns().get(i);
+        }
+        
+        ArrayList<Integer> rowIndices = new ArrayList<>();
+        int rowCount = tableView.getItems().size();
+        for(int i = 0; i < rowCount; i++) {
+            CheckBox cb = (CheckBox)updateCol.getCellData(i);
+            if(cb.isSelected())
+                rowIndices.add(i);
+        }
+        
+        return rowIndices;
+    }
+    
+    private int[] findDeleteRows() {
+        return new int[1];
+    }
+    
+    public static class CheckBoxTableCell<S, T> extends TableCell<S, T> {
+        private final CheckBox checkBox;
+        private ObservableValue<T> ov;
+
+	public CheckBoxTableCell() {
+
+            this.checkBox = new CheckBox();
+            this.checkBox.setAlignment(Pos.CENTER);
+
+            setAlignment(Pos.CENTER);
+            setGraphic(checkBox);
+        }
     }
     
     private void populateTableView(ArrayList<Data> data) {

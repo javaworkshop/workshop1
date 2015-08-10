@@ -207,7 +207,7 @@ public class Controller extends Application {
     }
 
     private void populateTableView(QueryResult queryResult) {
-        tableView.getColumns().removeAll(tableView.getColumns());
+        tableView.getColumns().clear();
         ObservableList<ObservableList> data = FXCollections.observableArrayList();    
         
         String[] columnNames = queryResult.columnNames();
@@ -243,7 +243,7 @@ public class Controller extends Application {
     }
     
     private void populateTableView(ArrayList<Data> data) {
-        tableView.getColumns().removeAll(tableView.getColumns());
+        tableView.getColumns().clear();
         
         String[] columnNames = Data.getAttributeNames(data.get(0));
         

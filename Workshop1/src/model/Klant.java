@@ -15,6 +15,7 @@ public class Klant extends Data {
     private String toevoeging;
     private String postcode;
     private String woonplaats;
+    //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {
         voornaam = null;

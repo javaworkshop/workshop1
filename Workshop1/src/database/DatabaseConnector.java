@@ -120,7 +120,7 @@ public class DatabaseConnector {
      * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public void batchInsertion(Klant[] klanten) throws SQLException, DatabaseException {        
+    public void batchInsertion(Klant[] klanten) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
        
@@ -166,9 +166,38 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public ArrayList<Klant> readAll() throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
         
+        executeCommand("SELECT * FROM klant");
+        ArrayList<Klant> klanten = new ArrayList<>();
         
-        return new ArrayList<Klant>();
+        while(rowSet.next()) {
+            klanten.add(retrieveKlant());
+        }
+        
+        return klanten;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws SQLException 
+     */
+    private Klant retrieveKlant() throws SQLException {
+        Klant klant = new Klant();
+        klant.setKlant_id(rowSet.getInt(1));
+        klant.setVoornaam(rowSet.getString(2));
+        klant.setTussenvoegsel(rowSet.getString(3));
+        klant.setAchternaam(rowSet.getString(4));
+        klant.setEmail(rowSet.getString(5));
+        klant.setStraatnaam(rowSet.getString(6));
+        klant.setHuisnummer(rowSet.getInt(7));
+        klant.setToevoeging(rowSet.getString(8));
+        klant.setPostcode(rowSet.getString(9));
+        klant.setWoonplaats(rowSet.getString(10));
+        
+        return klant;
     }
     
     /**

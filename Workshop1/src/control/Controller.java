@@ -133,6 +133,11 @@ public class Controller extends Application {
             }
             new Thread(() -> batchUpdate()).start();
 	});        
+        
+        //gerbrich
+        btVoegBestelling.setOnAction(e->{
+            model.BestellingGenerator bg= new model.BestellingGenerator();
+        });
     }
 
     private void batchUpdate() {

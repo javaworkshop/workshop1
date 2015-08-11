@@ -65,11 +65,11 @@ public class DatabaseConnector {
      * @throws SQLException
      * @throws DatabaseException     thrown if database connection has not been initialized yet
      */
-    public QueryResult executeQuery(String query) throws SQLException, DatabaseException {
+    public QueryResult executeQuery(String query) throws SQLException, 
+            DatabaseException {        
         executeCommand(query);
-        QueryResult queryResult = createQueryResult();
-        return queryResult;
-    }
+        return createQueryResult();
+    }    
     
     /**
      * 
@@ -77,25 +77,108 @@ public class DatabaseConnector {
      * @throws SQLException 
      */
     private QueryResult createQueryResult() throws SQLException {
-        ResultSetMetaData rsMeta = rowSet.getMetaData();
-        String[] columnNames = getCurrentColumnNames();
-        QueryResult queryResult = new QueryResult();        
-        
-        rowSet.next();
-        for(int i = 1; i <= getCurrentColumnCount(); i++) {
-            ArrayList<String> cellValues = new ArrayList<>();
-            int type = rsMeta.getColumnType(i);
-            do {
-                if(type == Types.CHAR || type == Types.VARCHAR)
-                    cellValues.add(rowSet.getString(i));
-                else if(type == Types.INTEGER)
-                    cellValues.add(rowSet.getInt(i) + "");
-                else if(type == Types.NULL)
-                    cellValues.add("");
+        String[] columnNames = getCurrentColumnNames();        
+        QueryResult queryResult = new QueryResult();
+                
+        while(rowSet.next()) {
+            QueryResultRow row = new QueryResultRow();
+            for(int i = 1; i <= getCurrentColumnCount(); i++) {
+                // klant kolommen
+                if(columnNames[i-1].equals("klant_id")) {
+                    row.setKlant_id(rowSet.getInt(i));
+                    queryResult.addColumnName("klant_id");
+                }
+                else if(columnNames[i-1].equals("voornaam")) {
+                    row.setVoornaam(rowSet.getString(i));
+                    queryResult.addColumnName("voornaam");
+                }
+                else if(columnNames[i-1].equals("tussenvoegsel")) {
+                    row.setTussenvoegsel(rowSet.getString(i));
+                    queryResult.addColumnName("tussenvoegsel");
+                }
+                else if(columnNames[i-1].equals("achternaam")) {
+                    row.setAchternaam(rowSet.getString(i));
+                    queryResult.addColumnName("achternaam");
+                }
+                else if(columnNames[i-1].equals("email")) {
+                    row.setEmail(rowSet.getString(i));
+                    queryResult.addColumnName("email");
+                }
+                else if(columnNames[i-1].equals("straatnaam")) {
+                    row.setStraatnaam(rowSet.getString(i));
+                    queryResult.addColumnName("straatnaam");
+                }
+                else if(columnNames[i-1].equals("huisnummer")) {
+                    row.setHuisnummer(rowSet.getInt(i));
+                    queryResult.addColumnName("huisnummer");
+                }
+                else if(columnNames[i-1].equals("toevoeging")) {
+                    row.setToevoeging(rowSet.getString(i));
+                    queryResult.addColumnName("toevoeging");
+                }
+                else if(columnNames[i-1].equals("postcode")) {
+                    row.setPostcode(rowSet.getString(i));
+                    queryResult.addColumnName("postcode");
+                }
+                else if(columnNames[i-1].equals("woonplaats")) {
+                    row.setWoonplaats(rowSet.getString(i));
+                    queryResult.addColumnName("woonplaats");
+                }
+                // bestelling kolommen
+                else if(columnNames[i-1].equals("bestelling_id")) {
+                    row.setBestelling_id(rowSet.getInt(i));
+                    queryResult.addColumnName("bestelling_id");
+                }
+                else if(columnNames[i-1].equals("artikel_id1")) {
+                    row.setArtikel_id1(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_id1");
+                }
+                else if(columnNames[i-1].equals("artikel_id2")) {
+                    row.setArtikel_id2(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_id2");
+                }
+                else if(columnNames[i-1].equals("artikel_id3")) {
+                    row.setArtikel_id3(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_id3");
+                }
+                else if(columnNames[i-1].equals("artikel_naam1")) {
+                    row.setArtikel_naam1(rowSet.getString(i));
+                    queryResult.addColumnName("artikel_naam1");
+                }
+                else if(columnNames[i-1].equals("artikel_naam2")) {
+                    row.setArtikel_naam2(rowSet.getString(i));
+                    queryResult.addColumnName("artikel_naam2");
+                }
+                else if(columnNames[i-1].equals("artikel_naam3")) {
+                    row.setArtikel_naam3(rowSet.getString(i));
+                    queryResult.addColumnName("artikel_naam3");
+                }
+                else if(columnNames[i-1].equals("artikel_aantal1")) {
+                    row.setArtikel_aantal1(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_aantal1");
+                }
+                else if(columnNames[i-1].equals("artikel_aantal2")) {
+                    row.setArtikel_aantal2(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_aantal2");
+                }
+                else if(columnNames[i-1].equals("artikel_aantal3")) {
+                    row.setArtikel_aantal3(rowSet.getInt(i));
+                    queryResult.addColumnName("artikel_aantal3");
+                }
+                else if(columnNames[i-1].equals("artikel_prijs1")) {
+                    row.setArtikel_prijs1(rowSet.getDouble(i));
+                    queryResult.addColumnName("artikel_prijs1");
+                }
+                else if(columnNames[i-1].equals("artikel_prijs2")) {
+                    row.setArtikel_prijs2(rowSet.getDouble(i));
+                    queryResult.addColumnName("artikel_prijs2");
+                }
+                else if(columnNames[i-1].equals("artikel_prijs3")) {
+                    row.setArtikel_prijs3(rowSet.getDouble(i));
+                    queryResult.addColumnName("artikel_prijs3");
+                }
             }
-            while(rowSet.next());
-            queryResult.addColumn(columnNames[i - 1], cellValues);
-            rowSet.first();
+            queryResult.addRow(row);
         }
         
         return queryResult;

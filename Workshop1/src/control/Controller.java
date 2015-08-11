@@ -144,7 +144,7 @@ public class Controller extends Application {
             });
             th.start();
 	});
-        btUpdate.setOnAction(e -> findUpdateRows()); //om te testen
+        //btUpdate.setOnAction(e -> findUpdateRows()); //om te testen
     }
     
     private void createKlanten() {
@@ -211,128 +211,24 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
-    }
-
+    }    
+    
     private void populateTableView(QueryResult queryResult) {
-        tableView.getColumns().clear(); // verwijdert huidige kolommen uit tableView
-        ObservableList<ObservableList> data = FXCollections.observableArrayList();    
+        tableView.getColumns().clear();
         
-        String[] columnNames = queryResult.columnNames();
+        String[] columnNames = queryResult.getColumnNames();
         
-        // maakt alle kolommen die in queryResult zijn opgeslagen
-        for (int i = 0; i < queryResult.columnCount(); i++) {
-            final int j = i;
-	    TableColumn col = new TableColumn(columnNames[i]);
-            
-            // Bepaalt de waarde van een cell
-            col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, 
-                ObservableValue<String>>() {
-                    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> 
-                            param) {
-                        if (param == null || param.getValue() == null || param.getValue().get(j) == 
-                                null) {
-                            return null;
-                        }
-                        return new SimpleStringProperty((String)param.getValue().get(j));
-                    }
-            });
-            
-            // Maakt een cell editable
-            col.setCellFactory(TextFieldTableCell.forTableColumn());
-            col.setOnEditCommit(new EventHandler<CellEditEvent<ObservableList, String>>() {
-                @Override
-                public void handle(CellEditEvent<ObservableList, String> t) {                    
-                    ObservableList<String> cellValues = (ObservableList)tableView.getItems().get(
-                            t.getTablePosition().getRow());
-                    cellValues.set(j, t.getNewValue());
-                }
-            });
-            
-            tableView.getColumns().add(col);
+        for(String columnName : columnNames) {
+                TableColumn<QueryResultRow, String> tc = new TableColumn<>(columnName);
+                tc.setCellValueFactory(new PropertyValueFactory<QueryResultRow, String>(
+                        columnName));
+                tableView.getColumns().add(tc);
         }
         
-        // Voegt de data uit queryResult toe aan tableView
-        for (int i = 1; i <= queryResult.rowCount(); i++) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            for(String columnName : columnNames) {           
-                row.add(queryResult.getCellValue(columnName, i));
-            }
-            data.add(row);
-        }   
-        
-        // Maakt update kolom met checkboxes
-	TableColumn<ObservableList,CheckBox> updateCol = new TableColumn<>();
-	updateCol.setText("update");
-	        
-	updateCol.setCellFactory(new Callback<TableColumn<ObservableList, CheckBox>, 
-                TableCell<ObservableList, CheckBox>>() {
-	    public TableCell<ObservableList, CheckBox> call(TableColumn<ObservableList, CheckBox> p) {
-                return new CheckBoxTableCell<ObservableList, CheckBox>(
-                        /*new Callback<Integer, ObservableValue<Boolean>>() {
-                            public ObservableValue<Boolean> call(int i) {
-                                return new 
-                            }
-                        }*/);
-            }
-	});     
-        
-        tableView.getColumns().add(updateCol);
-        tableView.setItems(data);
-        tableView.setEditable(true);        
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
-        tableView.getSelectionModel().clearSelection();
-        data.removeAll(tableView.getSelectionModel().getSelectedItems());
+        tableView.setItems(FXCollections.observableArrayList(queryResult.getRows()));        
     }
     
-    /**
-     * Finds the indices of the rows in the tableview that have their update cell checked.
-     * @return an array containing all the row numbers that have their update cell checked
-     */
-    private ArrayList<Integer> findUpdateRows() {
-        int columnCount = tableView.getColumns().size();
-        int updateColIndex;
-        for(updateColIndex = 0; updateColIndex < columnCount; updateColIndex++) {
-            String colText = ((TableColumn)tableView.getColumns().get(updateColIndex)).getText();
-            if(colText.equals("update")) {
-                break;
-            }
-        }
-        
-        ObservableList<ObservableList> table = tableView.getItems();       
-        ArrayList<Integer> rowIndices = new ArrayList<>();
-        int rowCount = table.size();
-        for(int i = 0; i < rowCount; i++) {
-            CheckBox cb = (CheckBox)table.get(i).get(updateColIndex);
-            if(cb.isSelected())
-                rowIndices.add(i);
-        }
-        
-        return rowIndices;
-    }
-    
-    /**
-     * Finds the indices of the rows in the tableview that have their delete cell checked.
-     * @return an array containing all the row numbers that have their delete cell checked
-     */
-    private int[] findDeleteRows() {
-        return new int[1];
-    }
-    
-    /*public static class CheckBoxTableCell<S, T> extends TableCell<S, T> {
-        private final CheckBox checkBox;
-        //private ObservableValue<T> ov;
-
-	public CheckBoxTableCell() {
-
-            this.checkBox = new CheckBox();
-            this.checkBox.setAlignment(Pos.CENTER);
-
-            setAlignment(Pos.CENTER);
-            setGraphic(checkBox);
-        }
-    }*/
-    
-    private void populateTableView(ArrayList<Data> data) {
+    private void populateTableViewData(ArrayList<Data> data) {
         tableView.getColumns().clear();
         
         String[] columnNames = Data.getAttributeNames(data.get(0));
@@ -342,7 +238,7 @@ public class Controller extends Application {
                 tc.setCellValueFactory(new PropertyValueFactory<Data, String>(
                         columnName));
                 tableView.getColumns().add(tc);
-        }
+        }       
         
         // Misschien is het nodig om het zo te doen, methode moet nog getest worden, dus ben niet 
         // zeker

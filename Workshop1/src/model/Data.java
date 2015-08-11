@@ -11,10 +11,10 @@ public abstract class Data {
             new String[]{"klant_id", "voornaam", "tussenvoegsel", "achternaam", "email", 
             "straatnaam", "huisnummer", "toevoeging", "postcode", "woonplaats"}));
     public static final LinkedHashSet<String> BESTELLING_ATTRIBUTES = new LinkedHashSet<>(
-            Arrays.asList(new String[]{"bestelling_id", "klant_id", "artikel_id1", "artikel_id2", 
-                "artikel_id3", "artikel_naam1", "artikel_naam2", "artikel_naam3", 
-                "artikel_aantal1", "artikel_aantal2", "artikel_aantal3", "artikel_prijs1", 
-                "artikel_prijs2", "artikel_prijs3"}));
+            Arrays.asList(new String[]{"bestelling_id", "klant_id", "artikel_id1", "artikel_naam1", 
+                "artikel_aantal1", "artikel_prijs1", "artikel_id2", "artikel_naam2", 
+                "artikel_aantal2", "artikel_prijs2", "artikel_id3", "artikel_naam3", 
+                "artikel_aantal3", "artikel_prijs3"}));
     private int primaryKey;
     
     protected Data() {

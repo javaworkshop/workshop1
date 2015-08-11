@@ -38,17 +38,18 @@ public class BestellingGenerator extends Stage{
 	}
 	
 	private void makeGUI(){
-		TextField tfKlantID = new TextField();
-		Label lblKlantID= new Label("Klant ID",tfKlantID);
-		lblKlantID.setContentDisplay(ContentDisplay.RIGHT);
+		TextField tfklantId = new TextField();
+		Label lblklantId= new Label("Klant ID",tfklantId);
+		lblklantId.setContentDisplay(ContentDisplay.RIGHT);
 		Button btVoegToe = new Button("Voeg bestelling toe");
-		pnBestelling.getChildren().addAll(lblKlantID, btVoegToe);
+		pnBestelling.getChildren().addAll(lblklantId, btVoegToe);
 				
 		//add TextFields for adding Artikelen
 		
 		btVoegToe.setOnAction(e->{	
 			Bestelling bestelling = new Bestelling();
 			//voeg alle info toe aan deze bestelling
+                        bestelling.setklantId(klantId);
 			
 			BestellingSQL.addToDatabase(bestelling);
 		});
@@ -64,9 +65,9 @@ public class BestellingGenerator extends Stage{
 		return artikelGUI;
 	}
 
-	public static boolean isKlantID(String klantID){
+	public static boolean isklantId(String klantId){
 		boolean justDigits = true;
-		for (char ch : klantID.toCharArray()){
+		for (char ch : klantId.toCharArray()){
 			if (!Character.isDigit(ch)){
 				justDigits = false;
 			}

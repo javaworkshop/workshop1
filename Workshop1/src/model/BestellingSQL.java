@@ -20,12 +20,15 @@ import java.sql.SQLException;
 public class BestellingSQL {
 	
 	static Connection connection; //initialize this
-
+        
+        private BestellingSQL(){
+            
+        }
+        
 	public static void addToDatabase(Bestelling bestelling){
 			try{
 				//zorg ervoor dat alle datafields van de bestelling naar de database worden geschreven
 
-				
 				String sql = "INSERT INTO Bestelling (klant_id), VALUES (?)";
 				PreparedStatement statement = connection.prepareStatement(sql);
 				statement.setInt(1, bestelling.getklantId());
@@ -55,6 +58,6 @@ public class BestellingSQL {
             //returns a bestelling object based on info from the database
             return new Bestelling();
         }
-        /*
+        
 }
 

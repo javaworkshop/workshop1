@@ -28,7 +28,7 @@ public class BestellingSQL {
 				
 				String sql = "INSERT INTO Bestelling (klant_id), VALUES (?)";
 				PreparedStatement statement = connection.prepareStatement(sql);
-				statement.setInt(1, bestelling.getKlantId());
+				statement.setInt(1, bestelling.getklantId());
 				int rowsInserted = statement.executeUpdate();
 				if (rowsInserted>0){
 					System.out.println("Bestelling toegevoegd");
@@ -41,5 +41,20 @@ public class BestellingSQL {
 				//make exception pop up
 			}
 	}
+        
+        public static void updateBestelling(Bestelling bestelling){
+            //implement
+        }
+        
+        public static void deleteBestelling(Bestelling bestelling){
+            //implement
+        }
+        
+        public static Bestelling getBestelling(int bestellingId){
+            //implement
+            //returns a bestelling object based on info from the database
+            return new Bestelling();
+        }
+        /*
 }
 

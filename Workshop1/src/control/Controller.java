@@ -144,7 +144,7 @@ public class Controller extends Application {
             });
             th.start();
 	});
-        //btUpdate.setOnAction(e -> findUpdateRows()); //om te testen
+        btUpdate.setOnAction(e -> test()); //om te testen
     }
     
     private void createKlanten() {
@@ -211,68 +211,54 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
-    }    
+    }
+    
+    private void test() {
+        ObservableList<QueryResultRow> list = (ObservableList)tableView.getItems();
+        String s = "4545";
+    }
     
     private void populateTableView(QueryResult queryResult) {
-        tableView.getColumns().clear();
+        tableView.getColumns().clear(); // maak tableView leeg
         
         String[] columnNames = queryResult.getColumnNames();
         
-        for(String columnName : columnNames) {
-                TableColumn<QueryResultRow, String> tc = new TableColumn<>(columnName);
-                tc.setCellValueFactory(new PropertyValueFactory<QueryResultRow, String>(
-                        columnName));
-                tableView.getColumns().add(tc);
-        }
-        
-        tableView.setItems(FXCollections.observableArrayList(queryResult.getRows()));        
-    }
-    
-    private void populateTableViewData(ArrayList<Data> data) {
-        tableView.getColumns().clear();
-        
-        String[] columnNames = Data.getAttributeNames(data.get(0));
-        
-        for(String columnName : columnNames) {
-                TableColumn<Data, String> tc = new TableColumn<>(columnName);
-                tc.setCellValueFactory(new PropertyValueFactory<Data, String>(
-                        columnName));
-                tableView.getColumns().add(tc);
-        }       
-        
-        // Misschien is het nodig om het zo te doen, methode moet nog getest worden, dus ben niet 
-        // zeker
-        /*
-        if(data.get(0) instanceof Klant) {
-            for(String columnName : columnNames) {
-                    TableColumn<Klant, String> tc = new TableColumn<>(columnName);
-                    tc.setCellValueFactory(new PropertyValueFactory<Klant, String>(
-                            columnName));
-                    tableView.getColumns().add(tc);
-            }
-        }
-        else if(data.get(0) instanceof Bestelling) {
-            for(String columnName : columnNames) {
-                    TableColumn<Bestelling, String> tc = new TableColumn<>(columnName);
-                    tc.setCellValueFactory(new PropertyValueFactory<Bestelling, String>(
-                            columnName));
-                    tableView.getColumns().add(tc);
-            }
-        }
-        */ 
-        /*
-        else if(data.get(0) instanceof Artikel) {
-            for(String columnName : columnNames) {
-                    TableColumn<Klant, String> tc = new TableColumn<>(columnName);
-                    tc.setCellValueFactory(new PropertyValueFactory<Artikel, String>(
-                            columnName));
-                    tableView.getColumns().add(tc);
-            }
-        }
-        */
+        // maak alle kolommen die in queryResult zijn opgeslagen
+        for(int i = 0; i < columnNames.length; i++) {
+            // maak kolom
+            TableColumn<QueryResultRow, String> col = new TableColumn<>(columnNames[i]);
             
-        tableView.setItems(FXCollections.observableArrayList(data));
-    }
+            // bepaalt de waarde van een cell
+            col.setCellValueFactory(new PropertyValueFactory<QueryResultRow, String>(
+                columnNames[i]));
+             
+            // Maakt een cell editable
+            col.setCellFactory(TextFieldTableCell.forTableColumn());
+            col.setEditable(true);
+             
+            // voeg kolom toe aan tableview
+            tableView.getColumns().add(col);
+        }
+        
+        // Voeg update kolom toe
+        TableColumn<CheckBoxValue, Boolean> updateCol = new TableColumn<>("update");
+        updateCol.setCellValueFactory(new PropertyValueFactory<CheckBoxValue, Boolean>("value"));
+        updateCol.setCellFactory(CheckBoxTableCell.forTableColumn(updateCol));
+        updateCol.setEditable(true);
+        tableView.getColumns().add(updateCol);
+        
+        // Voeg delete kolom toe
+        TableColumn<CheckBoxValue, Boolean> deleteCol = new TableColumn<>("delete");
+        deleteCol.setCellValueFactory(new PropertyValueFactory<CheckBoxValue, Boolean>("value"));
+        deleteCol.setCellFactory(CheckBoxTableCell.forTableColumn(updateCol));
+        deleteCol.setEditable(true);
+        tableView.getColumns().add(deleteCol);
+        
+        tableView.setEditable(true);        
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+        tableView.getSelectionModel().clearSelection();
+        tableView.setItems(FXCollections.observableArrayList(queryResult.getRows()));
+    }       
 
     private void processSQLNonSelect(String sqlCommand) {
         borderPaneExecutionResult.getChildren().remove(tableView);

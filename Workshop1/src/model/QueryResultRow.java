@@ -1,17 +1,27 @@
 package model;
 
-import java.util.ArrayList;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Class used by queryResult to represent rows.
+ * Class used by queryResult to represent rows. All properties are converted to String properties to
+ * support easy display and editing in a TableView. (bestelling properties nog niet!)
  */
 public class QueryResultRow {
     private Klant klant;
     private Bestelling bestelling;
+    private SimpleStringProperty klant_idProperty;
+    private SimpleStringProperty huisnummerProperty;
     
     public QueryResultRow() {
         klant = new Klant();
         bestelling = new Bestelling();
+        klant_idProperty = null;
+        huisnummerProperty = null;
     }
     
     public int getKlant_id() {
@@ -21,6 +31,11 @@ public class QueryResultRow {
     public void setKlant_id(int id) {
         klant.setKlant_id(id);
         bestelling.setKlant_id(id);
+        klant_idProperty = new SimpleStringProperty(id + "");
+    }
+    
+    public StringProperty klant_idProperty() {        
+        return klant_idProperty;
     }
     
     public String getVoornaam() {
@@ -30,6 +45,10 @@ public class QueryResultRow {
     public void setVoornaam(String voornaam) {
         klant.setVoornaam(voornaam);
     }
+    
+    public StringProperty voornaamProperty() {
+        return klant.voornaamProperty();
+    }
 
     public String getTussenvoegsel() {
         return klant.getTussenvoegsel();
@@ -37,6 +56,10 @@ public class QueryResultRow {
 
     public void setTussenvoegsel(String tussenvoegsel) {
         klant.setTussenvoegsel(tussenvoegsel);
+    }
+    
+    public StringProperty tussenvoegselProperty() {
+        return klant.tussenvoegselProperty();
     }
 
     public String getAchternaam() {
@@ -46,6 +69,10 @@ public class QueryResultRow {
     public void setAchternaam(String achternaam) {
         klant.setAchternaam(achternaam);
     }
+    
+    public StringProperty achternaamProperty() {
+        return klant.achternaamProperty();
+    }
 
     public String getEmail() {
         return klant.getEmail();
@@ -53,6 +80,10 @@ public class QueryResultRow {
 
     public void setEmail(String email) {
         klant.setEmail(email);
+    }
+    
+    public StringProperty emailProperty() {
+        return klant.emailProperty();
     }
 
     public String getStraatnaam() {
@@ -62,6 +93,10 @@ public class QueryResultRow {
     public void setStraatnaam(String straatnaam) {
         klant.setStraatnaam(straatnaam);
     }
+    
+    public StringProperty straatnaamProperty() {
+        return klant.straatnaamProperty();
+    }
 
     public int getHuisnummer() {
         return klant.getHuisnummer();
@@ -69,6 +104,11 @@ public class QueryResultRow {
 
     public void setHuisnummer(int huisnummer) {
         klant.setHuisnummer(huisnummer);
+        huisnummerProperty = new SimpleStringProperty(huisnummer + "");
+    }
+    
+    public StringProperty huisnummerProperty() {
+        return huisnummerProperty;
     }
 
     public String getToevoeging() {
@@ -78,6 +118,10 @@ public class QueryResultRow {
     public void setToevoeging(String toevoeging) {
         klant.setToevoeging(toevoeging);
     }
+    
+    public StringProperty toevoegingProperty() {
+        return klant.toevoegingProperty();
+    }
 
     public String getPostcode() {
         return klant.getPostcode();
@@ -85,6 +129,10 @@ public class QueryResultRow {
 
     public void setPostcode(String postcode) {
         klant.setPostcode(postcode);
+    }
+    
+    public StringProperty postcodeProperty() {
+        return klant.postcodeProperty();
     }
 
     public String getWoonplaats() {
@@ -95,6 +143,10 @@ public class QueryResultRow {
         klant.setWoonplaats(woonplaats);
     }
     
+    public StringProperty woonplaatsProperty() {
+        return klant.woonplaatsProperty();
+    }
+    
     public int getBestelling_id() {
         return bestelling.getBestelling_id();
     }
@@ -103,7 +155,11 @@ public class QueryResultRow {
         bestelling.setBestelling_id(id);
     }
     
-       public int getArtikel_id1() {
+    public IntegerProperty bestelling_idProperty() {
+        return bestelling.bestelling_idProperty();
+    }
+    
+    public int getArtikel_id1() {
         return bestelling.getArtikel_id1();
     }
 
@@ -111,6 +167,10 @@ public class QueryResultRow {
         bestelling.setArtikel_id1(artikel_id1);
     }
 
+    public IntegerProperty artikel_id1Property() {
+        return bestelling.artikel_id1Property();
+    }
+    
     public int getArtikel_id2() {
         return bestelling.getArtikel_id2();
     }

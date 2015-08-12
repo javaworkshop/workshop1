@@ -2,6 +2,8 @@ package model;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * Parent klasse van alle klassen die bedoeld zijn voor opslag van database gegevens.
@@ -15,22 +17,23 @@ public abstract class Data {
                 "artikel_aantal1", "artikel_prijs1", "artikel_id2", "artikel_naam2", 
                 "artikel_aantal2", "artikel_prijs2", "artikel_id3", "artikel_naam3", 
                 "artikel_aantal3", "artikel_prijs3"}));
-    private int primaryKey;
+    
+    private SimpleIntegerProperty primaryKey;
     
     protected Data() {
-        primaryKey = 0;
-    }
-    
-    protected Data(int primaryKey) {
-        this.primaryKey = primaryKey;
+        primaryKey = new SimpleIntegerProperty(0);
     }
 
     protected int getPrimaryKey() {
-        return primaryKey;
+        return primaryKey.getValue();
     }
 
     protected void setPrimaryKey(int primaryKey) {
-        this.primaryKey = primaryKey;
+        this.primaryKey.setValue(primaryKey);
+    }
+    
+    protected IntegerProperty primaryKeyProperty() {
+        return primaryKey;
     }
     
     public static String[] getAttributeNames(Data data) {        

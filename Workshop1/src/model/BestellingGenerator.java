@@ -9,7 +9,6 @@ package model;
  *
  * @author gerbrich2
  */
-import java.sql.Connection;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -42,27 +41,73 @@ public class BestellingGenerator extends Stage{
 		Label lblklantId= new Label("Klant ID",tfklantId);
 		lblklantId.setContentDisplay(ContentDisplay.RIGHT);
 		Button btVoegToe = new Button("Voeg bestelling toe");
-		pnBestelling.getChildren().addAll(lblklantId, btVoegToe);
-				
-		//add TextFields for adding Artikelen
+                
+                //info artikel 1
+                HBox pnArtikelInfo = new HBox();
+                TextField tfArtikelId = new TextField();
+		Label lblArtikelId = new Label("Artikel ID",tfArtikelId);
+		lblArtikelId.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelNaam = new TextField();
+		Label lblArtikelNaam = new Label("Artikel Naam",tfArtikelNaam);
+		lblArtikelNaam.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelAantal = new TextField();
+		Label lblArtikelAantal = new Label("Artikel Aantal",tfArtikelAantal);
+                tfArtikelAantal.setPrefWidth(50);
+		lblArtikelAantal.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelPrijs = new TextField();
+		Label lblArtikelPrijs= new Label("Artikel Prijs",tfArtikelPrijs);
+                tfArtikelPrijs.setPrefWidth(50);
+		lblArtikelPrijs.setContentDisplay(ContentDisplay.RIGHT);
+                
+                pnArtikelInfo.getChildren().addAll(lblArtikelId, lblArtikelNaam, lblArtikelAantal, lblArtikelPrijs);
 		
+                
+                pnBestelling.getChildren().addAll(lblklantId, pnArtikelInfo, btVoegToe);
+
 		btVoegToe.setOnAction(e->{	
 			Bestelling bestelling = new Bestelling();
+                        
 			//voeg alle info toe aan deze bestelling
-                        bestelling.setklantId(klantId);
-			
+                        bestelling.setklantId(Integer.parseInt(tfklantId.getText()));
+                        
+			int artikelId = Integer.parseInt(tfArtikelId.getText());
+                        String artikelNaam = tfArtikelNaam.getText();
+                        int artikelAantal = Integer.parseInt(tfArtikelAantal.getText());
+                        double artikelPrijs = Double.parseDouble(tfArtikelPrijs.getText());
+                        
+                        ArtikelGenerator.processArtikelInfo(bestelling, artikelId, artikelNaam, artikelAantal, artikelPrijs);
+                        
+                        
 			BestellingSQL.addToDatabase(bestelling);
 		});
 	}
 	
 	private HBox makeArtikelGUI(){
-		HBox artikelGUI = new HBox();
-		//implement
-		
-		//maybe get this from artikelGenerator
-		
-		//add textfields for one artikel
-		return artikelGUI;
+                HBox pnArtikelInfo = new HBox();
+                TextField tfArtikelId = new TextField();
+		Label lblArtikelId = new Label("Artikel ID",tfArtikelId);
+		lblArtikelId.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelNaam = new TextField();
+		Label lblArtikelNaam = new Label("Artikel Naam",tfArtikelNaam);
+		lblArtikelNaam.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelAantal = new TextField();
+		Label lblArtikelAantal = new Label("Artikel Aantal",tfArtikelAantal);
+                tfArtikelAantal.setPrefWidth(50);
+		lblArtikelAantal.setContentDisplay(ContentDisplay.RIGHT);
+                
+                TextField tfArtikelPrijs = new TextField();
+		Label lblArtikelPrijs= new Label("Artikel Prijs",tfArtikelPrijs);
+                tfArtikelPrijs.setPrefWidth(50);
+		lblArtikelPrijs.setContentDisplay(ContentDisplay.RIGHT);
+                
+                pnArtikelInfo.getChildren().addAll(lblArtikelId, lblArtikelNaam, lblArtikelAantal, lblArtikelPrijs);
+                
+		return pnArtikelInfo;
 	}
 
 	public static boolean isklantId(String klantId){

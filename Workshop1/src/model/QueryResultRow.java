@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleStringProperty;
  * Class used by queryResult to represent rows. All properties are converted to String properties to
  * support easy display and editing in a TableView. (bestelling properties nog niet!)
  */
-public class QueryResultRow {
+public class QueryResultRow extends DataDisplayRow {
     private Klant klant;
     private Bestelling bestelling;
     private SimpleStringProperty klant_idProperty;
@@ -34,6 +34,7 @@ public class QueryResultRow {
         klant_idProperty = new SimpleStringProperty(id + "");
     }
     
+    @Override
     public StringProperty klant_idProperty() {        
         return klant_idProperty;
     }

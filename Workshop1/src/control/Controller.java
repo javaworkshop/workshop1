@@ -226,13 +226,13 @@ public class Controller extends Application {
         // maak alle kolommen die in queryResult zijn opgeslagen
         for(int i = 0; i < columnNames.length; i++) {
             // maak kolom
-            TableColumn<QueryResultRow, String> col = new TableColumn<>(columnNames[i]);
+            TableColumn<DataDisplayRow, String> col = new TableColumn<>(columnNames[i]);
             
             // bepaalt de waarde van een cell
-            col.setCellValueFactory(new PropertyValueFactory<QueryResultRow, String>(
+            col.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, String>(
                 columnNames[i]));
              
-            // Maakt een cell editable
+            // maakt een cell editable
             col.setCellFactory(TextFieldTableCell.forTableColumn());
             col.setEditable(true);
              
@@ -241,16 +241,16 @@ public class Controller extends Application {
         }
         
         // Voeg update kolom toe
-        TableColumn<CheckBoxValue, Boolean> updateCol = new TableColumn<>("update");
-        updateCol.setCellValueFactory(new PropertyValueFactory<CheckBoxValue, Boolean>("value"));
+        TableColumn<DataDisplayRow, Boolean> updateCol = new TableColumn<>("update");
+        updateCol.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, Boolean>("update"));
         updateCol.setCellFactory(CheckBoxTableCell.forTableColumn(updateCol));
         updateCol.setEditable(true);
         tableView.getColumns().add(updateCol);
         
         // Voeg delete kolom toe
-        TableColumn<CheckBoxValue, Boolean> deleteCol = new TableColumn<>("delete");
-        deleteCol.setCellValueFactory(new PropertyValueFactory<CheckBoxValue, Boolean>("value"));
-        deleteCol.setCellFactory(CheckBoxTableCell.forTableColumn(updateCol));
+        TableColumn<DataDisplayRow, Boolean> deleteCol = new TableColumn<>("delete");
+        deleteCol.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, Boolean>("delete"));
+        deleteCol.setCellFactory(CheckBoxTableCell.forTableColumn(deleteCol));
         deleteCol.setEditable(true);
         tableView.getColumns().add(deleteCol);
         

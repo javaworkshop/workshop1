@@ -3,29 +3,73 @@ package model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * 
+ * Class meant to make editing and displaying a QueryResultRow in a TableView easier. Also contains
+ * BooleanProperties to keep track of the state of the update and delete checkboxes.
  */
-public abstract class DataDisplayRow {
+public class DataDisplayRow {
     SimpleBooleanProperty update;
     SimpleBooleanProperty delete;
     
-    public abstract StringProperty klant_idProperty();
-    public abstract StringProperty voornaamProperty();
-    public abstract StringProperty tussenvoegselProperty();
-    public abstract StringProperty achternaamProperty();
-    public abstract StringProperty emailProperty();
-    public abstract StringProperty straatnaamProperty();
-    public abstract StringProperty huisnummerProperty();
-    public abstract StringProperty toevoegingProperty();
-    public abstract StringProperty postcodeProperty();
-    public abstract StringProperty woonplaatsProperty();
+    QueryResultRow queryResultRow;
     
-    DataDisplayRow() {
+    private SimpleStringProperty klant_id;  // Integer and double properties are converted 
+    private SimpleStringProperty huisnummer;// to String properties to support easy display
+                                            // and editing in a TableView.   
+    
+    public DataDisplayRow(QueryResultRow queryResultRow) {
         update = new SimpleBooleanProperty(false);
         delete = new SimpleBooleanProperty(false);
+        this.queryResultRow = queryResultRow;
+        klant_id = new SimpleStringProperty(queryResultRow.getKlant().getKlant_id() + "");
+        huisnummer = new SimpleStringProperty(queryResultRow.getKlant().getHuisnummer() + "");
+    }
+
+    public QueryResultRow getQueryResultRow() {
+        return queryResultRow;
+    }
+
+    public void setQueryResultRow(QueryResultRow queryResultRow) {
+        this.queryResultRow = queryResultRow;
+    }
+    
+    public StringProperty klant_idProperty() {
+        return klant_id;
+    }
+    public StringProperty voornaamProperty() {
+        return queryResultRow.voornaamProperty();
+    }
+    public StringProperty tussenvoegselProperty() {
+        return queryResultRow.tussenvoegselProperty();
+    }
+    public StringProperty achternaamProperty() {
+        return queryResultRow.achternaamProperty();
+    }
+    public StringProperty emailProperty() {
+        return queryResultRow.emailProperty();
+    }
+    
+    public StringProperty straatnaamProperty() {
+        return queryResultRow.straatnaamProperty();
+    }
+    
+    public StringProperty huisnummerProperty() {
+        return huisnummer;
+    }
+    
+    public StringProperty toevoegingProperty() {
+        return queryResultRow.toevoegingProperty();
+    }
+    
+    public StringProperty postcodeProperty() {
+        return queryResultRow.postcodeProperty();
+    }
+    
+    public StringProperty woonplaatsProperty() {
+        return queryResultRow.woonplaatsProperty();
     }
     
     public boolean getUpdate() {

@@ -43,4 +43,11 @@ public abstract class Data {
             return (String[])BESTELLING_ATTRIBUTES.toArray();
     }
     
+    public static boolean isKlantAttribute(String attribute) {
+        return KLANT_ATTRIBUTES.contains(attribute);
+    }
+    
+    public static boolean isBestellingAttribute(String attribute) {
+        return BESTELLING_ATTRIBUTES.contains(attribute);
+    }
 }

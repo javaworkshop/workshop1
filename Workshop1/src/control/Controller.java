@@ -144,7 +144,7 @@ public class Controller extends Application {
             });
             th.start();
 	});
-        btUpdate.setOnAction(e -> test()); //om te testen
+        btUpdate.setOnAction(e -> update()); //om te testen
     }
     
     private void createKlanten() {
@@ -213,9 +213,19 @@ public class Controller extends Application {
         }
     }
     
-    private void test() {
-        ObservableList<QueryResultRow> list = (ObservableList)tableView.getItems();
-        String s = "4545";
+    private void update() {
+        ArrayList<Data> updatedData = new ArrayList<>();
+        ArrayList<Integer> rowIndices = updateRowIndices();
+    }
+
+    private ArrayList<Integer> updateRowIndices() {
+        ArrayList<Integer> rowIndices = new ArrayList<>();
+        int columnIndex = 0;
+        for(int i = 0; i < tableView.getColumns().size(); i++) {
+            
+        }
+        
+        return rowIndices;
     }
     
     private void populateTableView(QueryResult queryResult) {
@@ -232,9 +242,11 @@ public class Controller extends Application {
             col.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, String>(
                 columnNames[i]));
              
-            // maakt een cell editable
-            col.setCellFactory(TextFieldTableCell.forTableColumn());
-            col.setEditable(true);
+            // maakt een cell editable, primary keys kunnen niet veranderd worden            
+            if( !(columnNames[i].equals("klant_id") || columnNames[i].equals("bestelling_id")) ) {
+                col.setCellFactory(TextFieldTableCell.forTableColumn());
+                col.setEditable(true);
+            }
              
             // voeg kolom toe aan tableview
             tableView.getColumns().add(col);
@@ -257,7 +269,11 @@ public class Controller extends Application {
         tableView.setEditable(true);        
         tableView.getSelectionModel().setCellSelectionEnabled(true);
         tableView.getSelectionModel().clearSelection();
-        tableView.setItems(FXCollections.observableArrayList(queryResult.getRows()));
+        
+        ArrayList<DataDisplayRow> data = new ArrayList<>();
+        for(int i = 0; i < queryResult.rowCount(); i++)
+            data.add(new DataDisplayRow(queryResult.getRow(i)));        
+        tableView.setItems(FXCollections.observableArrayList(data));
     }       
 
     private void processSQLNonSelect(String sqlCommand) {

@@ -11,17 +11,14 @@ import javafx.beans.property.SimpleStringProperty;
  * Class used by queryResult to represent rows. All properties are converted to String properties to
  * support easy display and editing in a TableView. (bestelling properties nog niet!)
  */
-public class QueryResultRow extends DataDisplayRow {
+public class QueryResultRow {
     private Klant klant;
     private Bestelling bestelling;
-    private SimpleStringProperty klant_idProperty;
-    private SimpleStringProperty huisnummerProperty;
+    
     
     public QueryResultRow() {
         klant = new Klant();
         bestelling = new Bestelling();
-        klant_idProperty = null;
-        huisnummerProperty = null;
     }
     
     public int getKlant_id() {
@@ -31,12 +28,10 @@ public class QueryResultRow extends DataDisplayRow {
     public void setKlant_id(int id) {
         klant.setKlant_id(id);
         bestelling.setKlant_id(id);
-        klant_idProperty = new SimpleStringProperty(id + "");
     }
     
-    @Override
-    public StringProperty klant_idProperty() {        
-        return klant_idProperty;
+    public IntegerProperty klant_idProperty() {        
+        return klant.klant_idProperty();
     }
     
     public String getVoornaam() {
@@ -105,11 +100,10 @@ public class QueryResultRow extends DataDisplayRow {
 
     public void setHuisnummer(int huisnummer) {
         klant.setHuisnummer(huisnummer);
-        huisnummerProperty = new SimpleStringProperty(huisnummer + "");
     }
     
-    public StringProperty huisnummerProperty() {
-        return huisnummerProperty;
+    public IntegerProperty huisnummerProperty() {
+        return klant.huisnummerProperty();
     }
 
     public String getToevoeging() {

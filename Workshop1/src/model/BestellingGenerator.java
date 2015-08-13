@@ -37,10 +37,9 @@ public class BestellingGenerator extends Stage{
 		Scene scBestelling = new Scene(pnBestelling);
 		setScene(scBestelling);
 		setTitle("Nieuwe bestelling");
-		
-		makeGUI();
-		
 		show();	
+
+		makeGUI();
 	}
 	
 	private void makeGUI(){
@@ -54,6 +53,7 @@ public class BestellingGenerator extends Stage{
                   Bestelling bestelling = new Bestelling();
                   processTextFields(bestelling);
                   BestellingSQL.addToDatabase(bestelling);
+                  System.out.println(bestelling);
 		});
 	}
         

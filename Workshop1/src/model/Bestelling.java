@@ -97,7 +97,7 @@ public class Bestelling extends Data {
         this.artikel_id3.setValue(artikel_id3);
     }
     
-    public IntegerProperty artikel_id3() {
+    public IntegerProperty artikel_id3Property() {
         return artikel_id3;
     }
 

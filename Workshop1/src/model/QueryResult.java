@@ -2,7 +2,7 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 
 /**
@@ -15,11 +15,11 @@ import java.util.LinkedHashMap;
 
 public class QueryResult {
     private ArrayList<QueryResultRow> rows;
-    private LinkedHashMap<String, String> columnNames;
+    private LinkedHashSet<String> columnNames;
     
     public QueryResult() {
         rows = new ArrayList<>();
-        columnNames = new LinkedHashMap<>();
+        columnNames = new LinkedHashSet<>();
     }
     
     public void addRow(QueryResultRow qrr) {
@@ -38,18 +38,14 @@ public class QueryResult {
         return rows.size();
     }
     
-    public void addColumnName(String name, String type) {
-        columnNames.put(name, type);
+    public void addColumnName(String name) {
+        columnNames.add(name);
     }
     
     public String[] getColumnNames() {
         String[] columnNamesArray = new String[columnNames.size()];
-        columnNames.keySet().toArray(columnNamesArray);
+        columnNames.toArray(columnNamesArray);
         return columnNamesArray;
-    }
-    
-    public String getType(String columnName) {
-        return columnNames.get(columnName);
     }
 }
 

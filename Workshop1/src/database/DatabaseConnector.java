@@ -79,103 +79,105 @@ public class DatabaseConnector {
     private QueryResult createQueryResult() throws SQLException {
         String[] columnNames = getCurrentColumnNames();        
         QueryResult queryResult = new QueryResult();
-                
+        
         while(rowSet.next()) {
             QueryResultRow row = new QueryResultRow();
-            for(int i = 1; i <= getCurrentColumnCount(); i++) {
-                // klant kolommen
+            for(int i = 1; i <= getCurrentColumnCount(); i++) {               
                 switch (columnNames[i-1]) {
+                     // klant kolommen
                     case "klant_id":
-                        row.setKlant_id(rowSet.getInt(i));
-                        queryResult.addColumnName("klant_id", "Integer");
+                        row.getKlant().setKlant_id(rowSet.getInt(i));
+                        row.getBestelling().setKlant_id(rowSet.getInt(i));
+                        queryResult.addColumnName("klant_id");
                         break;
                     case "voornaam":
-                        row.setVoornaam(rowSet.getString(i));
-                        queryResult.addColumnName("voornaam", "String");
+                        row.getKlant().setVoornaam(rowSet.getString(i));
+                        queryResult.addColumnName("voornaam");
                         break;
                     case "tussenvoegsel":
-                        row.setTussenvoegsel(rowSet.getString(i));
-                        queryResult.addColumnName("tussenvoegsel", "String");
+                        row.getKlant().setTussenvoegsel(rowSet.getString(i));
+                        queryResult.addColumnName("tussenvoegsel");
                         break;
                     case "achternaam":
-                        row.setAchternaam(rowSet.getString(i));
-                        queryResult.addColumnName("achternaam", "String");
+                        row.getKlant().setAchternaam(rowSet.getString(i));
+                        queryResult.addColumnName("achternaam");
                         break;
                     case "email":
-                        row.setEmail(rowSet.getString(i));
-                        queryResult.addColumnName("email", "String");
+                        row.getKlant().setEmail(rowSet.getString(i));
+                        queryResult.addColumnName("email");
                         break;
                     case "straatnaam":
-                        row.setStraatnaam(rowSet.getString(i));
-                        queryResult.addColumnName("straatnaam", "String");
+                        row.getKlant().setStraatnaam(rowSet.getString(i));
+                        queryResult.addColumnName("straatnaam");
                         break;
                     case "huisnummer":
-                        row.setHuisnummer(rowSet.getInt(i));
-                        queryResult.addColumnName("huisnummer", "Integer");
+                        row.getKlant().setHuisnummer(rowSet.getInt(i));
+                        queryResult.addColumnName("huisnummer");
                         break;
                     case "toevoeging":
-                        row.setToevoeging(rowSet.getString(i));
-                        queryResult.addColumnName("toevoeging", "String");
+                        row.getKlant().setToevoeging(rowSet.getString(i));
+                        queryResult.addColumnName("toevoeging");
                         break;
                     case "postcode":
-                        row.setPostcode(rowSet.getString(i));
-                        queryResult.addColumnName("postcode", "String");
+                        row.getKlant().setPostcode(rowSet.getString(i));
+                        queryResult.addColumnName("postcode");
                         break;
                     case "woonplaats":
-                        row.setWoonplaats(rowSet.getString(i));
-                        queryResult.addColumnName("woonplaats", "String");
+                        row.getKlant().setWoonplaats(rowSet.getString(i));
+                        queryResult.addColumnName("woonplaats");
                         break;
+                    // bestelling kolommen
                     case "bestelling_id":
-                        row.setBestelling_id(rowSet.getInt(i));
-                        queryResult.addColumnName("bestelling_id", "Integer");
+                        row.getBestelling().setBestelling_id(rowSet.getInt(i));
+                        queryResult.addColumnName("bestelling_id");
                         break;
                     case "artikel_id1":
-                        row.setArtikel_id1(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_id1", "Integer");
+                        row.getBestelling().setArtikel_id1(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_id1");
                         break;
                     case "artikel_id2":
-                        row.setArtikel_id2(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_id2", "Integer");
+                        row.getBestelling().setArtikel_id2(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_id2");
                         break;
                     case "artikel_id3":
-                        row.setArtikel_id3(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_id3", "Integer");
+                        row.getBestelling().setArtikel_id3(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_id3");
                         break;
                     case "artikel_naam1":
-                        row.setArtikel_naam1(rowSet.getString(i));
-                        queryResult.addColumnName("artikel_naam1", "String");
+                        row.getBestelling().setArtikel_naam1(rowSet.getString(i));
+                        queryResult.addColumnName("artikel_naam1");
                         break;
                     case "artikel_naam2":
-                        row.setArtikel_naam2(rowSet.getString(i));
-                        queryResult.addColumnName("artikel_naam2", "String");
+                        row.getBestelling().setArtikel_naam2(rowSet.getString(i));
+                        queryResult.addColumnName("artikel_naam2");
                         break;
                     case "artikel_naam3":
-                        row.setArtikel_naam3(rowSet.getString(i));
-                        queryResult.addColumnName("artikel_naam3", "String");
+                        row.getBestelling().setArtikel_naam3(rowSet.getString(i));
+                        queryResult.addColumnName("artikel_naam3");
                         break;
                     case "artikel_aantal1":
-                        row.setArtikel_aantal1(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_aantal1", "Integer");
+                        row.getBestelling().setArtikel_aantal1(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_aantal1");
                         break;
                     case "artikel_aantal2":
-                        row.setArtikel_aantal2(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_aantal2", "Integer");
+                        row.getBestelling().setArtikel_aantal2(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_aantal2");
                         break;
                     case "artikel_aantal3":
-                        row.setArtikel_aantal3(rowSet.getInt(i));
-                        queryResult.addColumnName("artikel_aantal3", "Integer");
+                        row.getBestelling().setArtikel_aantal3(rowSet.getInt(i));
+                        queryResult.addColumnName("artikel_aantal3");
                         break;
                     case "artikel_prijs1":
-                        row.setArtikel_prijs1(rowSet.getDouble(i));
-                        queryResult.addColumnName("artikel_prijs1", "Double");
+                        row.getBestelling().setArtikel_prijs1(rowSet.getDouble(i));
+                        queryResult.addColumnName("artikel_prijs1");
                         break;
                     case "artikel_prijs2":
-                        row.setArtikel_prijs2(rowSet.getDouble(i));
-                        queryResult.addColumnName("artikel_prijs2", "Double");
+                        row.getBestelling().setArtikel_prijs2(rowSet.getDouble(i));
+                        queryResult.addColumnName("artikel_prijs2");
                         break;
                     case "artikel_prijs3":
-                        row.setArtikel_prijs3(rowSet.getDouble(i));
-                        queryResult.addColumnName("artikel_prijs3", "Double");
+                        row.getBestelling().setArtikel_prijs3(rowSet.getDouble(i));
+                        queryResult.addColumnName("artikel_prijs3");
                         break;
                 }
             }

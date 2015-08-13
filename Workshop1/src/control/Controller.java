@@ -213,11 +213,13 @@ public class Controller extends Application {
         }
     }
     
+    // ik denk dat update en delete alleen mogelijk moeten zijn als de primarykey ook in de tabel 
+    // staat...
     private void update() {
-        ArrayList<Data> updatedData = new ArrayList<>();
-        ArrayList<Integer> rowIndices = updateRowIndices();
+        
     }
 
+    // todo...
     private ArrayList<Integer> updateRowIndices() {
         ArrayList<Integer> rowIndices = new ArrayList<>();
         int columnIndex = 0;
@@ -270,6 +272,7 @@ public class Controller extends Application {
         tableView.getSelectionModel().setCellSelectionEnabled(true);
         tableView.getSelectionModel().clearSelection();
         
+        // voegt data toe aan tableView
         ArrayList<DataDisplayRow> data = new ArrayList<>();
         for(int i = 0; i < queryResult.rowCount(); i++)
             data.add(new DataDisplayRow(queryResult.getRow(i)));        

@@ -8,14 +8,15 @@ import javafx.beans.property.StringProperty;
 import javafx.util.converter.NumberStringConverter;
 
 /**
- * Class meant to make editing and displaying a QueryResultRow in a TableView easier. Also contains
+ * Class meant to make editing and displaying data in a TableView easier. Also contains
  * BooleanProperties to keep track of the state of the update and delete checkboxes.
  */
 public class DataDisplayRow {
     SimpleBooleanProperty update;
     SimpleBooleanProperty delete;
     
-    QueryResultRow queryResultRow;
+    Klant klant;
+    Bestelling bestelling;
     
     // klant properties
     private SimpleStringProperty klant_id;          // Integer and double properties are converted 
@@ -34,100 +35,129 @@ public class DataDisplayRow {
     private SimpleStringProperty artikel_prijs3;
     
     public DataDisplayRow(QueryResultRow queryResultRow) {
+        klant = queryResultRow.getKlant();       
+        bestelling = queryResultRow.getBestelling();
+        
+        initBooleanProperties();
+        initKlantProperties();
+        initBestellingProperties();
+    }
+    
+    public DataDisplayRow(Klant klant, Bestelling bestelling) {
+        this.klant = klant;
+        this.bestelling = bestelling;
+        
+        initBooleanProperties();
+        initKlantProperties();
+        initBestellingProperties();
+    }
+    
+    /**
+    * Declare boolean properties that correspond to the state of the update and delete checkboxes
+    * in the TableView.
+    */ 
+    private void initBooleanProperties() {
         update = new SimpleBooleanProperty(false);
         delete = new SimpleBooleanProperty(false);
-        
-        this.queryResultRow = queryResultRow;        
-        
-        /* Declareer alle properties en geef ze dezelfde waarde als de overeenkomende klant en  
-        *  bestelling properties. Bind deze properties bidirectionally zodat aanpassingen in de
-        *  tabel ook plaatsvinden in de klant en bestelling objecten in queryResultRow en andersom.
-        */ 
-        klant_id = new SimpleStringProperty(queryResultRow.getKlant().getKlant_id() + "");
-        klant_id.bindBidirectional(queryResultRow.getKlant().klant_idProperty(), 
+    }
+    
+    /**
+     * Declare klant properties and bind them bidirectionally to the corresponding properties in
+     * klant so changes made to the TableView will be reflected in klant and vice versa.
+     */
+    private void initKlantProperties() {
+        klant_id = new SimpleStringProperty(klant.getKlant_id() + "");
+        klant_id.bindBidirectional(klant.klant_idProperty(), 
                 new NumberStringConverter());
         
-        huisnummer = new SimpleStringProperty(queryResultRow.getKlant().getHuisnummer() + "");
-        huisnummer.bindBidirectional(queryResultRow.getKlant().huisnummerProperty(), 
+        huisnummer = new SimpleStringProperty(klant.getHuisnummer() + "");
+        huisnummer.bindBidirectional(klant.huisnummerProperty(),
+                new NumberStringConverter());
+    }
+    
+    /**
+     * Declare bestelling properties and bind them bidirectionally to the corresponding properties 
+     * in bestelling so changes made to the TableView will be reflected in bestelling and vice 
+     * versa.
+     */
+    private void initBestellingProperties() {
+        bestelling_id = new SimpleStringProperty(bestelling.getBestelling_id() + "");
+        bestelling_id.bindBidirectional(bestelling.bestelling_idProperty(),
                 new NumberStringConverter());
         
-        bestelling_id = new SimpleStringProperty(queryResultRow.getBestelling().getBestelling_id()
-                + "");
-        bestelling_id.bindBidirectional(queryResultRow.getBestelling().bestelling_idProperty(), 
+        artikel_id1 = new SimpleStringProperty(bestelling.getArtikel_id1() + "");
+        artikel_id1.bindBidirectional(bestelling.artikel_id1Property(), 
                 new NumberStringConverter());
         
-        artikel_id1 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_id1() 
-                + "");
-        artikel_id1.bindBidirectional(queryResultRow.getBestelling().artikel_id1Property(), 
+        artikel_id2 = new SimpleStringProperty(bestelling.getArtikel_id2() + "");
+        artikel_id2.bindBidirectional(bestelling.artikel_id2Property(), 
                 new NumberStringConverter());
         
-        artikel_id2 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_id2() 
-                + "");
-        artikel_id2.bindBidirectional(queryResultRow.getBestelling().artikel_id2Property(), 
+        artikel_id3 = new SimpleStringProperty(bestelling.getArtikel_id3() + "");
+        artikel_id3.bindBidirectional(bestelling.artikel_id3Property(), 
                 new NumberStringConverter());
         
-        artikel_id3 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_id3() 
-                + "");
-        artikel_id3.bindBidirectional(queryResultRow.getBestelling().artikel_id3Property(), 
+        artikel_aantal1 = new SimpleStringProperty(bestelling.getArtikel_aantal1() + "");
+        artikel_aantal1.bindBidirectional(bestelling.artikel_aantal1Property(), 
                 new NumberStringConverter());
         
-        artikel_aantal1 = new SimpleStringProperty(queryResultRow.getBestelling().
-                getArtikel_aantal1() + "");
-        artikel_aantal1.bindBidirectional(queryResultRow.getBestelling().artikel_aantal1Property(), 
+        artikel_aantal2 = new SimpleStringProperty(bestelling.getArtikel_aantal2() + "");
+        artikel_aantal2.bindBidirectional(bestelling.artikel_aantal2Property(), 
                 new NumberStringConverter());
         
-        artikel_aantal2 = new SimpleStringProperty(queryResultRow.getBestelling().
-                getArtikel_aantal2() + "");
-        artikel_aantal2.bindBidirectional(queryResultRow.getBestelling().artikel_aantal2Property(), 
+        artikel_aantal3 = new SimpleStringProperty(bestelling.getArtikel_aantal3() + "");
+        artikel_aantal3.bindBidirectional(bestelling.artikel_aantal3Property(), 
                 new NumberStringConverter());
         
-        artikel_aantal3 = new SimpleStringProperty(queryResultRow.getBestelling().
-                getArtikel_aantal3() + "");
-        artikel_aantal3.bindBidirectional(queryResultRow.getBestelling().artikel_aantal3Property(), 
+        artikel_prijs1 = new SimpleStringProperty(bestelling.getArtikel_prijs1() + "");
+        artikel_prijs1.bindBidirectional(bestelling.artikel_prijs1Property(), 
                 new NumberStringConverter());
         
-        artikel_prijs1 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_prijs1()
-                + "");
-        artikel_prijs1.bindBidirectional(queryResultRow.getBestelling().artikel_prijs1Property(), 
+        artikel_prijs2 = new SimpleStringProperty(bestelling.getArtikel_prijs2() + "");
+        artikel_prijs2.bindBidirectional(bestelling.artikel_prijs2Property(), 
                 new NumberStringConverter());
         
-        artikel_prijs2 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_prijs2()
-                + "");
-        artikel_prijs2.bindBidirectional(queryResultRow.getBestelling().artikel_prijs2Property(), 
-                new NumberStringConverter());
-        
-        artikel_prijs3 = new SimpleStringProperty(queryResultRow.getBestelling().getArtikel_prijs3()
-                + "");
-        artikel_prijs3.bindBidirectional(queryResultRow.getBestelling().artikel_prijs3Property(), 
+        artikel_prijs3 = new SimpleStringProperty(bestelling.getArtikel_prijs3() + "");
+        artikel_prijs3.bindBidirectional(bestelling.artikel_prijs3Property(), 
                 new NumberStringConverter());
     }
 
-    public QueryResultRow getQueryResultRow() {
-        return queryResultRow;
+    public Klant getKlant() {
+        return klant;
     }
-
-    public void setQueryResultRow(QueryResultRow queryResultRow) {
-        this.queryResultRow = queryResultRow;
+    
+    public Bestelling getBestelling() {
+        return bestelling;
+    }
+    
+    public void setKlant(Klant klant) {
+        this.klant = klant;
+        initKlantProperties();
+    }
+    
+    public void setBestelling(Bestelling bestelling) {
+        this.bestelling = bestelling;
+        initBestellingProperties();
     }
     
     public StringProperty klant_idProperty() {
         return klant_id;
     }
     public StringProperty voornaamProperty() {
-        return queryResultRow.getKlant().voornaamProperty();
+        return klant.voornaamProperty();
     }
     public StringProperty tussenvoegselProperty() {
-        return queryResultRow.getKlant().tussenvoegselProperty();
+        return klant.tussenvoegselProperty();
     }
     public StringProperty achternaamProperty() {
-        return queryResultRow.getKlant().achternaamProperty();
+        return klant.achternaamProperty();
     }
     public StringProperty emailProperty() {
-        return queryResultRow.getKlant().emailProperty();
+        return klant.emailProperty();
     }
     
     public StringProperty straatnaamProperty() {
-        return queryResultRow.getKlant().straatnaamProperty();
+        return klant.straatnaamProperty();
     }
     
     public StringProperty huisnummerProperty() {
@@ -135,15 +165,15 @@ public class DataDisplayRow {
     }
     
     public StringProperty toevoegingProperty() {
-        return queryResultRow.getKlant().toevoegingProperty();
+        return klant.toevoegingProperty();
     }
     
     public StringProperty postcodeProperty() {
-        return queryResultRow.getKlant().postcodeProperty();
+        return klant.postcodeProperty();
     }
     
     public StringProperty woonplaatsProperty() {
-        return queryResultRow.getKlant().woonplaatsProperty();
+        return klant.woonplaatsProperty();
     }
     
     public StringProperty bestelling_idProperty() {
@@ -163,15 +193,15 @@ public class DataDisplayRow {
     }
     
     public StringProperty artikel_naam1Property() {
-        return queryResultRow.getBestelling().artikel_naam1Property();
+        return bestelling.artikel_naam1Property();
     }
     
     public StringProperty artikel_naam2Property() {
-        return queryResultRow.getBestelling().artikel_naam2Property();
+        return bestelling.artikel_naam2Property();
     }
     
     public StringProperty artikel_naam3Property() {
-        return queryResultRow.getBestelling().artikel_naam3Property();
+        return bestelling.artikel_naam3Property();
     }
 
     public StringProperty artikel_aantal1Property() {

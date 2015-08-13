@@ -55,10 +55,10 @@ public class Controller extends Application {
     private Button btExecuteSQL = new Button("Execute SQL Command");
     private Button btUpdate = new Button("Update"); // geen implementatie
     private Button btVoegBestelling = new Button("Voeg Bestelling toe"); // implementatie nog niet toegevoegd
-    private Button btVoegArtikel = new Button("Voeg Artikel"); // geen implementatie
+    private Button btVoegArtikel = new Button("Voeg Artikel"); // implementatie nog niet toegevoegd
     private Button btClearSQLCommand = new Button("Clear");
     private Button btConnectDB = new Button("Connect to Database");
-    private Button btClearSQLResult = new Button("Clear Result");
+    private Button btClearSQLResult = new Button("Clear Result"); // geen implementatie
     private Button btVervers = new Button("Ververs tabel"); // geen implementatie
     private Button btNieuweKlant = new Button("Maak nieuwe klant"); // implementatie nog niet toegevoegd
     private Button btMaakKlanten = new Button("maak klanten aan");

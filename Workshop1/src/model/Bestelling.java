@@ -209,4 +209,13 @@ public class Bestelling extends Data {
         return artikel_prijs3;
     }
 
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }

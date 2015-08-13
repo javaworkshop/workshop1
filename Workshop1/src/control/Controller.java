@@ -230,6 +230,16 @@ public class Controller extends Application {
         return rowIndices;
     }
     
+    // todo...
+    private void delete() {
+        
+    }
+    
+    // todo...    
+    private ArrayList<Integer> deleteRowIndices() {
+        return new ArrayList<Integer>();
+    }
+    
     private void populateTableView(QueryResult queryResult) {
         tableView.getColumns().clear(); // maak tableView leeg
         

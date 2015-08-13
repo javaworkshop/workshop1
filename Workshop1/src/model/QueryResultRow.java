@@ -36,4 +36,14 @@ public class QueryResultRow {
     public void setBestelling(Bestelling b) {
         bestelling = b;
     }
+    
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }

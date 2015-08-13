@@ -221,4 +221,14 @@ public class DataDisplayRow {
     public BooleanProperty deleteProperty() {
         return delete;
     }
+    
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 package model;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.IntegerProperty;
@@ -153,4 +153,13 @@ public class Klant extends Data {
         return woonplaats;
     }
     
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }

@@ -47,5 +47,15 @@ public class QueryResult {
         columnNames.toArray(columnNamesArray);
         return columnNamesArray;
     }
+    
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }
 

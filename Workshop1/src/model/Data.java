@@ -50,4 +50,14 @@ public abstract class Data {
     public static boolean isBestellingAttribute(String attribute) {
         return BESTELLING_ATTRIBUTES.contains(attribute);
     }
+    
+    // todo...
+    public int hashCode() {
+        return 0;
+    }
+    
+    // todo...
+    public boolean equals() {
+        return false;
+    }
 }

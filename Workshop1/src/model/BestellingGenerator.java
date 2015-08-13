@@ -74,7 +74,6 @@ public class BestellingGenerator extends Stage{
         }
         
         public HBox makeArtikel1GUI(){
-                HBox pnArtikel1Info = new HBox();
                 tfArtikel1Id = new TextField();
 		Label lblArtikel1Id = new Label("Artikel ID",tfArtikel1Id);
                 tfArtikel1Naam = new TextField();
@@ -85,14 +84,14 @@ public class BestellingGenerator extends Stage{
                 tfArtikel1Prijs = new TextField();
 		Label lblArtikel1Prijs= new Label("Artikel Prijs",tfArtikel1Prijs);
                 tfArtikel1Prijs.setPrefWidth(50);
+                
+                HBox pnArtikel1Info = new HBox();
                 pnArtikel1Info.getChildren().addAll(lblArtikel1Id, lblArtikel1Naam, lblArtikel1Aantal, lblArtikel1Prijs);
                 setContentDisplayRight(pnArtikel1Info);
-                
                 return pnArtikel1Info;
         }
         
         public HBox makeArtikel2GUI(){
-                HBox pnArtikel2Info = new HBox();
                 tfArtikel2Id = new TextField();
 		Label lblArtikel2Id = new Label("Artikel ID",tfArtikel2Id);
                 tfArtikel2Naam = new TextField();
@@ -103,14 +102,14 @@ public class BestellingGenerator extends Stage{
                 tfArtikel2Prijs = new TextField();
 		Label lblArtikel2Prijs= new Label("Artikel Prijs",tfArtikel2Prijs);
                 tfArtikel2Prijs.setPrefWidth(50);
+                
+                HBox pnArtikel2Info = new HBox();
                 pnArtikel2Info.getChildren().addAll(lblArtikel2Id, lblArtikel2Naam, lblArtikel2Aantal, lblArtikel2Prijs);
                 setContentDisplayRight(pnArtikel2Info);
-                
                 return pnArtikel2Info;
         }
         
         public HBox makeArtikel3GUI(){
-                HBox pnArtikel3Info = new HBox();
                 tfArtikel3Id = new TextField();
 		Label lblArtikel3Id = new Label("Artikel ID",tfArtikel3Id);
                 tfArtikel3Naam = new TextField();
@@ -121,9 +120,10 @@ public class BestellingGenerator extends Stage{
                 tfArtikel3Prijs = new TextField();
 		Label lblArtikel3Prijs= new Label("Artikel Prijs",tfArtikel3Prijs);
                 tfArtikel3Prijs.setPrefWidth(50);
+ 
+                HBox pnArtikel3Info = new HBox();
                 pnArtikel3Info.getChildren().addAll(lblArtikel3Id, lblArtikel3Naam, lblArtikel3Aantal, lblArtikel3Prijs);
                 setContentDisplayRight(pnArtikel3Info);
-                
                 return pnArtikel3Info;
         }
         

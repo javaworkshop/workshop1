@@ -10,7 +10,6 @@ package model;
  * @author gerbrich2
  */
 
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -59,18 +58,38 @@ public class BestellingGenerator extends Stage{
         
         private void processTextFields(Bestelling bestelling){           
             bestelling.setklantId(Integer.parseInt(tfKlantId.getText()));
-
-            ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
+            
+            // do something about textfields being empty
+            
+            try{
+                 ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
                  tfArtikel1Naam.getText(), Integer.parseInt(tfArtikel1Aantal.getText()),
-                     Double.parseDouble(tfArtikel1Prijs.getText()));
+                 Double.parseDouble(tfArtikel1Prijs.getText()));
+            }
+            catch (NumberFormatException ex) {
+                //make popup?
+                System.out.println("Er zijn niet op de juiste plek cijfers ingevuld bij artikel 1, artikel 1 niet toegevoegd");
+            }
 
-            ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel2Id.getText()),
+            try{
+                ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel2Id.getText()),
                 tfArtikel2Naam.getText(), Integer.parseInt(tfArtikel2Aantal.getText()),
                     Double.parseDouble(tfArtikel2Prijs.getText()));
-                                              
+            }
+            catch (NumberFormatException ex){
+                //make popup?
+                System.out.println("Er zijn niet op de juiste plek cijfers ingevuld bij artikel 2, artikel 2 niet toegevoegd");
+            }
+            
+            try{
             ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel3Id.getText()),
                  tfArtikel3Naam.getText(), Integer.parseInt(tfArtikel3Aantal.getText()),
                     Double.parseDouble(tfArtikel3Prijs.getText()));
+            }
+            catch (NumberFormatException ex){
+                //make popup?
+                System.out.println("Er zijn niet op de juiste plek cijfers ingevuld bij artikel 3, artikel 3 niet toegevoegd");
+            }
         }
         
         public HBox makeArtikel1GUI(){

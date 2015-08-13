@@ -42,11 +42,11 @@ public class Bestelling extends Gegeven {
         super.setId(id);
     }
 
-    public int getKlantId() {
+    public int getklantId() {
         return klantId;
     }
 
-    public void setKlantId(int klantId) {
+    public void setklantId(int klantId) {
         this.klantId = klantId;
     }
 
@@ -144,6 +144,24 @@ public class Bestelling extends Gegeven {
 
     public void setArtikelPrijs3(double artikelPrijs3) {
         this.artikelPrijs3 = artikelPrijs3;
-    }   
+    }
+    
+    @Override
+    public String toString(){
+        return  "Bestelling" + 
+                " klantId " + klantId +
+                " artikelId1 " + artikelId1 + 
+                " artikelId2 " + artikelId2 +
+                " artikelId3 " + artikelId3 +
+                " artikelNaam1 " + artikelNaam1 + 
+                " artikelNaam2 " + artikelNaam2 + 
+                " artikelNaam3 " + artikelNaam3 + 
+                " artikelAantal1 " + artikelAantal1 +
+                " artikelAantal2 " + artikelAantal2 +
+                " artikelAantal3 " + artikelAantal3 + 
+                " artikelPrijs1 " + artikelPrijs1 +
+                " artikelPrijs2 " + artikelPrijs2 + 
+                " artikelPrijs3 " +  artikelPrijs3;
+    }
 
 }

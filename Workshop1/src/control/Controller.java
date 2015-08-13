@@ -1,5 +1,7 @@
 package control;
 
+import database.*;
+import model.*;
 import java.sql.*;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,12 +12,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -24,15 +30,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.util.ArrayList;
+import javafx.event.EventHandler;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.cell.CheckBoxTableCell;
 
 /**
- * Klasse van waaruit het programma draait en wordt aangestuurd. User input wordt via deze klasse
- * verwerkt.
+ * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
+    private DatabaseConnector dbConnector = new DatabaseConnector();
+    
+    private Stage primaryStage;
+    
     private TableView tableView = new TableView();
-    private Connection connection;
-    private Statement statement;
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
@@ -51,11 +62,11 @@ public class Controller extends Application {
     private Button btVervers = new Button("Ververs tabel");
     private Button btNieuweKlant = new Button("Maak nieuwe klant");
     private Button btMaakKlanten = new Button("maak klanten aan");
-    private Label lblConnectionStatus = new Label("No connection now");
+    private Label lblConnectionStatus = new Label("No connection now ");
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {        
     	cboURL.getItems().addAll(FXCollections.observableArrayList(
             "jdbc:Mysql://localhost:3306/mydb",
             "jdbc:mysql://liang.armstrong.edu/mydb",
@@ -65,7 +76,7 @@ public class Controller extends Application {
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
             "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
             "oracle.jdbc.driver.OracleDriver"));
-            cboDriver.getSelectionModel().selectFirst();
+        cboDriver.getSelectionModel().selectFirst();
 
 	GridPane gridPane = new GridPane();
 
@@ -82,8 +93,7 @@ public class Controller extends Application {
 	gridPane.add(tfAantal, 3, 1);
 	gridPane.add(btMaakKlanten, 2, 2);
 	HBox hBoxUpdate = new HBox();
-	hBoxUpdate.getChildren().addAll(btVervers, btNieuweKlant, btVoegArtikel,
-            btVoegBestelling);
+	hBoxUpdate.getChildren().addAll(btVervers, btNieuweKlant, btVoegArtikel, btVoegBestelling);
 
 
 	HBox hBoxConnection = new HBox();
@@ -117,7 +127,8 @@ public class Controller extends Application {
 	borderPane.setCenter(borderPaneExecutionResult);
 
 
-	Scene scene = new Scene(borderPane, 670, 400);
+	Scene scene = new Scene(borderPane, 1400, 700);
+        this.primaryStage = primaryStage;
 	primaryStage.setTitle("SQLClient"); // Set the stage title
 	primaryStage.setScene(scene); // Place the scene in the stage
 	primaryStage.show(); // Display the stage
@@ -127,140 +138,178 @@ public class Controller extends Application {
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
 	btClearSQLResult.setOnAction(e -> taSQLResult.setText(null));
 	btMaakKlanten.setOnAction(e -> {
-            if(connection == null){
-                taSQLResult.setText("Please connect first");
-		 return;
-            }
-            new Thread(() -> batchUpdate()).start();
-	});        
+            Thread th = new Thread(() -> createKlanten());
+            th.setUncaughtExceptionHandler((t, ex) -> {
+                taSQLResult.setText("Geen verbinding met database.");
+            });
+            th.start();
+	});
+        btUpdate.setOnAction(e -> update()); //om te testen
     }
-
-    private void batchUpdate() {
-        if (connection != null) {
-            try {
-		statement = connection.createStatement();
-		String aantalKlanten = tfAantal.getText().trim();
-		int klanten = Integer.parseInt(aantalKlanten);
-		if(klanten<=0)
-                    taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");
-		else{
-                    String[] names = {"Hani" , "Gerbrich", "Sander", "Maarten", "Remi" , "Rob" , "Bo" , "Jan" , "Willem" , " Piet"};
-                    String[] tussenvoegsel = {"van", "de", "el","","van de", "van der" , "ten", "van de", "uit het", "voor den"};
-                    String[] achternaam = {"de Jong", "Bakker", "Visser", "de Boer", "Peters","de Graaf", "Jacobs", "Ali", "Hassan", "Beatrix"};
-                    String[] straatnaam = {"Schoolstraat", "Dorpstraat", "Nieuwstraat", "Kastanjelaan", "Eikenlaan", "Stationsweg","Markt","Beukenlaan","Industrieweg","Molenstraat"};
-                    String[] postcode = {"2001aa" , "2002aa", "2003aa","2003ab","2005aa","2006aa","2007aa","2008aa","2009aa","2010aa"};
-                    for ( int i = 1; i<=klanten ; i++ ){
-			statement.addBatch("INSERT INTO KLANT VALUES(" + Math.random()*100000 + ",'" + names[(int)(Math.random()*10)] + "','" + tussenvoegsel[(int)(Math.random()*10)] + "','"
-                            + achternaam[(int)(Math.random()*10)] + "','email','" + straatnaam[(int)(Math.random()*10)] + "'," + Math.random()*500+",'toev.','"
-                            +postcode[(int)(Math.random()*10)] + "','Amsterdam')");
-                    }
-                    statement.executeBatch();
-		}
-	    }
-	    catch (Exception ex) {
-	        ex.printStackTrace();
-	    }
-	}
+    
+    private void createKlanten() {
+        try {            
+            int aantalKlanten = Integer.parseInt(tfAantal.getText().trim());
+            /*if(klanten<=0)
+                taSQLResult.setText("Geen klanten aangemaakt, voer correct aantal in");*/
+            Klant[] klanten = KlantGenerator.generateNKlanten(aantalKlanten);            
+            dbConnector.batchInsertion(klanten);
+        }
+	catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voer een geheel getal in.");
+        }
+        catch(IllegalArgumentException ex) {
+            showExceptionPopUp("Voer een getal in groter dan 0.");
+        }
     }
     
     private void connectToDB() {
-	String driver = cboDriver.getSelectionModel().getSelectedItem();
-	String url = cboURL.getSelectionModel().getSelectedItem();
-	String username = tfUsername.getText().trim();
-	String password = pfPassword.getText().trim();
+	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
+	dbConnector.setUrl(cboURL.getSelectionModel().getSelectedItem());
+	dbConnector.setUsername(tfUsername.getText().trim());
+	dbConnector.setPassword(pfPassword.getText().trim());
 	try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, username, password);
-            lblConnectionStatus.setText("Connected to " + url);
-	}
-	catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-	}
-    }
+            dbConnector.connectToDatabase();
+        }
+        catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        
+        lblConnectionStatus.setText("Connected to database ");
+    }    
 
     private void executeSQL() {
-	if(connection ==null){
-            taSQLResult.setText("Please connect first");
-            return;
-	}
-        else {
-            String sqlCommands = tasqlCommand.getText().trim();
-            String[] commands = sqlCommands.replace('\n', ' ').split(";");
-            for (String aCommand: commands) {
-		if (aCommand.trim().toUpperCase().startsWith("SELECT")) {
-                    processSQLSelect(aCommand);
-		}
-                else {
-                    processSQLNonSelect(aCommand);
-		}
-            }
-	}
+        String sqlCommands = tasqlCommand.getText().trim();
+        String[] commands = sqlCommands.replace('\n', ' ').split(";");
+        for (String aCommand: commands) {
+            if (aCommand.trim().toUpperCase().startsWith("SELECT"))
+                processSQLSelect(aCommand);
+            else
+                processSQLNonSelect(aCommand);
+        }
     }
 
     private void processSQLSelect(String sqlCommand){
 	borderPaneExecutionResult.getChildren().remove(taSQLResult);
 	borderPaneExecutionResult.setCenter(tableView);
 	try {
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sqlCommand);
-
-            populateTableView(resultSet, tableView);
+            QueryResult queryResult = dbConnector.executeQuery(sqlCommand);
+            populateTableView(queryResult);
 	}
         catch(SQLException ex){
-            ex.printStackTrace();
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
 	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+    }
+    
+    // ik denk dat update en delete alleen mogelijk moeten zijn als de primarykey ook in de tabel 
+    // staat...
+    private void update() {
+        
     }
 
-    private void populateTableView(ResultSet rs, TableView tableView) {
-        ObservableList<ObservableList> data = FXCollections.observableArrayList();
-        try {
-            for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
-	        final int j = i;
-	        TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
-
-                // col.setCellValueFactory(TextFieldTableCell.forTableColumn());
-		col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() {
-		    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) {
-		        if (param == null || param.getValue() == null || param.getValue().get(j) == null) {
-		            return null;
-		        }
-		        return new SimpleStringProperty(param.getValue().get(j).toString());
-		    }
-		});
-
-                tableView.getColumns().addAll(col);
-                System.out.println("Column [" + i + "] ");
-            }
-
-	    while (rs.next()) {
-		ObservableList<String> row = FXCollections.observableArrayList();
-		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-		    row.add(rs.getString(i));
-		}
-		System.out.println("Row [1] added " + row);
-		    data.add(row);
-            }
-	    
-            tableView.setItems(data);
-	} 
-        catch (Exception e) {
-	    e.printStackTrace();
-            System.out.println("Error on Building Data");
-	}
+    // todo...
+    private ArrayList<Integer> updateRowIndices() {
+        ArrayList<Integer> rowIndices = new ArrayList<>();
+        int columnIndex = 0;
+        for(int i = 0; i < tableView.getColumns().size(); i++) {
+            
+        }
+        
+        return rowIndices;
     }
+    
+    // todo...
+    private void delete() {
+        
+    }
+    
+    // todo...    
+    private ArrayList<Integer> deleteRowIndices() {
+        return new ArrayList<Integer>();
+    }
+    
+    private void populateTableView(QueryResult queryResult) {
+        tableView.getColumns().clear(); // maak tableView leeg
+        
+        String[] columnNames = queryResult.getColumnNames();
+        
+        // maak alle kolommen die in queryResult zijn opgeslagen
+        for(int i = 0; i < columnNames.length; i++) {
+            // maak kolom
+            TableColumn<DataDisplayRow, String> col = new TableColumn<>(columnNames[i]);
+            
+            // bepaalt de waarde van een cell
+            col.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, String>(
+                columnNames[i]));
+             
+            // maakt een cell editable, primary keys kunnen niet veranderd worden            
+            if( !(columnNames[i].equals("klant_id") || columnNames[i].equals("bestelling_id")) ) {
+                col.setCellFactory(TextFieldTableCell.forTableColumn());
+                col.setEditable(true);
+            }
+             
+            // voeg kolom toe aan tableview
+            tableView.getColumns().add(col);
+        }
+        
+        // Voeg update kolom toe
+        TableColumn<DataDisplayRow, Boolean> updateCol = new TableColumn<>("update");
+        updateCol.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, Boolean>("update"));
+        updateCol.setCellFactory(CheckBoxTableCell.forTableColumn(updateCol));
+        updateCol.setEditable(true);
+        tableView.getColumns().add(updateCol);
+        
+        // Voeg delete kolom toe
+        TableColumn<DataDisplayRow, Boolean> deleteCol = new TableColumn<>("delete");
+        deleteCol.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, Boolean>("delete"));
+        deleteCol.setCellFactory(CheckBoxTableCell.forTableColumn(deleteCol));
+        deleteCol.setEditable(true);
+        tableView.getColumns().add(deleteCol);
+        
+        tableView.setEditable(true);        
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+        tableView.getSelectionModel().clearSelection();
+        
+        // voegt data toe aan tableView
+        ArrayList<DataDisplayRow> data = new ArrayList<>();
+        for(int i = 0; i < queryResult.rowCount(); i++)
+            data.add(new DataDisplayRow(queryResult.getRow(i)));        
+        tableView.setItems(FXCollections.observableArrayList(data));
+    }       
 
     private void processSQLNonSelect(String sqlCommand) {
         borderPaneExecutionResult.getChildren().remove(tableView);
 	borderPaneExecutionResult.setCenter(taSQLResult);
 
         try {
-            statement = connection.createStatement();
-	    statement.executeUpdate(sqlCommand);
-            taSQLResult.setText("SQL command executed");
+            dbConnector.executeCommand(sqlCommand);
+            taSQLResult.setText("SQL commando uitgevoerd");
 	}
 	catch (SQLException ex) {
-	    taSQLResult.setText(ex.toString());
+	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
 	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+    }
+    
+    private void showExceptionPopUp(String message) {
+        ErrorScreen es = new ErrorScreen();
+        es.initOwner(primaryStage);
+        es.setMessage(message);
+        es.show();
     }
 
     public static void main(String[] args) {

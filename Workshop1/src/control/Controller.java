@@ -50,17 +50,17 @@ public class Controller extends Application {
     private TextField tfURL = new TextField();
     private TextField tfAantal = new TextField();
     private PasswordField pfPassword = new PasswordField();
-    private ComboBox<String> cboURL = new ComboBox<>();
+    private ComboBox<String> cboURL = new ComboBox<>(); // eventueel textfield van maken?
     private ComboBox<String> cboDriver = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
-    private Button btUpdate = new Button("Update");
-    private Button btVoegBestelling = new Button("Voeg Bestelling toe");
-    private Button btVoegArtikel = new Button("Voeg Artikel");
+    private Button btUpdate = new Button("Update"); // geen implementatie
+    private Button btVoegBestelling = new Button("Voeg Bestelling toe"); // implementatie nog niet toegevoegd
+    private Button btVoegArtikel = new Button("Voeg Artikel"); // geen implementatie
     private Button btClearSQLCommand = new Button("Clear");
     private Button btConnectDB = new Button("Connect to Database");
     private Button btClearSQLResult = new Button("Clear Result");
-    private Button btVervers = new Button("Ververs tabel");
-    private Button btNieuweKlant = new Button("Maak nieuwe klant");
+    private Button btVervers = new Button("Ververs tabel"); // geen implementatie
+    private Button btNieuweKlant = new Button("Maak nieuwe klant"); // implementatie nog niet toegevoegd
     private Button btMaakKlanten = new Button("maak klanten aan");
     private Label lblConnectionStatus = new Label("No connection now ");
     private BorderPane borderPaneExecutionResult = new BorderPane();
@@ -145,6 +145,7 @@ public class Controller extends Application {
             th.start();
 	});
         btUpdate.setOnAction(e -> update()); //om te testen
+        // btDelete knop toevoegen
     }
     
     private void createKlanten() {
@@ -253,7 +254,7 @@ public class Controller extends Application {
             // bepaalt de waarde van een cell
             col.setCellValueFactory(new PropertyValueFactory<DataDisplayRow, String>(
                 columnNames[i]));
-             
+            
             // maakt een cell editable, primary keys kunnen niet veranderd worden            
             if( !(columnNames[i].equals("klant_id") || columnNames[i].equals("bestelling_id")) ) {
                 col.setCellFactory(TextFieldTableCell.forTableColumn());

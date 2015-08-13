@@ -26,6 +26,7 @@ public class BestellingSQL {
         }
         
 	public static void addToDatabase(Bestelling bestelling){
+            /*
 			try{
 				//zorg ervoor dat alle datafields van de bestelling naar de database worden geschreven
 
@@ -43,6 +44,7 @@ public class BestellingSQL {
 			catch (Exception ex){
 				//make exception pop up
 			}
+                    */
 	}
         
         public static void updateBestelling(Bestelling bestelling){

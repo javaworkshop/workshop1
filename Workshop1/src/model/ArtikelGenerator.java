@@ -116,8 +116,6 @@ public class ArtikelGenerator extends Stage{
         }
         
         public static  int getSameArtikelSlotNr(int artikelId, Bestelling bestelling){
-            // do something about artikelId being 0
-            
             if (bestelling.getArtikelId1() == artikelId) return 1;
             else if (bestelling.getArtikelId2() == artikelId) return 2;
             else if (bestelling.getArtikelId3() == artikelId) return 3;

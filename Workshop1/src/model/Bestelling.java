@@ -8,7 +8,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Klasse om bestellinggegevens in op te slaan.
+ * Class to store data from the bestelling table.
  */
 public class Bestelling extends Data {
     private SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
@@ -210,12 +210,14 @@ public class Bestelling extends Data {
     }
 
     // todo...
+    @Override
     public int hashCode() {
         return 0;
     }
     
     // todo...
-    public boolean equals() {
+    @Override
+    public boolean equals(Object obj) {
         return false;
     }
 }

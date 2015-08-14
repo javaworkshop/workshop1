@@ -71,9 +71,11 @@ public class DatabaseConnector {
         return createQueryResult();
     }    
     
+    // De switch in deze methode is niet zo mooi (erg lang). Misschien is er een betere manier?
     /**
-     * 
-     * @return
+     * Retrieves results from the last executed query from rowSet and stores them in a QueryResult
+     * object.
+     * @return              the QueryResult object containing retrieved data
      * @throws SQLException 
      */
     private QueryResult createQueryResult() throws SQLException {
@@ -280,8 +282,10 @@ public class DatabaseConnector {
     }    
     
     /**
-     * 
-     * @return
+     * Retrieves klant data from rowSet and stores them in a Klant object. The klant data that is
+     * retrieved comes from the row to which the cursor in rowSet is currently pointing. The method
+     * assumes rowSet contains data from all columns in the klant table.
+     * @return              the Klant object with data from the currently selected row in rowSet
      * @throws SQLException 
      */
     private Klant retrieveKlant() throws SQLException {
@@ -335,72 +339,73 @@ public class DatabaseConnector {
     }    
     
     /**
-     * 
-     * @param driver 
+     * Sets the driver that will be used to connect with SQL database.
+     * @param driver a String with driver name
      */
     public void setDriver(String driver) {
         this.driver = driver;
     }
     
     /**
-     * 
-     * @return 
+     * Return a String with the driver name currently stored in this DatabaseConnector instance.
+     * @return driver name
      */
     public String getDriver() {
         return driver;
     }
 
     /**
-     * 
-     * @return 
+     * Return a String with the database url currently stored in this DatabaseConnector instance.
+     * @return database url
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     * 
-     * @param url 
+     * Sets the database url that will be used to connect with SQL database.
+     * @param url a String with database url
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     * 
-     * @return 
+     * Return a String with the username currently stored in this DatabaseConnector instance.
+     * @return username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * 
-     * @param username 
+     * Sets the username that will be used to connect with SQL database.
+     * @param username a String with the username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * 
-     * @return 
+     * Return a String with the password currently stored in this DatabaseConnector instance.
+     * @return password
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * 
-     * @param password 
+     * Sets the password that will be used to connect with SQL database.
+     * @param password a String with the password
      */
     public void setPassword(String password) {
         this.password = password;
     }
     
     /**
-     * 
-     * @return 
+     * Returns true when this DatabaseConnector instance is currently connected to a database.
+     * Returns false when this is not the case.
+     * @return true when connected, false when not connected
      */
     public boolean isInitialized() {
         return isInitialized;

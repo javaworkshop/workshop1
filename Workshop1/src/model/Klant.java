@@ -7,7 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
- * Klasse om klantgegevens in op te slaan.
+ * Class to store data from the klant table.
  */
 public class Klant extends Data {
     private SimpleStringProperty voornaam;
@@ -154,12 +154,14 @@ public class Klant extends Data {
     }
     
     // todo...
+    @Override
     public int hashCode() {
         return 0;
     }
     
     // todo...
-    public boolean equals() {
+    @Override
+    public boolean equals(Object obj) {
         return false;
     }
 }

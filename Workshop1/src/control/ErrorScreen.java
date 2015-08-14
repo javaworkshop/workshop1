@@ -12,8 +12,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.ContentDisplay;
 
 /**
- * Een algemeen scherm om foutmeldingen aan de gebruiker door te geven. Gebruik show() methode om
- * scherm weer te geven.
+ * A general screen used to display error messages to the user. Use show method to get the screen to
+ * pop up.
  */
 class ErrorScreen extends Stage {
     Label errorMessage;
@@ -51,7 +51,7 @@ class ErrorScreen extends Stage {
         setTitle(title);
         errorMessage.setText(message);        
     }
-    
+
     void setMessage(String message) {
         errorMessage.setText(message);
     }

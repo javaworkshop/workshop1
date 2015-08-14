@@ -1,5 +1,6 @@
 package control;
 
+// TODO: aan het eind imports opschonen
 import database.*;
 import model.*;
 import java.sql.*;
@@ -54,6 +55,7 @@ public class Controller extends Application {
     private ComboBox<String> cboDriver = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
     private Button btUpdate = new Button("Update"); // geen implementatie
+    private Button btDelete = new Button("Delete"); // geen implementatie
     private Button btVoegBestelling = new Button("Voeg Bestelling toe"); // implementatie nog niet toegevoegd
     private Button btVoegArtikel = new Button("Voeg Artikel"); // implementatie nog niet toegevoegd
     private Button btClearSQLCommand = new Button("Clear");
@@ -106,7 +108,7 @@ public class Controller extends Application {
 
 	HBox hBoxSQLCommand = new HBox(5);
 	hBoxSQLCommand.getChildren().addAll(
-	btClearSQLCommand, btExecuteSQL, btUpdate);
+	btClearSQLCommand, btExecuteSQL, btDelete, btUpdate);
 	hBoxSQLCommand.setAlignment(Pos.CENTER_RIGHT);
 
 	BorderPane borderPaneSqlCommand = new BorderPane();
@@ -144,10 +146,14 @@ public class Controller extends Application {
             });
             th.start();
 	});
-        btUpdate.setOnAction(e -> update()); //om te testen
-        // btDelete knop toevoegen
+        btDelete.setOnAction(e -> delete()); //nog te implementeren
+        btUpdate.setOnAction(e -> update()); //nog te implementeren
     }
     
+    /**
+     * Called when the Maak Klanten button is pressed. Uses the KlantGenerator class to create n 
+     * random klanten and adds them to the database.
+     */
     private void createKlanten() {
         try {            
             int aantalKlanten = Integer.parseInt(tfAantal.getText().trim());
@@ -170,6 +176,10 @@ public class Controller extends Application {
         }
     }
     
+    /**
+     * Called when the Verbind Met Database button is pressed. Uses the driver en url comboboxes and
+     * username and password textfields to initate database connection.
+     */
     private void connectToDB() {
 	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
 	dbConnector.setUrl(cboURL.getSelectionModel().getSelectedItem());
@@ -187,7 +197,12 @@ public class Controller extends Application {
         
         lblConnectionStatus.setText("Connected to database ");
     }    
-
+    
+    /**
+     * Called when the Voer SQL Uit button is pressed. Calls either the processSQLSelect() or the
+     * processSQLNonSelect() method, depending on whether the SQL command statement entered in the
+     * SQL Command text area is a SELECT statement (that returns a QueryResult object) or not. 
+     */
     private void executeSQL() {
         String sqlCommands = tasqlCommand.getText().trim();
         String[] commands = sqlCommands.replace('\n', ' ').split(";");
@@ -214,6 +229,22 @@ public class Controller extends Application {
         }
     }
     
+    private void processSQLNonSelect(String sqlCommand) {
+        borderPaneExecutionResult.getChildren().remove(tableView);
+	borderPaneExecutionResult.setCenter(taSQLResult);
+
+        try {
+            dbConnector.executeCommand(sqlCommand);
+            taSQLResult.setText("SQL commando uitgevoerd");
+	}
+	catch (SQLException ex) {
+	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+    }
+    
     // ik denk dat update en delete alleen mogelijk moeten zijn als de primarykey ook in de tabel 
     // staat...
     private void update() {
@@ -221,6 +252,11 @@ public class Controller extends Application {
     }
 
     // todo...
+    /**
+     * Determines which rows have their update checkbox ticked and returns the indices of these rows
+     * in an ArrayList object.
+     * @return the ArrayList object that contains row indices of the rows that should be updated
+     */
     private ArrayList<Integer> updateRowIndices() {
         ArrayList<Integer> rowIndices = new ArrayList<>();
         int columnIndex = 0;
@@ -241,6 +277,9 @@ public class Controller extends Application {
         return new ArrayList<Integer>();
     }
     
+    // Het heeft aardig wat uurtjes en flink wat hoofdpijn gekost om het checkbox probleem op te
+    // lossen, maar nu blijkt ineens dat in de workshop handleiding deze link staat: 
+    // http://stackoverflow.com/questions/25419786/please-explain-how-to-use-checkboxtablecell
     private void populateTableView(QueryResult queryResult) {
         tableView.getColumns().clear(); // maak tableView leeg
         
@@ -288,24 +327,13 @@ public class Controller extends Application {
         for(int i = 0; i < queryResult.rowCount(); i++)
             data.add(new DataDisplayRow(queryResult.getRow(i)));        
         tableView.setItems(FXCollections.observableArrayList(data));
-    }       
-
-    private void processSQLNonSelect(String sqlCommand) {
-        borderPaneExecutionResult.getChildren().remove(tableView);
-	borderPaneExecutionResult.setCenter(taSQLResult);
-
-        try {
-            dbConnector.executeCommand(sqlCommand);
-            taSQLResult.setText("SQL commando uitgevoerd");
-	}
-	catch (SQLException ex) {
-	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
-	}
-        catch(DatabaseException ex) {
-            showExceptionPopUp(ex.getMessage());
-        }
-    }
+    }   
     
+    /**
+     * Creates an ErrorScreen object containing the given message and displays it on the screen. As
+     * long as the error screen is open it will stay in front of the main screen.
+     * @param message the message that will be shown inside the error screen
+     */
     private void showExceptionPopUp(String message) {
         ErrorScreen es = new ErrorScreen();
         es.initOwner(primaryStage);

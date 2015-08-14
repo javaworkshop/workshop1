@@ -6,13 +6,13 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
- * Parent klasse van alle klassen die bedoeld zijn voor opslag van database gegevens.
+ * Parent class of all classes that are used to store data from the database.
  */
 public abstract class Data {
-    public static final LinkedHashSet<String> KLANT_ATTRIBUTES = new LinkedHashSet<>(Arrays.asList(
+    private static final LinkedHashSet<String> KLANT_ATTRIBUTES = new LinkedHashSet<>(Arrays.asList(
             new String[]{"klant_id", "voornaam", "tussenvoegsel", "achternaam", "email", 
             "straatnaam", "huisnummer", "toevoeging", "postcode", "woonplaats"}));
-    public static final LinkedHashSet<String> BESTELLING_ATTRIBUTES = new LinkedHashSet<>(
+    private static final LinkedHashSet<String> BESTELLING_ATTRIBUTES = new LinkedHashSet<>(
             Arrays.asList(new String[]{"bestelling_id", "klant_id", "artikel_id1", "artikel_naam1", 
                 "artikel_aantal1", "artikel_prijs1", "artikel_id2", "artikel_naam2", 
                 "artikel_aantal2", "artikel_prijs2", "artikel_id3", "artikel_naam3", 
@@ -51,13 +51,15 @@ public abstract class Data {
         return BESTELLING_ATTRIBUTES.contains(attribute);
     }
     
-    // todo...
+    // todo... gewoon primaryKey returnen?
+    @Override
     public int hashCode() {
         return 0;
     }
     
     // todo...
-    public boolean equals() {
+    @Override
+    public boolean equals(Object obj) {
         return false;
     }
 }

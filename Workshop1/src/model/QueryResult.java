@@ -49,12 +49,14 @@ public class QueryResult {
     }
     
     // todo...
+    @Override
     public int hashCode() {
         return 0;
     }
     
     // todo...
-    public boolean equals() {
+    @Override
+    public boolean equals(Object obj) {
         return false;
     }
 }

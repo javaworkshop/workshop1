@@ -18,6 +18,7 @@ class SqlCodeGenerator {
      */
     static String generateKlantInsertionCode(Klant klant) {
         String sqlCode = "INSERT INTO klant VALUES(NULL, ";
+        
         sqlCode += (klant.getVoornaam() == null) ? "NULL, " : "'" + 
             klant.getVoornaam() + "', ";
         sqlCode += (klant.getTussenvoegsel() == null) ? "NULL, " : "'" + 
@@ -28,13 +29,49 @@ class SqlCodeGenerator {
             klant.getEmail() + "', ";
         sqlCode += (klant.getStraatnaam() == null) ? "NULL, " : "'" + 
             klant.getStraatnaam() + "', ";
-        sqlCode += (klant.getHuisnummer() == 0) ? "NULL, " : klant.getHuisnummer() + ", ";
+        sqlCode += (klant.getHuisnummer() == 0) ? "NULL, " : 
+            klant.getHuisnummer() + ", ";
         sqlCode += (klant.getToevoeging() == null) ? "NULL, " : "'" + 
             klant.getToevoeging() + "', ";    
         sqlCode += (klant.getPostcode() == null) ? "NULL, " : "'" + 
             klant.getPostcode() + "', ";            
         sqlCode += (klant.getWoonplaats() == null) ? "NULL, " : "'" + 
             klant.getWoonplaats() + "')";
+        
+        return sqlCode;
+    }
+    
+    /**
+     * 
+     * @param klant
+     * @return 
+     */
+    static String generateKlantUpdateCode(Klant klant) {
+        String sqlCode = "UPDATE klant SET ";
+        
+        sqlCode += (klant.getVoornaam() == null) ? "" : "voornaam = '" + 
+            klant.getVoornaam() + "', ";
+        sqlCode += (klant.getTussenvoegsel() == null) ? "" : "tussenvoegsel = '" + 
+            klant.getTussenvoegsel() + "', ";
+        sqlCode += (klant.getAchternaam() == null) ? "" : "achternaam = '" + 
+            klant.getAchternaam() + "', ";
+        sqlCode += (klant.getEmail() == null) ? "" : "email = '" + 
+            klant.getEmail() + "', ";
+        sqlCode += (klant.getStraatnaam() == null) ? "" : "straatnaam = '" + 
+            klant.getStraatnaam() + "', ";
+        sqlCode += (klant.getHuisnummer() == 0) ? "" : "huisnummer = " + 
+            klant.getHuisnummer() + ", ";
+        sqlCode += (klant.getToevoeging() == null) ? "" : "toevoeging = '" + 
+            klant.getToevoeging() + "', ";    
+        sqlCode += (klant.getPostcode() == null) ? "" : "postcode = '" + 
+            klant.getPostcode() + "', ";            
+        sqlCode += (klant.getWoonplaats() == null) ? "" : "woonplaats = '" + 
+            klant.getWoonplaats() + "'";
+        
+        if(sqlCode.endsWith(", "))
+            sqlCode = sqlCode.substring(0, sqlCode.length() - 2);
+        
+        sqlCode += " WHERE klant_id = " + klant.getKlant_id();
         
         return sqlCode;
     }
@@ -47,6 +84,7 @@ class SqlCodeGenerator {
      */
     static String generateKlantSelectionCode(Klant klant) {
         String sqlCode = "SELECT * FROM klant WHERE ";
+        
         sqlCode += (klant.getKlant_id() == 0) ? "" : "klant_id = " + 
             klant.getKlant_id() + " AND ";
         sqlCode += (klant.getVoornaam() == null) ? "" : "voornaam = '" + 
@@ -72,6 +110,15 @@ class SqlCodeGenerator {
             sqlCode = sqlCode.substring(0, sqlCode.length() - 5);
         
         return sqlCode;
+    }
+    
+    /**
+     * TODO
+     * @param bestelling
+     * @return 
+     */
+    static String generateBestellingUpdateCode(Bestelling bestelling) {
+        return "";
     }
     
 }

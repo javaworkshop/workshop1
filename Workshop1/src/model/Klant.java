@@ -10,15 +10,15 @@ import javafx.beans.property.SimpleIntegerProperty;
  * Class to store data from the klant table.
  */
 public class Klant extends Data {
-    private SimpleStringProperty voornaam;
-    private SimpleStringProperty tussenvoegsel;
-    private SimpleStringProperty achternaam;
-    private SimpleStringProperty email;
-    private SimpleStringProperty straatnaam;
-    private SimpleIntegerProperty huisnummer;
-    private SimpleStringProperty toevoeging;
-    private SimpleStringProperty postcode;
-    private SimpleStringProperty woonplaats;
+    private final SimpleStringProperty voornaam;
+    private final SimpleStringProperty tussenvoegsel;
+    private final SimpleStringProperty achternaam;
+    private final SimpleStringProperty email;
+    private final SimpleStringProperty straatnaam;
+    private final SimpleIntegerProperty huisnummer;
+    private final SimpleStringProperty toevoeging;
+    private final SimpleStringProperty postcode;
+    private final SimpleStringProperty woonplaats;
     //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {

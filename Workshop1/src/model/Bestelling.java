@@ -11,19 +11,19 @@ import javafx.beans.property.SimpleStringProperty;
  * Class to store data from the bestelling table.
  */
 public class Bestelling extends Data {
-    private SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
-    private SimpleIntegerProperty artikel_id1;
-    private SimpleIntegerProperty artikel_id2;
-    private SimpleIntegerProperty artikel_id3;
-    private SimpleStringProperty artikel_naam1;
-    private SimpleStringProperty artikel_naam2;
-    private SimpleStringProperty artikel_naam3;
-    private SimpleIntegerProperty artikel_aantal1;
-    private SimpleIntegerProperty artikel_aantal2;
-    private SimpleIntegerProperty artikel_aantal3;
-    private SimpleDoubleProperty artikel_prijs1;
-    private SimpleDoubleProperty artikel_prijs2;
-    private SimpleDoubleProperty artikel_prijs3;
+    private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
+    private final SimpleIntegerProperty artikel_id1;
+    private final SimpleIntegerProperty artikel_id2;
+    private final SimpleIntegerProperty artikel_id3;
+    private final SimpleStringProperty artikel_naam1;
+    private final SimpleStringProperty artikel_naam2;
+    private final SimpleStringProperty artikel_naam3;
+    private final SimpleIntegerProperty artikel_aantal1;
+    private final SimpleIntegerProperty artikel_aantal2;
+    private final SimpleIntegerProperty artikel_aantal3;
+    private final SimpleDoubleProperty artikel_prijs1;
+    private final SimpleDoubleProperty artikel_prijs2;
+    private final SimpleDoubleProperty artikel_prijs3;
     
     public Bestelling() {
         klant_id = new SimpleIntegerProperty(0);

@@ -14,8 +14,8 @@ import java.util.LinkedHashSet;
  */
 
 public class QueryResult {
-    private ArrayList<QueryResultRow> rows;
-    private LinkedHashSet<String> columnNames;
+    private final ArrayList<QueryResultRow> rows;
+    private final LinkedHashSet<String> columnNames;
     
     public QueryResult() {
         rows = new ArrayList<>();

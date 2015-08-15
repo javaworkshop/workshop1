@@ -18,7 +18,7 @@ public abstract class Data {
                 "artikel_aantal2", "artikel_prijs2", "artikel_id3", "artikel_naam3", 
                 "artikel_aantal3", "artikel_prijs3"}));
     
-    private SimpleIntegerProperty primaryKey;
+    private final SimpleIntegerProperty primaryKey;
     
     protected Data() {
         primaryKey = new SimpleIntegerProperty(0);

@@ -145,15 +145,19 @@ public class DataDisplayRow {
     public StringProperty klant_idProperty() {
         return klant_id;
     }
+    
     public StringProperty voornaamProperty() {
         return klant.voornaamProperty();
     }
+    
     public StringProperty tussenvoegselProperty() {
         return klant.tussenvoegselProperty();
     }
+    
     public StringProperty achternaamProperty() {
         return klant.achternaamProperty();
     }
+    
     public StringProperty emailProperty() {
         return klant.emailProperty();
     }

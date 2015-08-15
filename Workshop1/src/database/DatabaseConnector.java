@@ -216,7 +216,33 @@ public class DatabaseConnector {
         for(Klant klant : klanten)
             statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
         statement.executeBatch();
-    }    
+    }
+    
+    /**
+     * Updates the database tables with the values contained in the Data objects in the given 
+     * ArrayList using a batch statement.
+     * @param data                  the ArrayList containing the new values
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public void batchUpdate(ArrayList<Data> data) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");        
+        
+        for(Data d : data) {
+            if(d instanceof Klant) {
+                if(((Klant)d).getKlant_id() != 0)
+                    statement.addBatch(SqlCodeGenerator.
+                            generateKlantUpdateCode(((Klant)d)));
+            }
+            else //if(d instanceof Bestelling)
+                if(((Bestelling)d).getBestelling_id() != 0)
+                    statement.addBatch(SqlCodeGenerator.
+                            generateBestellingUpdateCode(((Bestelling)d)));
+        }
+        
+        statement.executeBatch();
+    }
     
     /**
      * Reads all customer data currently present in the database and stores them in an arraylist

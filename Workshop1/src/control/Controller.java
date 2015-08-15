@@ -146,8 +146,20 @@ public class Controller extends Application {
             });
             th.start();
 	});
-        btDelete.setOnAction(e -> delete()); //nog te implementeren
-        btUpdate.setOnAction(e -> update()); //nog te implementeren
+        btDelete.setOnAction(e -> {
+            Thread th = new Thread(() -> delete());
+            th.setUncaughtExceptionHandler((t, ex) -> {
+                taSQLResult.setText("Geen verbinding met database.");
+            });
+            th.start();
+	}); //nog te implementeren
+        btUpdate.setOnAction(e -> {
+            Thread th = new Thread(() -> update());
+            th.setUncaughtExceptionHandler((t, ex) -> {
+                taSQLResult.setText("Geen verbinding met database.");
+            });
+            th.start();
+	}); //nog te implementeren
     }
     
     /**
@@ -246,40 +258,32 @@ public class Controller extends Application {
     }
     
     // ik denk dat update en delete alleen mogelijk moeten zijn als de primarykey ook in de tabel 
-    // staat...
+    // staat, anders wordt het wel erg ingewikkeld om het gecontroleerd te laten verlopen
     private void update() {
-        
-    }
-
-    // todo...
-    /**
-     * Determines which rows have their update checkbox ticked and returns the indices of these rows
-     * in an ArrayList object.
-     * @return the ArrayList object that contains row indices of the rows that should be updated
-     */
-    private ArrayList<Integer> updateRowIndices() {
-        ArrayList<Integer> rowIndices = new ArrayList<>();
-        int columnIndex = 0;
-        for(int i = 0; i < tableView.getColumns().size(); i++) {
-            
+        ArrayList<Data> dataToUpdate = new ArrayList<>();
+        for(int i = 0; i < tableView.getItems().size(); i++) {
+            DataDisplayRow currentRow = (DataDisplayRow)tableView.getItems().get(i);
+            if(currentRow.getUpdate()) {
+                dataToUpdate.add(currentRow.getKlant());
+                dataToUpdate.add(currentRow.getBestelling());
+            }
         }
-        
-        return rowIndices;
+        try {
+            dbConnector.batchUpdate(dataToUpdate);
+        }
+        catch (SQLException ex) {
+	    showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+	}
+        catch(DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
     }
     
     // todo...
     private void delete() {
         
     }
-    
-    // todo...    
-    private ArrayList<Integer> deleteRowIndices() {
-        return new ArrayList<Integer>();
-    }
-    
-    // Het heeft aardig wat uurtjes en flink wat hoofdpijn gekost om het checkbox probleem op te
-    // lossen, maar nu blijkt ineens dat in de workshop handleiding deze link staat: 
-    // http://stackoverflow.com/questions/25419786/please-explain-how-to-use-checkboxtablecell
+
     private void populateTableView(QueryResult queryResult) {
         tableView.getColumns().clear(); // maak tableView leeg
         

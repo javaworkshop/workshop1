@@ -48,10 +48,9 @@ public class Controller extends Application {
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
-    private TextField tfURL = new TextField();
+    private TextField tfURL = new TextField("jdbc:Mysql://localhost:3306/mydb");
     private TextField tfAantal = new TextField();
     private PasswordField pfPassword = new PasswordField();
-    private ComboBox<String> cboURL = new ComboBox<>(); // eventueel textfield van maken?
     private ComboBox<String> cboDriver = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
     private Button btUpdate = new Button("Update"); // geen implementatie
@@ -69,12 +68,7 @@ public class Controller extends Application {
 
     @Override
     public void start(Stage primaryStage) {        
-    	cboURL.getItems().addAll(FXCollections.observableArrayList(
-            "jdbc:Mysql://localhost:3306/mydb",
-            "jdbc:mysql://liang.armstrong.edu/mydb",
-            "jdbc:odbc:exampleMDBDataSource",
-            "jdbc:oracle:thin:@liang.armstrong.edu:1521:orcl"));
-	cboURL.getSelectionModel().selectFirst();
+    	
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
             "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
             "oracle.jdbc.driver.OracleDriver"));
@@ -82,7 +76,7 @@ public class Controller extends Application {
 
 	GridPane gridPane = new GridPane();
 
-	gridPane.add(cboURL, 1, 0);
+	gridPane.add(tfURL, 1, 0);
 	gridPane.add(cboDriver, 1, 1);
 	gridPane.add(tfUsername, 1, 2);
 	gridPane.add(pfPassword, 1, 3);
@@ -183,7 +177,7 @@ public class Controller extends Application {
      */
     private void connectToDB() {
 	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
-	dbConnector.setUrl(cboURL.getSelectionModel().getSelectedItem());
+	dbConnector.setUrl(tfURL.getText().trim());
 	dbConnector.setUsername(tfUsername.getText().trim());
 	dbConnector.setPassword(pfPassword.getText().trim());
 	try {

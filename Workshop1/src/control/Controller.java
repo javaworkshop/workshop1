@@ -148,6 +148,7 @@ public class Controller extends Application {
 	});
         btDelete.setOnAction(e -> delete()); //nog te implementeren
         btUpdate.setOnAction(e -> update()); //nog te implementeren
+	btVervers.setOnAction(e -> ververs());
     }
     
     /**
@@ -250,6 +251,11 @@ public class Controller extends Application {
     private void update() {
         
     }
+    
+    private void ververs() {
+	processSQLSelect(select * from klant);
+    }
+	
 
     // todo...
     /**

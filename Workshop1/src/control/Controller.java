@@ -324,8 +324,11 @@ public class Controller extends Application {
         
         // voegt data toe aan tableView
         ArrayList<DataDisplayRow> data = new ArrayList<>();
-        for(int i = 0; i < queryResult.rowCount(); i++)
-            data.add(new DataDisplayRow(queryResult.getRow(i)));        
+        for(int i = 0; i < queryResult.rowCount(); i++) {
+            DataDisplayRow currentRow = new DataDisplayRow(queryResult.getRow(i));
+            currentRow.makeExclusiveCheckBoxes();
+            data.add(currentRow);
+        }
         tableView.setItems(FXCollections.observableArrayList(data));
     }   
     

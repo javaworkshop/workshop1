@@ -6,6 +6,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.converter.NumberStringConverter;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ChangeListener;
 
 /**
  * Class meant to make editing and displaying data in a TableView easier. Also contains
@@ -250,6 +252,30 @@ public class DataDisplayRow {
     
     public BooleanProperty deleteProperty() {
         return delete;
+    }
+    
+    /**
+     * Bind the boolean properties, associated with the update and delete checkboxes, together, such
+     * that only one of them can be ticked at the same time.
+     */
+    public void makeExclusiveCheckBoxes() {
+        update.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, 
+                    Boolean newValue) {
+                if(newValue == true && delete.getValue() == true)
+                    delete.setValue(false);
+            }
+        });
+        
+        delete.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, 
+                    Boolean newValue) {
+                if(newValue == true && update.getValue() == true)
+                    update.setValue(false);
+            }
+        });
     }
     
     // todo...

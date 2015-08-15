@@ -266,6 +266,7 @@ public class Controller extends Application {
             if(currentRow.getUpdate()) {
                 dataToUpdate.add(currentRow.getKlant());
                 dataToUpdate.add(currentRow.getBestelling());
+                currentRow.setUpdate(false);
             }
         }
         try {

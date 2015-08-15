@@ -238,7 +238,7 @@ public class DataDisplayRow {
         return update.getValue();
     }
     
-    public void setValue(boolean bool) {
+    public void setUpdate(boolean bool) {
         update.setValue(bool);
     }
     

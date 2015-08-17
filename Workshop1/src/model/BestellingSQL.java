@@ -12,39 +12,34 @@ package model;
 
 //test
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 
 public class BestellingSQL {
 	
-	static Connection connection; //initialize this
         
         private BestellingSQL(){
             
         }
         
+        static String generateBestellingInsertionCode(Bestelling bestelling){
+            //implement 
+            String s = 
+                    "Insert into bestelling (klant_id,  artikel_id1,  artikel_id2,  artikel_id3,  artikel_naam1,  artikel_naam2,  artikel_naam3,  artikel_aantal1,  artikel_aantal2,  artikel_aantal3,  artikel_prijs1,  artikel_prijs2,  artikel_prijs3) values (" +
+                bestelling.getklantId() + ", " + bestelling.getArtikelId1() + ", " + bestelling.getArtikelId2() + ", " +bestelling.getArtikelId3()
+                    + ", \'" + bestelling.getArtikelNaam1() + "\', \'" + bestelling.getArtikelNaam2() + "\', \'" + bestelling.getArtikelNaam3() + "\', " +
+                bestelling.getArtikelAantal1() + ", " + bestelling.getArtikelAantal2() + ", " + bestelling.getArtikelAantal3() + ", " +
+                bestelling.getArtikelPrijs1() + ", " + bestelling.getArtikelPrijs2() + ", " + bestelling.getArtikelPrijs3() + ")";
+            
+            
+            return s;
+        }
+        
 	public static void addToDatabase(Bestelling bestelling){
-            /*
-			try{
-				//zorg ervoor dat alle datafields van de bestelling naar de database worden geschreven
-
-				String sql = "INSERT INTO Bestelling (klant_id), VALUES (?)";
-				PreparedStatement statement = connection.prepareStatement(sql);
-				statement.setInt(1, bestelling.getklantId());
-				int rowsInserted = statement.executeUpdate();
-				if (rowsInserted>0){
-					System.out.println("Bestelling toegevoegd");
-				}
-			}
-			catch(SQLException ex){
-				//make exception pop up
-			}
-			catch (Exception ex){
-				//make exception pop up
-			}
-                    */
+            
+            //roep een methode aan die iets kan met de sql
+            
+	generateBestellingInsertCode(bestelling);
+                    
 	}
         
         public static void updateBestelling(Bestelling bestelling){

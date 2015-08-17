@@ -38,7 +38,7 @@ public class BestellingSQL {
             
             //roep een methode aan die iets kan met de sql
             
-	generateBestellingInsertCode(bestelling);
+	generateBestellingInsertionCode(bestelling);
                     
 	}
         

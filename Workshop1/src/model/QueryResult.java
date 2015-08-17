@@ -54,14 +54,7 @@ public class QueryResult {
     
     @Override
     public int hashCode() {
-        int hash = 19;
-        int multiplier = 11;
-        
-        int hashcode = multiplier * hash;
-        for(QueryResultRow qrr : rows)
-            hashcode += qrr.hashCode();
-        
-        return hashcode;
+        return rows.hashCode();
     }
     
     @Override
@@ -72,7 +65,7 @@ public class QueryResult {
             return false;
         
         QueryResult qr = (QueryResult)obj;
-        return  qr.rows.equals(this.rows);
+        return qr.rows.equals(this.rows);
     }
 
     @Override

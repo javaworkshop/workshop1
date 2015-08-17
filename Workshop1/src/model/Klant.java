@@ -28,11 +28,11 @@ public class Klant extends Gegeven {
         woonplaats= "";
     }
     
-    public int getKlantId() {
+    public int getklantId() {
         return super.getId();
     }
     
-    public void setKlantId(int id) {
+    public void setklantId(int id) {
         super.setId(id);
     }
     

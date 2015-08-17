@@ -73,6 +73,7 @@ public class ArtikelGenerator extends Stage{
                         processArtikelInfo(bestelling, artikelId, artikelNaam, artikelAantal, artikelPrijs);
                         
                         BestellingSQL.updateBestelling(bestelling);
+                        System.out.println(bestelling);
 		});
 	}
         

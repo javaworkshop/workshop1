@@ -550,6 +550,19 @@ public class DatabaseConnector {
             con.setAutoCommit(true);
         }
     }
+    
+    /**
+     * Removes all data from the database. Tables still exist afterwards, except now they're empty.
+     * @throws SQLException
+     * @throws DatabaseException thrown if database connection has not been initialized yet
+     */
+    public void clearDatabase() throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        executeCommand("DELETE FROM klant");
+        executeCommand("DELETE FROM bestelling");
+    }
 
     /**
      * Retrieves the names of all the columns in rowSet, which contains the results from the last

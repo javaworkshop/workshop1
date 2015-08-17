@@ -27,7 +27,7 @@ import javafx.util.Callback;
 
 /**
  * Klasse van waaruit het programma draait en wordt aangestuurd. User input wordt via deze klasse
- * verwerkt.
+ * verwerkt. 
  */
 public class Controller extends Application {
 

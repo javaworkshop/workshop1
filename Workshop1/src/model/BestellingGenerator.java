@@ -51,7 +51,8 @@ public class BestellingGenerator extends Stage{
 		btVoegToe.setOnAction(e->{	
                   Bestelling bestelling = new Bestelling();
                   processTextFields(bestelling);
-                  BestellingSQL.addToDatabase(bestelling);
+                  
+                  addToDatabase(bestelling);
                   System.out.println(bestelling);
 		});
 	}
@@ -60,7 +61,7 @@ public class BestellingGenerator extends Stage{
             bestelling.setklantId(Integer.parseInt(tfKlantId.getText()));
             
             try{
-                 ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
+                 processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
                  tfArtikel1Naam.getText(), Integer.parseInt(tfArtikel1Aantal.getText()),
                  Double.parseDouble(tfArtikel1Prijs.getText()));
             }
@@ -70,7 +71,7 @@ public class BestellingGenerator extends Stage{
             }
 
             try{
-                ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel2Id.getText()),
+                processArtikelInfo(bestelling, Integer.parseInt(tfArtikel2Id.getText()),
                 tfArtikel2Naam.getText(), Integer.parseInt(tfArtikel2Aantal.getText()),
                     Double.parseDouble(tfArtikel2Prijs.getText()));
             }
@@ -80,7 +81,7 @@ public class BestellingGenerator extends Stage{
             }
             
             try{
-            ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel3Id.getText()),
+                processArtikelInfo(bestelling, Integer.parseInt(tfArtikel3Id.getText()),
                  tfArtikel3Naam.getText(), Integer.parseInt(tfArtikel3Aantal.getText()),
                     Double.parseDouble(tfArtikel3Prijs.getText()));
             }
@@ -88,6 +89,60 @@ public class BestellingGenerator extends Stage{
                 //make popup?
                 System.out.println("Er zijn niet op de juiste plek cijfers ingevuld bij artikel 3, artikel 3 niet toegevoegd");
             }
+        }
+        
+              
+        public static void processArtikelInfo(Bestelling bestelling, int artikelId, String artikelNaam, int artikelAantal, double artikelPrijs){
+                  
+                        if (getSameArtikelSlotNr(artikelId, bestelling) == 1){
+                            bestelling.setArtikelAantal1(bestelling.getArtikelAantal1()+artikelAantal);
+                        }
+                        else if (getSameArtikelSlotNr(artikelId, bestelling) == 2){
+                            bestelling.setArtikelAantal2(bestelling.getArtikelAantal2()+artikelAantal);
+                        }
+                        else if (getSameArtikelSlotNr(artikelId, bestelling) == 3){
+                            bestelling.setArtikelAantal3(bestelling.getArtikelAantal3()+artikelAantal);
+                        }
+                        else if (getSameArtikelSlotNr(artikelId, bestelling) == -999){
+                            if (getEmptySlotNr(bestelling) == 1){
+                                bestelling.setArtikelId1(artikelId);
+                                bestelling.setArtikelNaam1(artikelNaam);
+                                bestelling.setArtikelAantal1(artikelAantal);
+                                bestelling.setArtikelPrijs1(artikelPrijs);
+                            }
+                            else if (getEmptySlotNr(bestelling) == 2){
+                                bestelling.setArtikelId2(artikelId);
+                                bestelling.setArtikelNaam2(artikelNaam);
+                                bestelling.setArtikelAantal2(artikelAantal);
+                                bestelling.setArtikelPrijs2(artikelPrijs);
+
+                            }
+                            else if (getEmptySlotNr(bestelling) == 3){
+                                bestelling.setArtikelId3(artikelId);
+                                bestelling.setArtikelNaam3(artikelNaam);
+                                bestelling.setArtikelAantal3(artikelAantal);
+                                bestelling.setArtikelPrijs3(artikelPrijs);
+
+                            }
+                            else if (getEmptySlotNr(bestelling) == -999){
+                                //geef foutmelding artikel kan niet worden toegevoegd, doe dit met popup
+                                System.out.println("Er zijn al drie verschillende artikelen, dit artikel kan niet worden toegevoegd.");
+                            }
+                        }
+        }
+        
+        public static  int getSameArtikelSlotNr(int artikelId, Bestelling bestelling){
+            if (bestelling.getArtikelId1() == artikelId) return 1;
+            else if (bestelling.getArtikelId2() == artikelId) return 2;
+            else if (bestelling.getArtikelId3() == artikelId) return 3;
+            else return -999;
+        }
+        
+        public static int getEmptySlotNr(Bestelling bestelling){
+            if (bestelling.getArtikelId1() == 0) return 1;
+            else if (bestelling.getArtikelId2() == 0) return 2;
+            else if (bestelling.getArtikelId3() == 0) return 3;
+            else return -999;
         }
         
         public HBox makeArtikel1GUI(){
@@ -152,5 +207,14 @@ public class BestellingGenerator extends Stage{
                 }
             }
         }
+        
+        
+        public static void addToDatabase(Bestelling bestelling){
+    
+	control.Controller.getDbConnector().batchInsertion(bestelling);
+                    
+	}
+        
+        
 }
 

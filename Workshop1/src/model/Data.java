@@ -49,17 +49,5 @@ public abstract class Data {
     
     public static boolean isBestellingAttribute(String attribute) {
         return BESTELLING_ATTRIBUTES.contains(attribute);
-    }
-    
-    // todo... gewoon primaryKey returnen?
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-    
-    // todo...
-    @Override
-    public boolean equals(Object obj) {
-        return false;
-    }
+    }    
 }

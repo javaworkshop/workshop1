@@ -58,10 +58,15 @@ public class QueryResult {
         return 0;
     }
     
-    // todo...
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+        
+        QueryResult qr = (QueryResult)obj;
+        return  qr.rows.equals(this.rows);
     }
 }
 

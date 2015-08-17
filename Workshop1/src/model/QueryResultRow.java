@@ -39,6 +39,13 @@ public class QueryResultRow {
     // todo...
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+        
+        QueryResultRow qrr = (QueryResultRow)obj;
+        return  qrr.klant.equals(this.klant) &&
+                qrr.bestelling.equals(this.bestelling);
     }
 }

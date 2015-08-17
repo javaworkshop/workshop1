@@ -291,6 +291,15 @@ public class DataDisplayRow {
     // todo...
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+        
+        DataDisplayRow ddr = (DataDisplayRow)obj;
+        return  ddr.klant.equals(this.klant) &&
+                ddr.bestelling.equals(this.bestelling) &&
+                ddr.update.equals(this.update) &&
+                ddr.delete.equals(this.delete);
     }
 }

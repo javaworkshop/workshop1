@@ -218,6 +218,25 @@ public class Bestelling extends Data {
     // todo...
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+        
+        Bestelling b = (Bestelling)obj;
+        return  b.getBestelling_id() == this.getBestelling_id() &&
+                b.getKlant_id() == this.getKlant_id() &&
+                b.getArtikel_id1() == this.getArtikel_id1() &&
+                b.getArtikel_id2() == this.getArtikel_id2() &&
+                b.getArtikel_id3() == this.getArtikel_id2() &&
+                b.getArtikel_aantal1() == this.getArtikel_aantal1() &&
+                b.getArtikel_aantal2() == this.getArtikel_aantal2() &&
+                b.getArtikel_aantal3() == this.getArtikel_aantal3() &&
+                b.getArtikel_prijs1() == this.getArtikel_prijs1() &&
+                b.getArtikel_prijs2() == this.getArtikel_prijs2() &&
+                b.getArtikel_prijs3() == this.getArtikel_prijs3() &&
+                b.getArtikel_naam1().equals(this.getArtikel_naam1()) &&
+                b.getArtikel_naam2().equals(this.getArtikel_naam2()) &&
+                b.getArtikel_naam3().equals(this.getArtikel_naam3());
     }
 }

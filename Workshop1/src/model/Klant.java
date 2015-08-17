@@ -153,7 +153,7 @@ public class Klant extends Data {
         return woonplaats;
     }
     
-    // todo...
+    // todo... gewoon primaryKey returnen?
     @Override
     public int hashCode() {
         return 0;
@@ -162,6 +162,30 @@ public class Klant extends Data {
     // todo...
     @Override
     public boolean equals(Object obj) {
-        return false;
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;        
+        
+        Klant k = (Klant)obj;
+        return  k.getKlant_id() == this.getKlant_id() && 
+                k.getHuisnummer() == this.getHuisnummer() &&
+                k.getVoornaam().equals(this.getVoornaam()) && 
+                k.getTussenvoegsel().equals(this.getTussenvoegsel()) &&
+                k.getAchternaam().equals(this.getAchternaam()) &&
+                k.getEmail().equals(this.getEmail()) &&
+                k.getStraatnaam().equals(this.getStraatnaam()) &&
+                k.getToevoeging().equals(this.getToevoeging()) &&
+                k.getPostcode().equals(this.getPostcode()) &&
+                k.getWoonplaats().equals(this.getWoonplaats());
+    } 
+
+    @Override
+    public String toString() {
+        return "Klant{" + "klant_id=" + super.primaryKeyProperty() + ", voornaam=" + voornaam + 
+                ", tussenvoegsel=" + tussenvoegsel + ", achternaam=" + achternaam + 
+                ", email=" + email + ", straatnaam=" + straatnaam + ", huisnummer=" + huisnummer + 
+                ", toevoeging=" + toevoeging + ", postcode=" + postcode + 
+                ", woonplaats=" + woonplaats + '}';
     }
 }

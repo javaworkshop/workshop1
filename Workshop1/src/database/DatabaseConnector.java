@@ -19,7 +19,7 @@ public class DatabaseConnector {
     throw new DatabaseException("Geen verbinding met database.");
 
 
-    statement.addBatch(model.BestellingSQL.generateBestellingInsertionCode(bestelling));
+    statement.addBatch(database.BestellingSQL.generateBestellingInsertionCode(bestelling));
 
 
     statement.executeBatch();
@@ -30,7 +30,7 @@ public class DatabaseConnector {
        throw new DatabaseException("Geen verbinding met database.");
 
 
-        statement.addBatch(model.BestellingSQL.generateArtikelUpdateCode(bestellingId, artikelId, artikelNaam, artikelAantal, artikelPrijs));
+        statement.addBatch(database.BestellingSQL.generateArtikelUpdateCode(bestellingId, artikelId, artikelNaam, artikelAantal, artikelPrijs));
 
 
         statement.executeBatch();

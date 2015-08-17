@@ -138,6 +138,10 @@ public class Controller extends Application {
         btVoegBestelling.setOnAction(e->{
             model.BestellingGenerator bg= new model.BestellingGenerator();
         });
+                btVoegArtikel.setOnAction(e->{
+            model.ArtikelGenerator ag= new model.ArtikelGenerator();
+        });
+        
     }
 
     private void batchUpdate() {

@@ -59,8 +59,6 @@ public class BestellingGenerator extends Stage{
         private void processTextFields(Bestelling bestelling){           
             bestelling.setklantId(Integer.parseInt(tfKlantId.getText()));
             
-            // do something about textfields being empty
-            
             try{
                  ArtikelGenerator.processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
                  tfArtikel1Naam.getText(), Integer.parseInt(tfArtikel1Aantal.getText()),

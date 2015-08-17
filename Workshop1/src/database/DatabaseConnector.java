@@ -377,16 +377,54 @@ public class DatabaseConnector {
         return bestelling;
     }
     
-    // TODO
-    public void update(Klant k) {
+    /**
+     * Updates the given klant in the database based on the klant id contained in the Klant object.
+     * If the klant id of the given klant is equal to 0, this method will not do anything, in which
+     * case it will return false. When klant data has been succesfully updated, this method will 
+     * return true.
+     * @param k                     klant data to be updated
+     * @return                      true if update was successful, false when nothing was updated
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public boolean update(Klant k) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
         
+        if(k.getKlant_id() != 0) {
+            executeCommand(SqlCodeGenerator.generateKlantUpdateCode(k));
+            return true;
+        }
+        return false;
     }
     
-    // TODO
-    public void update(Bestelling b) {
+    /**
+     * Updates the given bestelling in the database based on the bestelling id contained in the 
+     * Bestelling object. If the Bestelling id of the given bestelling is equal to 0, this method 
+     * will not do anything, in which case it will return false. When bestelling data has been 
+     * succesfully updated, this method will return true.
+     * @param b                     bestelling data to be updated
+     * @return                      true if update was successful, false when nothing was updated
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public boolean update(Bestelling b) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
         
+        if(b.getBestelling_id() != 0) {
+            executeCommand(SqlCodeGenerator.generateBestellingUpdateCode(b));
+            return true;
+        }
+        return false;
     }
     
+    /**
+     * Deletes the klant from the database with the given klant id.
+     * @param klant_id              the id of the klant that is to be deleted
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
     public void deleteKlant(int klant_id) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
@@ -424,6 +462,12 @@ public class DatabaseConnector {
         }
     }
     
+    /**
+     * Deletes the bestelling from the database with the given bestelling id.
+     * @param bestelling_id         the id of the bestelling that is to be deleted
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
     public void deleteBestelling(int bestelling_id) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
@@ -433,7 +477,9 @@ public class DatabaseConnector {
     
     /**
      * Deletes the given klant from the database based on voornaam, achternaam, and tussenvoegsel.
-     * @param k klant to be deleted
+     * @param k                     klant to be deleted
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void delete(Klant k) throws SQLException, DatabaseException{
         if(!isInitialized)

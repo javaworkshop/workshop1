@@ -273,7 +273,7 @@ public class DatabaseConnector {
      * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public Klant read(int klant_id) throws SQLException, DatabaseException {
+    public Klant readKlant(int klant_id) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
@@ -305,7 +305,26 @@ public class DatabaseConnector {
             klanten.add(retrieveKlant());
         
         return klanten;
-    }    
+    }
+    
+    /**
+     * Returns the bestelling stored in the database with the given bestelling id. Bestelling data
+     * is returned in a Bestelling object.
+     * @param bestelling_id         the id of the bestelling that is to be retrieved
+     * @return                      the bestelling with the given id
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public Bestelling readBestelling(int bestelling_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        executeCommand("SELECT * FROM bestelling WHERE bestelling_id = " + bestelling_id);
+        rowSet.next();
+        Bestelling bestelling = retrieveBestelling();
+        
+        return bestelling;
+    }
     
     /**
      * Retrieves klant data from rowSet and stores them in a Klant object. The klant data that is
@@ -330,6 +349,162 @@ public class DatabaseConnector {
         return klant;
     }
     
+    /**
+     * Retrieves bestelling data from rowSet and stores them in a Bestelling object. The bestelling
+     * data that is retrieved comes from the row to which the cursor in rowSet is currently 
+     * pointing. The method assumes rowSet contains data from all columns in the bestelling table.
+     * @return              the Bestelling object with data from the currently selected row in 
+     *                      rowSet
+     * @throws SQLException 
+     */
+    private Bestelling retrieveBestelling() throws SQLException {
+        Bestelling bestelling = new Bestelling();
+        bestelling.setBestelling_id(rowSet.getInt(1));
+        bestelling.setKlant_id(rowSet.getInt(2));
+        bestelling.setArtikel_id1(rowSet.getInt(3));
+        bestelling.setArtikel_naam1(rowSet.getString(4));
+        bestelling.setArtikel_aantal1(rowSet.getInt(5));
+        bestelling.setArtikel_prijs1(rowSet.getDouble(6));
+        bestelling.setArtikel_id2(rowSet.getInt(7));
+        bestelling.setArtikel_naam2(rowSet.getString(8));
+        bestelling.setArtikel_aantal2(rowSet.getInt(9));
+        bestelling.setArtikel_prijs2(rowSet.getDouble(10));
+        bestelling.setArtikel_id3(rowSet.getInt(11));
+        bestelling.setArtikel_naam3(rowSet.getString(12));
+        bestelling.setArtikel_aantal3(rowSet.getInt(13));
+        bestelling.setArtikel_prijs3(rowSet.getDouble(14));
+        
+        return bestelling;
+    }
+    
+    // TODO
+    public void update(Klant k) {
+        
+    }
+    
+    // TODO
+    public void update(Bestelling b) {
+        
+    }
+    
+    public void deleteKlant(int klant_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Connection con = statement.getConnection();
+        String klantSQL = "DELETE FROM klant WHERE klant_id = ?";
+        String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";
+        
+        PreparedStatement deleteKlant = null;
+        PreparedStatement deleteBestelling = null;
+        try {
+            con.setAutoCommit(false);
+            deleteKlant = con.prepareStatement(klantSQL);
+            deleteBestelling = con.prepareStatement(bestellingSQL);
+            
+            deleteKlant.setInt(1, klant_id);
+            deleteKlant.executeUpdate();
+            deleteBestelling.setInt(1, klant_id);
+            deleteBestelling.executeUpdate();
+            
+            con.commit();
+        }
+        catch(SQLException ex) {
+            if(con != null)
+                con.rollback();
+            throw ex;
+        }
+        finally {
+            if(deleteKlant != null) 
+                deleteKlant.close();
+            if(deleteBestelling != null) 
+                deleteBestelling.close();
+            
+            con.setAutoCommit(true);
+        }
+    }
+    
+    public void deleteBestelling(int bestelling_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        executeCommand("DELETE FROM bestelling WHERE bestelling_id = " + bestelling_id);
+    }
+    
+    /**
+     * Deletes the given klant from the database based on voornaam, achternaam, and tussenvoegsel.
+     * @param k klant to be deleted
+     */
+    public void delete(Klant k) throws SQLException, DatabaseException{
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        // Get information from klant object.
+        String voornaam = k.getVoornaam();
+        String achternaam = k.getAchternaam();
+        String tussenvoegsel = k.getTussenvoegsel();
+        
+        // Retrieve all klant_ids from the database that have the specified voornaam, achternaam, 
+        // and tussenvoegsel.
+        executeCommand("SELECT klant_id FROM klant WHERE "
+                + "voornaam = '" + voornaam + "' AND "
+                + "achternaam = '" + achternaam + "' AND "
+                + "tussenvoegsel = '" + tussenvoegsel + "'");        
+        ArrayList<Integer> klant_ids = new ArrayList<>();
+        while(rowSet.next())
+            klant_ids.add(rowSet.getInt(1));
+        
+        // Declare connection object and prepare String for klant deletion.
+        Connection con = statement.getConnection();
+        String klantSQL = "DELETE FROM klant WHERE "
+                + "voornaam = ? AND "
+                + "achternaam = ? AND "
+                + "tussenvoegsel = ?";
+        
+        // Prepare String for deletion of all bestellingen that have the klant_ids of klanten that
+        // will also be deleted.
+        String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";;
+        
+        // Declare PreparedStatements and assign a null reference to them so they can be closed
+        // in a finally clause.
+        PreparedStatement deleteKlant = null;
+        PreparedStatement[] deleteBestellingen = new PreparedStatement[klant_ids.size()];
+        try {
+            con.setAutoCommit(false);
+            
+            // delete klant(en)
+            deleteKlant = con.prepareStatement(klantSQL);
+            deleteKlant.setString(1, voornaam);
+            deleteKlant.setString(2, achternaam);
+            deleteKlant.setString(3, tussenvoegsel);
+            deleteKlant.executeUpdate();
+            
+            // delete bestelling(en)
+            for(int i = 0; i < deleteBestellingen.length; i++) {
+                deleteBestellingen[i] = con.prepareStatement(bestellingSQL);
+                deleteBestellingen[i].setInt(1, klant_ids.get(i));
+                deleteBestellingen[i].executeUpdate();
+            }
+            
+            con.commit();
+        }
+        catch(SQLException ex) {
+            if(con != null)
+                con.rollback();
+            throw ex;
+        }
+        finally {
+            if(deleteKlant != null) 
+                deleteKlant.close();
+            for(int i = 0; i < deleteBestellingen.length; i++) {
+                if(deleteBestellingen[i] != null) 
+                    deleteBestellingen[i].close();
+            }
+            
+            con.setAutoCommit(true);
+        }
+    }
+
     /**
      * Retrieves the names of all the columns in rowSet, which contains the results from the last
      * executed query.    

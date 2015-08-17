@@ -48,6 +48,10 @@ public class QueryResult {
         return columnNamesArray;
     }
     
+    public boolean isEmpty() {
+        return rows.isEmpty();
+    }
+    
     // todo...
     @Override
     public int hashCode() {

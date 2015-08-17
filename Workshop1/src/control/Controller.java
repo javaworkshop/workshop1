@@ -287,6 +287,8 @@ public class Controller extends Application {
 
     private void populateTableView(QueryResult queryResult) {
         tableView.getColumns().clear(); // maak tableView leeg
+        if(queryResult.isEmpty())
+            return;
         
         String[] columnNames = queryResult.getColumnNames();
         

@@ -30,6 +30,10 @@ import javafx.util.Callback;
  * verwerkt.
  */
 public class Controller extends Application {
+
+    public static database.DataBaseConnector getDbConnector() {
+        return dbConnector;
+    }
     private TableView tableView = new TableView();
     private Connection connection;
     private Statement statement;

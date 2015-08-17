@@ -282,13 +282,18 @@ public class DataDisplayRow {
         });
     }
     
-    // todo...
     @Override
     public int hashCode() {
-        return 0;
+        int hash = 29;
+        int multiplier = 17;
+        
+        return  multiplier * hash + 
+                klant.hashCode() +
+                bestelling.hashCode() +
+                update.getValue().hashCode() +
+                delete.getValue().hashCode();
     }
     
-    // todo...
     @Override
     public boolean equals(Object obj) {
         if(obj == this)
@@ -301,5 +306,11 @@ public class DataDisplayRow {
                 ddr.bestelling.equals(this.bestelling) &&
                 ddr.update.equals(this.update) &&
                 ddr.delete.equals(this.delete);
+    }
+
+    @Override
+    public String toString() {
+        return "DataDisplayRow{" + "update=" + update + ", delete=" + delete + 
+                ", klant=" + klant + ", bestelling=" + bestelling + '}';
     }
 }

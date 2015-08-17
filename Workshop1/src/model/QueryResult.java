@@ -52,10 +52,16 @@ public class QueryResult {
         return rows.isEmpty();
     }
     
-    // todo...
     @Override
     public int hashCode() {
-        return 0;
+        int hash = 19;
+        int multiplier = 11;
+        
+        int hashcode = multiplier * hash;
+        for(QueryResultRow qrr : rows)
+            hashcode += qrr.hashCode();
+        
+        return hashcode;
     }
     
     @Override
@@ -67,6 +73,11 @@ public class QueryResult {
         
         QueryResult qr = (QueryResult)obj;
         return  qr.rows.equals(this.rows);
+    }
+
+    @Override
+    public String toString() {
+        return "QueryResult{" + "rows=" + rows + ", columnNames=" + columnNames + '}';
     }
 }
 

@@ -153,13 +153,23 @@ public class Klant extends Data {
         return woonplaats;
     }
     
-    // todo... gewoon primaryKey returnen?
     @Override
     public int hashCode() {
-        return 0;
+        int hash = 11;
+        int multiplier = 5;
+        
+        return  multiplier * hash + 
+                getKlant_id() +
+                getVoornaam().hashCode() +
+                getTussenvoegsel().hashCode() +
+                getAchternaam().hashCode() +
+                getEmail().hashCode() +
+                getStraatnaam().hashCode() +
+                getToevoeging().hashCode() +
+                getPostcode().hashCode() +
+                getWoonplaats().hashCode();
     }
     
-    // todo...
     @Override
     public boolean equals(Object obj) {
         if(obj == this)

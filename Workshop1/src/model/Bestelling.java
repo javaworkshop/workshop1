@@ -209,13 +209,28 @@ public class Bestelling extends Data {
         return artikel_prijs3;
     }
 
-    // todo...
     @Override
     public int hashCode() {
-        return 0;
+        int hash = 13;
+        int multiplier = 7;
+        
+        return  multiplier * hash + 
+                getBestelling_id() +
+                getKlant_id() +
+                getArtikel_id1() +
+                getArtikel_id2() +
+                getArtikel_id3() +
+                getArtikel_naam1().hashCode() +
+                getArtikel_naam2().hashCode() +
+                getArtikel_naam3().hashCode() +
+                getArtikel_aantal1() +
+                getArtikel_aantal2() +
+                getArtikel_aantal3() +
+                (int)getArtikel_prijs1() +
+                (int)getArtikel_prijs2() +
+                (int)getArtikel_prijs3();
     }
     
-    // todo...
     @Override
     public boolean equals(Object obj) {
         if(obj == this)
@@ -238,5 +253,16 @@ public class Bestelling extends Data {
                 b.getArtikel_naam1().equals(this.getArtikel_naam1()) &&
                 b.getArtikel_naam2().equals(this.getArtikel_naam2()) &&
                 b.getArtikel_naam3().equals(this.getArtikel_naam3());
+    }
+
+    @Override
+    public String toString() {
+        return "Bestelling{" + "bestelling_id=" + super.getPrimaryKey() + "klant_id=" + klant_id
+                + ", artikel_id1=" + artikel_id1 + ", artikel_id2=" + artikel_id2 +
+                ", artikel_id3=" + artikel_id3 + ", artikel_naam1=" + artikel_naam1 + 
+                ", artikel_naam2=" + artikel_naam2 + ", artikel_naam3=" + artikel_naam3 + 
+                ", artikel_aantal1=" + artikel_aantal1 + ", artikel_aantal2=" + artikel_aantal2 + 
+                ", artikel_aantal3=" + artikel_aantal3 + ", artikel_prijs1=" + artikel_prijs1 + 
+                ", artikel_prijs2=" + artikel_prijs2 + ", artikel_prijs3=" + artikel_prijs3 + '}';
     }
 }

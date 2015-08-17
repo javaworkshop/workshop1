@@ -29,14 +29,17 @@ public class QueryResultRow {
     public void setBestelling(Bestelling b) {
         bestelling = b;
     }
-    
-    // todo...
+
     @Override
     public int hashCode() {
-        return 0;
+        int hash = 23;
+        int multiplier = 13;
+        
+        return  multiplier * hash +
+                klant.hashCode() +
+                bestelling.hashCode();
     }
-    
-    // todo...
+
     @Override
     public boolean equals(Object obj) {
         if(obj == this)
@@ -47,5 +50,10 @@ public class QueryResultRow {
         QueryResultRow qrr = (QueryResultRow)obj;
         return  qrr.klant.equals(this.klant) &&
                 qrr.bestelling.equals(this.bestelling);
+    }
+
+    @Override
+    public String toString() {
+        return "QueryResultRow{" + "klant=" + klant + ", bestelling=" + bestelling + '}';
     }
 }

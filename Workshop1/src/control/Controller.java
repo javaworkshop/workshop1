@@ -41,8 +41,8 @@ import javafx.scene.control.cell.CheckBoxTableCell;
  */
 public class Controller extends Application {
     private DatabaseConnector dbConnector = new DatabaseConnector();
+    private String lastExecutedQuery = "";
     
-    private Stage primaryStage;
     private ErrorScreen errorScreen;
     private AddBestellingScreen addBestellingScreen;
     private AddArtikelScreen addArtikelScreen;
@@ -51,10 +51,9 @@ public class Controller extends Application {
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
-    private TextField tfURL = new TextField();
+    private TextField tfURL = new TextField("jdbc:Mysql://localhost:3306/mydb");
     private TextField tfAantal = new TextField();
-    private PasswordField pfPassword = new PasswordField();
-    private ComboBox<String> cboURL = new ComboBox<>(); // eventueel textfield van maken?
+    private PasswordField pfPassword = new PasswordField();    
     private ComboBox<String> cboDriver = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
     private Button btUpdate = new Button("Update");
@@ -64,20 +63,14 @@ public class Controller extends Application {
     private Button btClearSQLCommand = new Button("Clear");
     private Button btConnectDB = new Button("Connect to Database");
     private Button btClearSQLResult = new Button("Clear Result"); // geen implementatie
-    private Button btVervers = new Button("Ververs tabel"); // geen implementatie
+    private Button btRefresh = new Button("Ververs tabel"); // geen implementatie
     private Button btNieuweKlant = new Button("Maak nieuwe klant"); // implementatie nog niet toegevoegd
     private Button btMaakKlanten = new Button("maak klanten aan");
     private Label lblConnectionStatus = new Label("No connection now ");
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     @Override
-    public void start(Stage primaryStage) {        
-    	cboURL.getItems().addAll(FXCollections.observableArrayList(
-            "jdbc:Mysql://localhost:3306/mydb",
-            "jdbc:mysql://liang.armstrong.edu/mydb",
-            "jdbc:odbc:exampleMDBDataSource",
-            "jdbc:oracle:thin:@liang.armstrong.edu:1521:orcl"));
-	cboURL.getSelectionModel().selectFirst();
+    public void start(Stage primaryStage) {   	
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
             "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
             "oracle.jdbc.driver.OracleDriver"));
@@ -85,7 +78,7 @@ public class Controller extends Application {
 
 	GridPane gridPane = new GridPane();
 
-	gridPane.add(cboURL, 1, 0);
+	gridPane.add(tfURL, 1, 0);
 	gridPane.add(cboDriver, 1, 1);
 	gridPane.add(tfUsername, 1, 2);
 	gridPane.add(pfPassword, 1, 3);
@@ -98,7 +91,7 @@ public class Controller extends Application {
 	gridPane.add(tfAantal, 3, 1);
 	gridPane.add(btMaakKlanten, 2, 2);
 	HBox hBoxUpdate = new HBox();
-	hBoxUpdate.getChildren().addAll(btVervers, btNieuweKlant, btVoegArtikel, btVoegBestelling);
+	hBoxUpdate.getChildren().addAll(btRefresh, btNieuweKlant, btVoegArtikel, btVoegBestelling);
 
 
 	HBox hBoxConnection = new HBox();
@@ -133,7 +126,6 @@ public class Controller extends Application {
 
 
 	Scene scene = new Scene(borderPane, 1400, 700);
-        this.primaryStage = primaryStage;
 	primaryStage.setTitle("SQLClient"); // Set the stage title
 	primaryStage.setScene(scene); // Place the scene in the stage
 	primaryStage.show(); // Display the stage
@@ -184,6 +176,7 @@ public class Controller extends Application {
             });
             th.start();
 	});
+        btRefresh.setOnAction(e -> refresh());
     }
     
     private void addBestelling() {
@@ -206,6 +199,18 @@ public class Controller extends Application {
     private void addArtikel() {
         Artikel artikel = new Artikel();
         addArtikelScreen.processArtikelInfo(artikel);
+        
+        try {
+            dbConnector.addArtikel(artikel);
+        }
+        catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        
+        addArtikelScreen.hide();
     }
     
     /**
@@ -240,7 +245,7 @@ public class Controller extends Application {
      */
     private void connectToDB() {
 	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
-	dbConnector.setUrl(cboURL.getSelectionModel().getSelectedItem());
+	dbConnector.setUrl(tfURL.getText().trim());
 	dbConnector.setUsername(tfUsername.getText().trim());
 	dbConnector.setPassword(pfPassword.getText().trim());
 	try {
@@ -265,8 +270,10 @@ public class Controller extends Application {
         String sqlCommands = tasqlCommand.getText().trim();
         String[] commands = sqlCommands.replace('\n', ' ').split(";");
         for (String aCommand: commands) {
-            if (aCommand.trim().toUpperCase().startsWith("SELECT"))
+            if (aCommand.trim().toUpperCase().startsWith("SELECT")) {
                 processSQLSelect(aCommand);
+                lastExecutedQuery = aCommand;
+            }
             else
                 processSQLNonSelect(aCommand);
         }
@@ -329,6 +336,10 @@ public class Controller extends Application {
     // todo...
     private void delete() {
         
+    }
+    
+    private void refresh() {
+        processSQLSelect(lastExecutedQuery);
     }
 
     private void populateTableView(QueryResult queryResult) {

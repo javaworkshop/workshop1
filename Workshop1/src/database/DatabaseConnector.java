@@ -266,6 +266,22 @@ public class DatabaseConnector {
     }
     
     /**
+     * 
+     * @param b
+     * @throws SQLException
+     * @throws DatabaseException 
+     */
+    public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
+        executeCommand(database.SqlCodeGenerator.generateBestellingInsertionCode(b));
+    }
+    
+    public void addArtikel(int bestellingId, int artikelId, String artikelNaam, int artikelAantal, 
+            double artikelPrijs) throws SQLException, DatabaseException {
+        executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(
+                bestellingId, artikelId, artikelNaam, artikelAantal, artikelPrijs));
+    }
+    
+    /**
      * Returns the klant stored in the database with the given klant id. Klant data is returned in a
      * klant object.
      * @param klant_id              the id of the klant that is to be retrieved

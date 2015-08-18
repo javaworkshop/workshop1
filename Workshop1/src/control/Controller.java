@@ -43,6 +43,8 @@ public class Controller extends Application {
     private DatabaseConnector dbConnector = new DatabaseConnector();
     
     private Stage primaryStage;
+    private ErrorScreen errorScreen;
+    private AddBestellingScreen addBestellingScreen;
     
     private TableView tableView = new TableView();
     private TextArea taSQLResult = new TextArea();
@@ -134,7 +136,15 @@ public class Controller extends Application {
 	primaryStage.setTitle("SQLClient"); // Set the stage title
 	primaryStage.setScene(scene); // Place the scene in the stage
 	primaryStage.show(); // Display the stage
-
+        
+        // Initialise windows
+        errorScreen = new ErrorScreen();
+        errorScreen.initOwner(primaryStage);
+        addBestellingScreen = new AddBestellingScreen();
+        addBestellingScreen.initOwner(primaryStage);
+        addBestellingScreen.setVoegToeHandler(e -> addBestelling());
+        
+        // Set button actions        
 	btConnectDB.setOnAction(e -> connectToDB());
 	btExecuteSQL.setOnAction(e -> executeSQL());
 	btClearSQLCommand.setOnAction(e -> tasqlCommand.setText(null));
@@ -146,6 +156,11 @@ public class Controller extends Application {
             });
             th.start();
 	});
+        btVoegBestelling.setOnAction(e -> {
+            if(dbConnector.isInitialized())
+                addBestellingScreen.show();
+            else taSQLResult.setText("Geen verbinding met database.");
+        });
         btDelete.setOnAction(e -> {
             Thread th = new Thread(() -> delete());
             th.setUncaughtExceptionHandler((t, ex) -> {
@@ -160,6 +175,23 @@ public class Controller extends Application {
             });
             th.start();
 	}); //nog te implementeren
+    }
+    
+    private void addBestelling() {
+        Bestelling bestelling = new Bestelling();
+        addBestellingScreen.processTextFields(bestelling);
+        
+        try {
+            dbConnector.addBestelling(bestelling);
+        }
+        catch(SQLException ex) {            
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        
+        addBestellingScreen.hide();
     }
     
     /**
@@ -340,15 +372,13 @@ public class Controller extends Application {
     }   
     
     /**
-     * Creates an ErrorScreen object containing the given message and displays it on the screen. As
-     * long as the error screen is open it will stay in front of the main screen.
+     * Makes errorScreen pop up with the given message. As long as the error screen is open it will 
+     * stay in front of the main screen.
      * @param message the message that will be shown inside the error screen
      */
-    private void showExceptionPopUp(String message) {
-        ErrorScreen es = new ErrorScreen();
-        es.initOwner(primaryStage);
-        es.setMessage(message);
-        es.show();
+    private void showExceptionPopUp(String message) {        
+        errorScreen.setMessage(message);
+        errorScreen.show();
     }
 
     public static void main(String[] args) {

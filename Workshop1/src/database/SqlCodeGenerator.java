@@ -141,8 +141,13 @@ class SqlCodeGenerator {
             return sqlString;
         }
         
-        public static String generateArtikelUpdateCode(int bestellingId, int artikelId, 
-                String artikelNaam, int artikelAantal, double artikelPrijs){
+        public static String generateArtikelUpdateCode(Artikel a){
+            int bestellingId = a.getBestelling_id();
+            int artikelId = a.getArtikel_id();
+            String artikelNaam = a.getArtikel_naam();
+            int artikelAantal = a.getArtikel_aantal();
+            double artikelPrijs = a.getArtikel_prijs();
+            
             String sqlString =   "  UPDATE   bestelling SET "
             //artikel id
             +  "artikel_id1 = ( CASE  WHEN (artikel_id1 is null and  IFNULL(artikel_id2,0) <> " + 

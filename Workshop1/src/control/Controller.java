@@ -45,6 +45,7 @@ public class Controller extends Application {
     private Stage primaryStage;
     private ErrorScreen errorScreen;
     private AddBestellingScreen addBestellingScreen;
+    private AddArtikelScreen addArtikelScreen;
     
     private TableView tableView = new TableView();
     private TextArea taSQLResult = new TextArea();
@@ -56,10 +57,10 @@ public class Controller extends Application {
     private ComboBox<String> cboURL = new ComboBox<>(); // eventueel textfield van maken?
     private ComboBox<String> cboDriver = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
-    private Button btUpdate = new Button("Update"); // geen implementatie
+    private Button btUpdate = new Button("Update");
     private Button btDelete = new Button("Delete"); // geen implementatie
     private Button btVoegBestelling = new Button("Voeg Bestelling toe"); // implementatie nog niet toegevoegd
-    private Button btVoegArtikel = new Button("Voeg Artikel"); // implementatie nog niet toegevoegd
+    private Button btVoegArtikel = new Button("Voeg Artikel");
     private Button btClearSQLCommand = new Button("Clear");
     private Button btConnectDB = new Button("Connect to Database");
     private Button btClearSQLResult = new Button("Clear Result"); // geen implementatie
@@ -143,6 +144,9 @@ public class Controller extends Application {
         addBestellingScreen = new AddBestellingScreen();
         addBestellingScreen.initOwner(primaryStage);
         addBestellingScreen.setVoegToeHandler(e -> addBestelling());
+        addArtikelScreen = new AddArtikelScreen();
+        addArtikelScreen.initOwner(primaryStage);
+        addArtikelScreen.setVoegToeHandler(e -> addArtikel());
         
         // Set button actions        
 	btConnectDB.setOnAction(e -> connectToDB());
@@ -161,6 +165,11 @@ public class Controller extends Application {
                 addBestellingScreen.show();
             else taSQLResult.setText("Geen verbinding met database.");
         });
+        btVoegArtikel.setOnAction(e -> {
+            if(dbConnector.isInitialized())
+                addArtikelScreen.show();
+            else taSQLResult.setText("Geen verbinding met database.");
+        });
         btDelete.setOnAction(e -> {
             Thread th = new Thread(() -> delete());
             th.setUncaughtExceptionHandler((t, ex) -> {
@@ -174,7 +183,7 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-	}); //nog te implementeren
+	});
     }
     
     private void addBestelling() {
@@ -192,6 +201,11 @@ public class Controller extends Application {
         }
         
         addBestellingScreen.hide();
+    }
+    
+    private void addArtikel() {
+        Artikel artikel = new Artikel();
+        addArtikelScreen.processArtikelInfo(artikel);
     }
     
     /**
@@ -221,8 +235,8 @@ public class Controller extends Application {
     }
     
     /**
-     * Called when the Verbind Met Database button is pressed. Uses the driver en url comboboxes and
-     * username and password textfields to initate database connection.
+     * Called when the Verbind Met Database button is pressed. Uses the driver and url comboboxes 
+     * and username and password textfields to initate database connection.
      */
     private void connectToDB() {
 	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());

@@ -275,10 +275,8 @@ public class DatabaseConnector {
         executeCommand(database.SqlCodeGenerator.generateBestellingInsertionCode(b));
     }
     
-    public void addArtikel(int bestellingId, int artikelId, String artikelNaam, int artikelAantal, 
-            double artikelPrijs) throws SQLException, DatabaseException {
-        executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(
-                bestellingId, artikelId, artikelNaam, artikelAantal, artikelPrijs));
+    public void addArtikel(Artikel a) throws SQLException, DatabaseException {
+        executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(a));
     }
     
     /**

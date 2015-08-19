@@ -40,6 +40,9 @@ import javafx.scene.control.cell.CheckBoxTableCell;
  * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
+    private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb";
+    //private static final String FIREBIRD_URL = "???";
+    
     private DatabaseConnector dbConnector = new DatabaseConnector();
     private String lastExecutedQuery = "";
     
@@ -51,19 +54,19 @@ public class Controller extends Application {
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
-    private TextField tfURL = new TextField("jdbc:Mysql://localhost:3306/mydb");
+    private TextField tfURL = new TextField(MYSQL_URL);
     private TextField tfAantal = new TextField();
-    private PasswordField pfPassword = new PasswordField();    
-    private ComboBox<String> cboDriver = new ComboBox<>();
+    private PasswordField pfPassword = new PasswordField();
+    private ComboBox<String> cboDataSource = new ComboBox<>();
     private Button btExecuteSQL = new Button("Execute SQL Command");
     private Button btUpdate = new Button("Update");
     private Button btDelete = new Button("Delete"); // geen implementatie
-    private Button btVoegBestelling = new Button("Voeg Bestelling toe"); // implementatie nog niet toegevoegd
+    private Button btVoegBestelling = new Button("Voeg Bestelling toe");
     private Button btVoegArtikel = new Button("Voeg Artikel");
     private Button btClearSQLCommand = new Button("Clear");
     private Button btConnectDB = new Button("Connect to Database");
-    private Button btClearSQLResult = new Button("Clear Result"); // geen implementatie
-    private Button btRefresh = new Button("Ververs tabel"); // geen implementatie
+    private Button btClearSQLResult = new Button("Clear Result");
+    private Button btRefresh = new Button("Ververs tabel");
     private Button btNieuweKlant = new Button("Maak nieuwe klant"); // implementatie nog niet toegevoegd
     private Button btMaakKlanten = new Button("maak klanten aan");
     private Label lblConnectionStatus = new Label("No connection now ");
@@ -71,15 +74,13 @@ public class Controller extends Application {
 
     @Override
     public void start(Stage primaryStage) {   	
-        cboDriver.getItems().addAll(FXCollections.observableArrayList(
-            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource", 
-            "sun.jdbc.odbc.dbcOdbcDriver", "oracle.jdbc.driver.OracleDriver"));
-        cboDriver.getSelectionModel().selectFirst();
+        cboDataSource.getItems().addAll(FXCollections.observableArrayList("Hikari_CP", "C3P0"));
+        cboDataSource.getSelectionModel().selectFirst();
 
 	GridPane gridPane = new GridPane();
 
 	gridPane.add(tfURL, 1, 0);
-	gridPane.add(cboDriver, 1, 1);
+	gridPane.add(cboDataSource, 1, 1);
 	gridPane.add(tfUsername, 1, 2);
 	gridPane.add(pfPassword, 1, 3);
 	gridPane.add(new Label("url datasource"), 0, 0);
@@ -244,15 +245,20 @@ public class Controller extends Application {
      * and username and password textfields to initate database connection.
      */
     private void connectToDB() {
-	dbConnector.setDriver(cboDriver.getSelectionModel().getSelectedItem());
+        String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
+        if(dataSource.equals("Hikari_CP")) {
+            dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
+            dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER);
+        }
+        else/*if(dataSource.equals("C3P0"))*/ {
+            dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
+            dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER);            
+        }
 	dbConnector.setUrl(tfURL.getText().trim());
 	dbConnector.setUsername(tfUsername.getText().trim());
 	dbConnector.setPassword(pfPassword.getText().trim());
 	try {
             dbConnector.connectToDatabase();
-        }
-        catch(SQLException ex) {            
-            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
         }
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());

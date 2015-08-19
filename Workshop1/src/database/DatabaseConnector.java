@@ -1,6 +1,8 @@
 package database;
 
 import com.zaxxer.hikari.*;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import  com.mchange.v2.c3p0.DataSources;
 import model.*;
 import java.sql.*;
 import com.sun.rowset.*;
@@ -10,17 +12,22 @@ import javax.sql.RowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 import java.util.ArrayList;
-//import com.sun.rowset.*;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
  * operations are processed.
  */
 public class DatabaseConnector {
+    public static final byte HIKARI_CP_DATASOURCE = 1;
+    public static final byte C3P0_DATASOURCE = 2;
+    public static final String HIKARI_CP_DRIVER = "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
+    public static final String C3P0_DRIVER = "com.mysql.jdbc.Driver";
+    
     DataSource dataSource;
     
     private boolean isInitialized;
     
+    private byte dataSourceType;
     private String driver;
     private String url;
     private String username;
@@ -34,11 +41,35 @@ public class DatabaseConnector {
     /**
      * Initializes connection to database. Before this method is run driver, url, username, and 
      * password should be set using the appropriate setter methods.
-     * @throws SQLException
      * @throws DatabaseException thrown if driver could not be loaded
      */
-    public void connectToDatabase() throws SQLException, DatabaseException {
-        // HikariCP connection (MySQL)
+    public void connectToDatabase() throws DatabaseException {
+        if(dataSourceType == HIKARI_CP_DATASOURCE)
+            setUpHikariCPDataSource();
+        else/*if(dataSourceType == C3P0_DATASOURCE)*/
+            setUpC3p0DataSource();
+        
+        isInitialized = true;       
+    }
+    
+    private void setUpC3p0DataSource() throws DatabaseException {
+        try {
+            Class.forName(driver);
+        } catch (Exception ex) {
+            throw new DatabaseException("Driver laden mislukt.", ex);
+        }
+        
+        try {
+            DataSource unpooledDS = DataSources.unpooledDataSource(url, username, password);
+            dataSource = DataSources.pooledDataSource(unpooledDS);
+        }
+        catch(SQLException ex) {
+            throw new DatabaseException("Verbinden mislukt.\n"
+                    + "Controleer gebruikersnaam en wachtwoord.", ex);
+        }
+    }
+    
+    private void setUpHikariCPDataSource() throws DatabaseException {
         HikariConfig config = new HikariConfig();
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(5);
@@ -52,19 +83,23 @@ public class DatabaseConnector {
         config.addDataSourceProperty("password", password);
         
         dataSource = new HikariDataSource(config);
-        
-        isInitialized = true;       
+        testConnection();
     }
     
-    private RowSet createRowSet() throws SQLException {
-        //RowSetFactory rowSetFactory = RowSetProvider.newFactory(); Hoe te combineren met DataSource?
-        //JdbcRowSet rowSet = rowSetFactory.createJdbcRowSet();
-        return new JdbcRowSetImpl(dataSource.getConnection());
+    private void testConnection() throws DatabaseException {
+        try {
+            Statement statement = dataSource.getConnection().createStatement();
+            statement.execute("SHOW TABLES");
+        }
+        catch(SQLException ex) {
+            throw new DatabaseException("Verbinden mislukt.\n"
+                    + "Controleer gebruikersnaam en wachtwoord.", ex);
+        }
     }
     
     private RowSet createRowSet(String query) throws SQLException {
-        //RowSetFactory rowSetFactory = RowSetProvider.newFactory();
-        //JdbcRowSet rowSet = rowSetFactory.createJdbcRowSet();
+        //RowSetFactory rowSetFactory = RowSetProvider.newFactory(); Hoe te combineren met DataSource?
+        //JdbcRowSet rowSet = rowSetFactory.createJdbcRowSet();      Met deze methode krijg je geen warning. 
         RowSet rowSet = new JdbcRowSetImpl(dataSource.getConnection());
         rowSet.setCommand(query);
         rowSet.execute();
@@ -607,6 +642,14 @@ public class DatabaseConnector {
         executeCommand("DELETE FROM bestelling");
     }
 
+    public byte getDataSourceType() {
+        return dataSourceType;
+    }
+    
+    public void setDataSourceType(byte dataSourceType) {
+        this.dataSourceType = dataSourceType;
+    }    
+    
     /**
      * Sets the driver that will be used to connect with SQL database.
      * @param driver a String with driver name

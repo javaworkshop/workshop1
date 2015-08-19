@@ -1,8 +1,12 @@
 package database;
 
+import com.zaxxer.hikari.*;
 import model.*;
 import java.sql.*;
+import com.sun.rowset.*;
+import javax.sql.DataSource;
 import javax.sql.rowset.JdbcRowSet;
+import javax.sql.RowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 import java.util.ArrayList;
@@ -13,8 +17,7 @@ import java.util.ArrayList;
  * operations are processed.
  */
 public class DatabaseConnector {
-    private JdbcRowSet rowSet;
-    Statement statement;
+    DataSource dataSource;
     
     private boolean isInitialized;
     
@@ -24,7 +27,7 @@ public class DatabaseConnector {
     private String password;
     
     public DatabaseConnector() {
-        rowSet = null;
+        dataSource = null;
         isInitialized = false;
     }
     
@@ -35,26 +38,41 @@ public class DatabaseConnector {
      * @throws DatabaseException thrown if driver could not be loaded
      */
     public void connectToDatabase() throws SQLException, DatabaseException {
-        try {
-            Class.forName(driver);
-        }
-        catch(Exception ex) {
-            throw new DatabaseException("Driver laden mislukt.", ex);
-        }
-        RowSetFactory rowSetFactory = RowSetProvider.newFactory("com.sun.rowset.RowSetFactoryImpl",
-                null);
-        rowSet = rowSetFactory.createJdbcRowSet();
-        rowSet.setUrl(url);
-        rowSet.setUsername(username);
-        rowSet.setPassword(password);
+        // HikariCP connection (MySQL)
+        HikariConfig config = new HikariConfig();
+        config.setMinimumIdle(1);
+        config.setMaximumPoolSize(5);
+        config.setInitializationFailFast(true);
         
-        statement = DriverManager.getConnection(url, username, password).createStatement();
-        //Alternatief:
-        //rowSet.setCommand("SHOW TABLES");
-        //rowSet.execute();
-        //statement = rowSet.getStatement();
+        config.setDataSourceClassName(driver);        
+        config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet 
+        config.addDataSourceProperty("port", "3306");            // eigenlijk info uit de gui 
+        config.addDataSourceProperty("databaseName", "mydb");    // gebruikt worden
+        config.addDataSourceProperty("user", username);
+        config.addDataSourceProperty("password", password);
         
-        isInitialized = true;
+        dataSource = new HikariDataSource(config);
+        
+        isInitialized = true;       
+    }
+    
+    private RowSet createRowSet() throws SQLException {
+        //RowSetFactory rowSetFactory = RowSetProvider.newFactory(); Hoe te combineren met DataSource?
+        //JdbcRowSet rowSet = rowSetFactory.createJdbcRowSet();
+        return new JdbcRowSetImpl(dataSource.getConnection());
+    }
+    
+    private RowSet createRowSet(String query) throws SQLException {
+        //RowSetFactory rowSetFactory = RowSetProvider.newFactory();
+        //JdbcRowSet rowSet = rowSetFactory.createJdbcRowSet();
+        RowSet rowSet = new JdbcRowSetImpl(dataSource.getConnection());
+        rowSet.setCommand(query);
+        rowSet.execute();
+        return rowSet;
+    }
+    
+    private Statement createStatement() throws SQLException {
+        return dataSource.getConnection().createStatement();
     }
     
     /**
@@ -68,7 +86,9 @@ public class DatabaseConnector {
     public QueryResult executeQuery(String query) throws SQLException, 
             DatabaseException {        
         executeCommand(query);
-        return createQueryResult();
+        RowSet rowSet = createRowSet(query);
+        
+        return createQueryResult(rowSet);
     }    
     
     // De switch in deze methode is niet zo mooi (erg lang). Misschien is er een betere manier?
@@ -78,13 +98,17 @@ public class DatabaseConnector {
      * @return              the QueryResult object containing retrieved data
      * @throws SQLException 
      */
-    private QueryResult createQueryResult() throws SQLException {
-        String[] columnNames = getCurrentColumnNames();        
+    private QueryResult createQueryResult(RowSet rowSet) throws SQLException {
+        int columnCount = rowSet.getMetaData().getColumnCount();
+        String[] columnNames = new String[columnCount];
+        for(int i = 0; i < columnNames.length; i ++)
+            columnNames[i] = rowSet.getMetaData().getColumnName(i + 1);     
+        
         QueryResult queryResult = new QueryResult();
         
         while(rowSet.next()) {
             QueryResultRow row = new QueryResultRow();
-            for(int i = 1; i <= getCurrentColumnCount(); i++) {               
+            for(int i = 1; i <= columnCount; i++) {               
                 switch (columnNames[i-1]) {
                      // klant kolommen
                     case "klant_id":
@@ -198,9 +222,9 @@ public class DatabaseConnector {
     public void executeCommand(String command) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
-
-        rowSet.setCommand(command);
-        rowSet.execute();
+        
+        Statement statement = createStatement();
+        statement.execute(command);
     }
     
     /**
@@ -213,6 +237,7 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
        
+        Statement statement = createStatement();
         for(Klant klant : klanten)
             statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
         statement.executeBatch();
@@ -227,7 +252,9 @@ public class DatabaseConnector {
      */
     public void batchUpdate(ArrayList<Data> data) throws SQLException, DatabaseException {
         if(!isInitialized)
-            throw new DatabaseException("Geen verbinding met database.");        
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Statement statement = createStatement();
         
         for(Data d : data) {
             if(d instanceof Klant) {
@@ -256,11 +283,11 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        executeCommand("SELECT * FROM klant");
+        RowSet rowSet = createRowSet("SELECT * FROM klant");
         ArrayList<Klant> klanten = new ArrayList<>();
         
         while(rowSet.next())
-            klanten.add(retrieveKlant());
+            klanten.add(retrieveKlant(rowSet));
         
         return klanten;
     }
@@ -291,9 +318,9 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        executeCommand("SELECT * FROM klant WHERE klant_id = " + klant_id);
+        RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id);
         rowSet.next();
-        Klant klant = retrieveKlant();
+        Klant klant = retrieveKlant(rowSet);
         
         return klant;
     }
@@ -312,11 +339,11 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         String sqlcode = SqlCodeGenerator.generateKlantSelectionCode(k);
-        executeCommand(sqlcode);
+        RowSet rowSet = createRowSet(sqlcode);
         ArrayList<Klant> klanten = new ArrayList<>();
         
         while(rowSet.next())
-            klanten.add(retrieveKlant());
+            klanten.add(retrieveKlant(rowSet));
         
         return klanten;
     }
@@ -333,9 +360,10 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        executeCommand("SELECT * FROM bestelling WHERE bestelling_id = " + bestelling_id);
+        RowSet rowSet = createRowSet("SELECT * FROM bestelling WHERE bestelling_id = "
+                + bestelling_id);
         rowSet.next();
-        Bestelling bestelling = retrieveBestelling();
+        Bestelling bestelling = retrieveBestelling(rowSet);
         
         return bestelling;
     }
@@ -347,7 +375,7 @@ public class DatabaseConnector {
      * @return              the Klant object with data from the currently selected row in rowSet
      * @throws SQLException 
      */
-    private Klant retrieveKlant() throws SQLException {
+    private Klant retrieveKlant(RowSet rowSet) throws SQLException {
         Klant klant = new Klant();
         klant.setKlant_id(rowSet.getInt(1));
         klant.setVoornaam(rowSet.getString(2));
@@ -371,7 +399,7 @@ public class DatabaseConnector {
      *                      rowSet
      * @throws SQLException 
      */
-    private Bestelling retrieveBestelling() throws SQLException {
+    private Bestelling retrieveBestelling(RowSet rowSet) throws SQLException {
         Bestelling bestelling = new Bestelling();
         bestelling.setBestelling_id(rowSet.getInt(1));
         bestelling.setKlant_id(rowSet.getInt(2));
@@ -443,7 +471,7 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Connection con = statement.getConnection();
+        Connection con = dataSource.getConnection();
         String klantSQL = "DELETE FROM klant WHERE klant_id = ?";
         String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";
         
@@ -506,16 +534,17 @@ public class DatabaseConnector {
         
         // Retrieve all klant_ids from the database that have the specified voornaam, achternaam, 
         // and tussenvoegsel.
-        executeCommand("SELECT klant_id FROM klant WHERE "
+        RowSet rowSet = createRowSet("SELECT klant_id FROM klant WHERE "
                 + "voornaam = '" + voornaam + "' AND "
                 + "achternaam = '" + achternaam + "' AND "
                 + "tussenvoegsel = '" + tussenvoegsel + "'");        
         ArrayList<Integer> klant_ids = new ArrayList<>();
         while(rowSet.next())
             klant_ids.add(rowSet.getInt(1));
+        rowSet.close();
         
         // Declare connection object and prepare String for klant deletion.
-        Connection con = statement.getConnection();
+        Connection con = dataSource.getConnection();
         String klantSQL = "DELETE FROM klant WHERE "
                 + "voornaam = ? AND "
                 + "achternaam = ? AND "
@@ -578,40 +607,6 @@ public class DatabaseConnector {
         executeCommand("DELETE FROM bestelling");
     }
 
-    /**
-     * Retrieves the names of all the columns in rowSet, which contains the results from the last
-     * executed query.    
-     * @return              array of Strings containing the names of all columns in rowSet
-     * @throws SQLException 
-     */
-    private String[] getCurrentColumnNames() throws SQLException {
-        String[] columnNames = new String[getCurrentColumnCount()];
-        for(int i = 0; i < columnNames.length; i ++)
-            columnNames[i] = getCurrentColumnName(i + 1);
-        return columnNames;
-    }
-    
-    /**
-     * Retrieves the name of the specified column in rowSet, which contains the results from the
-     * last executed query. 
-     * @param column        the column from which the name should be returned
-     * @return              the name of the specified column
-     * @throws SQLException 
-     */
-    private String getCurrentColumnName(int column) throws SQLException {
-        return rowSet.getMetaData().getColumnName(column);
-    }
-    
-    /**
-     * Retrieves the number of columns in rowSet, which contains the results from the last executed
-     * query. 
-     * @return              the number of columns of the current query result
-     * @throws SQLException  
-     */
-    private int getCurrentColumnCount() throws SQLException {
-        return rowSet.getMetaData().getColumnCount();
-    }    
-    
     /**
      * Sets the driver that will be used to connect with SQL database.
      * @param driver a String with driver name

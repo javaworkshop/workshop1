@@ -72,8 +72,8 @@ public class Controller extends Application {
     @Override
     public void start(Stage primaryStage) {   	
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
-            "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
-            "oracle.jdbc.driver.OracleDriver"));
+            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource", 
+            "sun.jdbc.odbc.dbcOdbcDriver", "oracle.jdbc.driver.OracleDriver"));
         cboDriver.getSelectionModel().selectFirst();
 
 	GridPane gridPane = new GridPane();

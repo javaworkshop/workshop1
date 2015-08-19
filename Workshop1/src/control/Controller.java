@@ -4,6 +4,8 @@ package control;
 import database.*;
 import model.*;
 import java.sql.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -40,6 +42,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
  * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     private DatabaseConnector dbConnector = new DatabaseConnector();
     
     private Stage primaryStage;
@@ -68,7 +71,7 @@ public class Controller extends Application {
 
     @Override
     public void start(Stage primaryStage) {        
-    	
+    	logger.info("start applicatie");
         cboDriver.getItems().addAll(FXCollections.observableArrayList(
             "com.mysql.jdbc.Driver", "sun.jdbc.odbc.dbcOdbcDriver",
             "oracle.jdbc.driver.OracleDriver"));
@@ -189,7 +192,7 @@ public class Controller extends Application {
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
-        
+        logger.info("Connected to database " + tfURL.getText().trim());
         lblConnectionStatus.setText("Connected to database ");
     }    
     

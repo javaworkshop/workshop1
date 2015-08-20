@@ -262,6 +262,15 @@ public class DatabaseConnector {
         statement.execute(command);
     }
     
+    public void executeDelete(String klant_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+            
+        String SQL = "DELETE FROM KLANT WHERE KLANT_ID = " + klant_id;
+        Statement statement = createStatement();
+        statement.executeUpdate(SQL);
+    }
+    
     /**
      * Inserts an array of klanten into the database using a batch statement.
      * @param klanten               the array of klanten to be inserted

@@ -79,6 +79,7 @@ public class DatabaseConnector {
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(5);
         config.setInitializationFailFast(true);
+        config.setLeakDetectionThreshold(5000);
         
         config.setDataSourceClassName(driver);        
         config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet 
@@ -93,8 +94,9 @@ public class DatabaseConnector {
     
     private void testConnection() throws DatabaseException {
         try {
-            Statement statement = dataSource.getConnection().createStatement();
+            Statement statement = createStatement();
             statement.execute("SHOW TABLES");
+            statement.getConnection().close();
         }
         catch(SQLException ex) {
             throw new DatabaseException("Verbinden mislukt.\n"
@@ -127,8 +129,9 @@ public class DatabaseConnector {
             DatabaseException {        
         executeCommand(query);
         RowSet rowSet = createRowSet(query);
-        
-        return createQueryResult(rowSet);
+        QueryResult queryResult = createQueryResult(rowSet);
+        rowSet.close();
+        return queryResult;
     }    
     
     // De switch in deze methode is niet zo mooi (erg lang). Misschien is er een betere manier?
@@ -265,6 +268,7 @@ public class DatabaseConnector {
         
         Statement statement = createStatement();
         statement.execute(command);
+        statement.getConnection().close();
     }
     
     public void executeDelete(String klant_id) throws SQLException, DatabaseException {
@@ -274,6 +278,7 @@ public class DatabaseConnector {
         String SQL = "DELETE FROM KLANT WHERE KLANT_ID = " + klant_id;
         Statement statement = createStatement();
         statement.executeUpdate(SQL);
+        statement.getConnection().close();
     }
     
     /**
@@ -290,6 +295,7 @@ public class DatabaseConnector {
         for(Klant klant : klanten)
             statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
         statement.executeBatch();
+        statement.getConnection().close();
     }
     
     /**
@@ -318,6 +324,7 @@ public class DatabaseConnector {
         }
         
         statement.executeBatch();
+        statement.getConnection().close();
     }   
     
     /**
@@ -338,6 +345,7 @@ public class DatabaseConnector {
         while(rowSet.next())
             klanten.add(retrieveKlant(rowSet));
         
+        rowSet.close();
         return klanten;
     }
     
@@ -374,6 +382,7 @@ public class DatabaseConnector {
         RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id);
         rowSet.next();
         Klant klant = retrieveKlant(rowSet);
+        rowSet.close();
         
         return klant;
     }
@@ -397,6 +406,7 @@ public class DatabaseConnector {
         
         while(rowSet.next())
             klanten.add(retrieveKlant(rowSet));
+        rowSet.close();
         
         return klanten;
     }
@@ -417,6 +427,7 @@ public class DatabaseConnector {
                 + bestelling_id);
         rowSet.next();
         Bestelling bestelling = retrieveBestelling(rowSet);
+        rowSet.close();
         
         return bestelling;
     }
@@ -554,6 +565,7 @@ public class DatabaseConnector {
                 deleteBestelling.close();
             
             con.setAutoCommit(true);
+            con.close();
         }
     }
     
@@ -644,6 +656,7 @@ public class DatabaseConnector {
             }
             
             con.setAutoCommit(true);
+            con.close();
         }
     }
     

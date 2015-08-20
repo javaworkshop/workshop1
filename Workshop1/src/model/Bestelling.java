@@ -250,9 +250,12 @@ public class Bestelling extends Data {
                 Math.abs(b.getArtikel_prijs1() - this.getArtikel_prijs1()) <= 0.001 &&
                 Math.abs(b.getArtikel_prijs2() - this.getArtikel_prijs2()) <= 0.001 &&
                 Math.abs(b.getArtikel_prijs3() - this.getArtikel_prijs3()) <= 0.001 &&
-                b.getArtikel_naam1().equals(this.getArtikel_naam1()) &&
-                b.getArtikel_naam2().equals(this.getArtikel_naam2()) &&
-                b.getArtikel_naam3().equals(this.getArtikel_naam3());
+                (b.getArtikel_naam1() == null && this.getArtikel_naam1() == null ||
+                b.getArtikel_naam1().equals(this.getArtikel_naam1())) &&
+                (b.getArtikel_naam2() == null && this.getArtikel_naam2() == null ||
+                b.getArtikel_naam2().equals(this.getArtikel_naam2())) &&
+                (b.getArtikel_naam3() == null && this.getArtikel_naam3() == null ||
+                b.getArtikel_naam3().equals(this.getArtikel_naam3()));
     }
 
     @Override

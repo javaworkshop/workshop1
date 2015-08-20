@@ -153,6 +153,7 @@ public class Controller extends Application {
         btClearSQLResult.setOnAction(e -> { 
             taSQLResult.setText(null);
             tableView.getColumns().clear();
+            lastExecutedQuery = "";
                 });
         btMaakKlanten.setOnAction(e -> {
             Thread th = new Thread(() -> createKlanten());
@@ -401,7 +402,8 @@ public class Controller extends Application {
     }
     
     private void refresh() {
-        processSQLSelect(lastExecutedQuery);
+        if(!lastExecutedQuery.equals(""))
+            processSQLSelect(lastExecutedQuery);
     }
 
     private void populateTableView(QueryResult queryResult) {

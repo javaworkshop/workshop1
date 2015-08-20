@@ -180,14 +180,22 @@ public class Klant extends Data {
         Klant k = (Klant)obj;
         return  k.getKlant_id() == this.getKlant_id() && 
                 k.getHuisnummer() == this.getHuisnummer() &&
-                k.getVoornaam().equals(this.getVoornaam()) && 
-                k.getTussenvoegsel().equals(this.getTussenvoegsel()) &&
-                k.getAchternaam().equals(this.getAchternaam()) &&
-                k.getEmail().equals(this.getEmail()) &&
-                k.getStraatnaam().equals(this.getStraatnaam()) &&
-                k.getToevoeging().equals(this.getToevoeging()) &&
-                k.getPostcode().equals(this.getPostcode()) &&
-                k.getWoonplaats().equals(this.getWoonplaats());
+                (k.getVoornaam() == null && this.getVoornaam() == null ||
+                k.getVoornaam().equals(this.getVoornaam())) &&
+                (k.getTussenvoegsel() == null && this.getTussenvoegsel() == null ||
+                k.getTussenvoegsel().equals(this.getTussenvoegsel())) &&
+                (k.getAchternaam() == null && this.getAchternaam() == null ||
+                k.getAchternaam().equals(this.getAchternaam())) &&
+                (k.getEmail() == null && this.getEmail() == null ||
+                k.getEmail().equals(this.getEmail())) &&
+                (k.getStraatnaam() == null && this.getStraatnaam() == null ||
+                k.getStraatnaam().equals(this.getStraatnaam())) &&
+                (k.getToevoeging() == null && this.getToevoeging() == null ||
+                k.getToevoeging().equals(this.getToevoeging())) &&
+                (k.getPostcode() == null && this.getPostcode() == null ||
+                k.getPostcode().equals(this.getPostcode())) &&
+                (k.getWoonplaats() == null && this.getWoonplaats() == null ||
+                k.getWoonplaats().equals(this.getWoonplaats()));
     } 
 
     @Override

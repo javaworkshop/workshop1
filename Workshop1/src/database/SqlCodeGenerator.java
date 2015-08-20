@@ -1,7 +1,9 @@
 
 package database;
 
-import model.*;
+import model.Artikel;
+import model.Bestelling;
+import model.Klant;
 
 /**
  * Class that contains static methods to generate sql code from data objects. Cannot be 
@@ -118,7 +120,41 @@ class SqlCodeGenerator {
      * @return 
      */
     static String generateBestellingUpdateCode(Bestelling bestelling) {
-        return "";
+        String sqlCode = "UPDATE bestelling SET ";
+        
+        sqlCode += (bestelling.getKlant_id() == 0) ? "" : "klant_id = " + 
+            bestelling.getKlant_id() + ", ";
+        sqlCode += (bestelling.getArtikel_id1() == 0) ? "" : "artikel_id1 = " + 
+            bestelling.getArtikel_id1() + ", ";
+        sqlCode += (bestelling.getArtikel_naam1()== null) ? "" : "artikel_naam1 = '" + 
+            bestelling.getArtikel_naam1() + "', ";
+        sqlCode += (bestelling.getArtikel_aantal1() == 0) ? "" : "artikel_aantal1 = " + 
+            bestelling.getArtikel_aantal1() + ", ";
+        sqlCode += (bestelling.getArtikel_prijs1() == 0) ? "" : "artikel_prijs1 = " + 
+            bestelling.getArtikel_prijs1() + ", ";
+        sqlCode += (bestelling.getArtikel_id2() == 0) ? "" : "artikel_id2 = " + 
+            bestelling.getArtikel_id2() + ", ";
+        sqlCode += (bestelling.getArtikel_naam2()== null) ? "" : "artikel_naam2 = '" + 
+            bestelling.getArtikel_naam2() + "', ";
+        sqlCode += (bestelling.getArtikel_aantal2() == 0) ? "" : "artikel_aantal2 = " + 
+            bestelling.getArtikel_aantal2() + ", ";
+        sqlCode += (bestelling.getArtikel_prijs2() == 0) ? "" : "artikel_prijs2 = " + 
+            bestelling.getArtikel_prijs2() + ", ";
+        sqlCode += (bestelling.getArtikel_id3() == 0) ? "" : "artikel_id3 = " + 
+            bestelling.getArtikel_id3() + ", ";
+        sqlCode += (bestelling.getArtikel_naam3()== null) ? "" : "artikel_naam3 = '" + 
+            bestelling.getArtikel_naam3() + "', ";
+        sqlCode += (bestelling.getArtikel_aantal3() == 0) ? "" : "artikel_aantal3 = " + 
+            bestelling.getArtikel_aantal3() + ", ";
+        sqlCode += (bestelling.getArtikel_prijs3() == 0) ? "" : "artikel_prijs3 = " + 
+            bestelling.getArtikel_prijs3();
+        
+        if(sqlCode.endsWith(", "))
+            sqlCode = sqlCode.substring(0, sqlCode.length() - 2);
+        
+        sqlCode += " WHERE bestelling_id = " + bestelling.getBestelling_id();
+        
+        return sqlCode;
     }
     
     public static String generateBestellingInsertionCode(Bestelling bestelling){
@@ -181,7 +217,8 @@ class SqlCodeGenerator {
                     " and IFNULL(artikel_id1,0) <> " + artikelId + 
             ")  THEN \' " + artikelNaam + "\' ELSE artikel_naam2 END)," + 
             "artikel_naam3 =  (CASE WHEN (artikel_id3 = " + artikelId + 
-                    " and IFNULL(artikel_id1,0) <> " + artikelId + " and IFNULL(artikel_id2,0) <> " + artikelId +
+                    " and IFNULL(artikel_id1,0) <> " + artikelId + " and IFNULL(artikel_id2,0) <> " 
+                    + artikelId +
              ") THEN \' " + artikelNaam + "\' ELSE artikel_naam3 END),"
 
             //artikel prijs

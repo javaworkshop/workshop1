@@ -1,7 +1,6 @@
 
 package control;
 
-import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -12,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.*;
+import model.Artikel;
 
 public class AddArtikelScreen extends Stage{
     private VBox pnArtikel;

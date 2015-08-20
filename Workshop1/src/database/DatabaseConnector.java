@@ -1,17 +1,22 @@
 package database;
 
-import com.zaxxer.hikari.*;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import  com.mchange.v2.c3p0.DataSources;
-import model.*;
-import java.sql.*;
-import com.sun.rowset.*;
-import javax.sql.DataSource;
-import javax.sql.rowset.JdbcRowSet;
-import javax.sql.RowSet;
-import javax.sql.rowset.RowSetFactory;
-import javax.sql.rowset.RowSetProvider;
+import com.mchange.v2.c3p0.DataSources;
+import com.sun.rowset.JdbcRowSetImpl;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import javax.sql.DataSource;
+import javax.sql.RowSet;
+import model.Artikel;
+import model.Bestelling;
+import model.Data;
+import model.Klant;
+import model.QueryResult;
+import model.QueryResultRow;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
@@ -313,7 +318,7 @@ public class DatabaseConnector {
         }
         
         statement.executeBatch();
-    }
+    }   
     
     /**
      * Reads all customer data currently present in the database and stores them in an arraylist
@@ -334,6 +339,10 @@ public class DatabaseConnector {
             klanten.add(retrieveKlant(rowSet));
         
         return klanten;
+    }
+    
+    public void addKlant(Klant k) throws SQLException, DatabaseException {
+        executeCommand(database.SqlCodeGenerator.generateKlantInsertionCode(k));
     }
     
     /**

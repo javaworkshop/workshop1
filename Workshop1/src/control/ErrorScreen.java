@@ -1,15 +1,15 @@
 package control;
 
 import javafx.geometry.Pos;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.ContentDisplay;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  * A general screen used to display error messages to the user. Use show method to get the screen to
@@ -43,13 +43,13 @@ class ErrorScreen extends Stage {
         
         mainPane.getChildren().add(buttonPane);
         
-        setScene(new Scene(mainPane, 340, 140));
+        setScene(new Scene(mainPane, 340, 140)); 
     }
     
     ErrorScreen(String title, String message) {
         this();
         setTitle(title);
-        errorMessage.setText(message);        
+        errorMessage.setText(message);      
     }
 
     void setMessage(String message) {

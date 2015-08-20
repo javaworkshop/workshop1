@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import model.*;
+import model.Klant;
 import org.apache.commons.validator.GenericValidator;
 
 public class AddKlantScreen extends Stage {

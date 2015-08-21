@@ -1,6 +1,5 @@
 package control;
 
-// TODO: aan het eind imports opschonen
 import database.DatabaseConnector;
 import database.DatabaseException;
 import java.sql.SQLException;
@@ -56,18 +55,18 @@ public class Controller extends Application {
     private TextField tfAantal = new TextField();
     private PasswordField pfPassword = new PasswordField();
     private ComboBox<String> cboDataSource = new ComboBox<>();
-    private Button btExecuteSQL = new Button("Execute SQL Command");
+    private Button btExecuteSQL = new Button("Voer SQL Commando Uit");
     private Button btUpdate = new Button("Update");
     private Button btDelete = new Button("Delete");
-    private Button btVoegBestelling = new Button("Voeg Bestelling toe");
-    private Button btVoegArtikel = new Button("Voeg Artikel");
-    private Button btClearSQLCommand = new Button("Clear");
-    private Button btConnectDB = new Button("Connect to Database");
-    private Button btClearSQLResult = new Button("Clear Result");
-    private Button btRefresh = new Button("Ververs tabel");
-    private Button btNieuweKlant = new Button("Maak nieuwe klant");
-    private Button btMaakKlanten = new Button("maak klanten aan");
-    private Label lblConnectionStatus = new Label("No connection now ");
+    private Button btVoegBestelling = new Button("Voeg Bestelling Toe");
+    private Button btVoegArtikel = new Button("Voeg Artikel Toe");
+    private Button btClearSQLCommand = new Button("Leegmaken");
+    private Button btConnectDB = new Button("Verbind Met Database");
+    private Button btClearSQLResult = new Button("Scherm Leegmaken");
+    private Button btRefresh = new Button("Ververs Tabel");
+    private Button btNieuweKlant = new Button("Maak Nieuwe Klant");
+    private Button btMaakKlanten = new Button("Maak Klanten Aan");
+    private Label lblConnectionStatus = new Label("Geen verbinding ");
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     public static void main(String[] args) {
@@ -101,7 +100,7 @@ public class Controller extends Application {
         hBoxConnection.getChildren().addAll(lblConnectionStatus, btConnectDB);
         hBoxConnection.setAlignment(Pos.CENTER_RIGHT);
         VBox vBoxConnection = new VBox(5);
-        vBoxConnection.getChildren().addAll(new Label("Enter Database Information"), gridPane,
+        vBoxConnection.getChildren().addAll(new Label("Vul database waarden in"), gridPane,
                 hBoxConnection, hBoxUpdate);
         gridPane.setStyle("-fx-border-color: black;");
         
@@ -111,7 +110,7 @@ public class Controller extends Application {
         hBoxSQLCommand.setAlignment(Pos.CENTER_RIGHT);
         
         BorderPane borderPaneSqlCommand = new BorderPane();
-        borderPaneSqlCommand.setTop(  new Label("Enter an SQL Command"));
+        borderPaneSqlCommand.setTop(new Label("Vul SQL Commando in"));
         borderPaneSqlCommand.setCenter(new ScrollPane(tasqlCommand));
         borderPaneSqlCommand.setBottom(hBoxSQLCommand);
         
@@ -119,7 +118,7 @@ public class Controller extends Application {
         hBoxConnectionCommand.getChildren().addAll(vBoxConnection, borderPaneSqlCommand);
         
         
-        borderPaneExecutionResult.setTop(  new Label("SQL Execution Result"));
+        borderPaneExecutionResult.setTop(  new Label("SQL uitvoer"));
         borderPaneExecutionResult.setCenter(taSQLResult);
         borderPaneExecutionResult.setBottom(btClearSQLResult);
         
@@ -285,27 +284,27 @@ public class Controller extends Application {
      * Called when the Verbind Met Database button is pressed. Uses the driver and url comboboxes 
      * and username and password textfields to initate database connection.
      */
-    private void connectToDB() {
-        String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
-        if(dataSource.equals("Hikari_CP")) {
-            dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-            dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER);
-        }
-        else/*if(dataSource.equals("C3P0"))*/ {
-            dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
-            dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER);            
-        }
+    private void connectToDB() {               
 	dbConnector.setUrl(tfURL.getText().trim());
 	dbConnector.setUsername(tfUsername.getText().trim());
 	dbConnector.setPassword(pfPassword.getText().trim());
+        String dataSource = cboDataSource.getSelectionModel().getSelectedItem(); 
 	try {
+            if(dataSource.equals("Hikari_CP")) {
+                dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
+                dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER);
+            }
+            else/*if(dataSource.equals("C3P0"))*/ {
+                dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
+                dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER);            
+            }
             dbConnector.connectToDatabase();
         }
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
         
-        lblConnectionStatus.setText("Connected to database ");
+        lblConnectionStatus.setText("Verbonden met database ");
     }    
     
     /**

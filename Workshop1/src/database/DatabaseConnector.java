@@ -93,10 +93,10 @@ public class DatabaseConnector {
     }
     
     private void testConnection() throws DatabaseException {
-        try {
-            Statement statement = createStatement();
+        try(Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement()
+        ) {
             statement.execute("SHOW TABLES");
-            statement.getConnection().close();
         }
         catch(SQLException ex) {
             throw new DatabaseException("Verbinden mislukt.\n"
@@ -113,10 +113,6 @@ public class DatabaseConnector {
         return rowSet;
     }
     
-    private Statement createStatement() throws SQLException {
-        return dataSource.getConnection().createStatement();
-    }
-    
     /**
      * Executes the given query. The contents of the resulting ResultSet are transferred to a 
      * QueryResult object, which is returned to the caller.
@@ -126,11 +122,12 @@ public class DatabaseConnector {
      * @throws DatabaseException     thrown if database connection has not been initialized yet
      */
     public QueryResult executeQuery(String query) throws SQLException, 
-            DatabaseException {        
+            DatabaseException {
         executeCommand(query);
-        RowSet rowSet = createRowSet(query);
-        QueryResult queryResult = createQueryResult(rowSet);
-        rowSet.close();
+        QueryResult queryResult = null;
+        try(RowSet rowSet = createRowSet(query);) {
+            queryResult = createQueryResult(rowSet);
+        }
         return queryResult;
     }    
     
@@ -266,9 +263,11 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Statement statement = createStatement();
-        statement.execute(command);
-        statement.getConnection().close();
+        try(Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement()
+        ) {
+            statement.execute(command);
+        }
     }
     
     public void executeDelete(String klant_id) throws SQLException, DatabaseException {
@@ -276,9 +275,11 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
             
         String SQL = "DELETE FROM KLANT WHERE KLANT_ID = " + klant_id;
-        Statement statement = createStatement();
-        statement.executeUpdate(SQL);
-        statement.getConnection().close();
+        try(Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement()
+        ) {
+            statement.executeUpdate(SQL);
+        }
     }
     
     /**
@@ -291,11 +292,13 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
        
-        Statement statement = createStatement();
-        for(Klant klant : klanten)
-            statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
-        statement.executeBatch();
-        statement.getConnection().close();
+        try(Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement()
+        ) {
+            for(Klant klant : klanten)
+                statement.addBatch(SqlCodeGenerator.generateKlantInsertionCode(klant));
+            statement.executeBatch();
+        }
     }
     
     /**
@@ -309,22 +312,23 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Statement statement = createStatement();
-        
-        for(Data d : data) {
-            if(d instanceof Klant) {
-                if(((Klant)d).getKlant_id() != 0)
-                    statement.addBatch(SqlCodeGenerator.
-                            generateKlantUpdateCode(((Klant)d)));
+        try(Connection con = dataSource.getConnection();
+            Statement statement = con.createStatement()
+        ) {        
+            for(Data d : data) {
+                if(d instanceof Klant) {
+                    if(((Klant)d).getKlant_id() != 0)
+                        statement.addBatch(SqlCodeGenerator.
+                                generateKlantUpdateCode(((Klant)d)));
+                }
+                else //if(d instanceof Bestelling)
+                    if(((Bestelling)d).getBestelling_id() != 0)
+                        statement.addBatch(SqlCodeGenerator.
+                                generateBestellingUpdateCode(((Bestelling)d)));
             }
-            else //if(d instanceof Bestelling)
-                if(((Bestelling)d).getBestelling_id() != 0)
-                    statement.addBatch(SqlCodeGenerator.
-                            generateBestellingUpdateCode(((Bestelling)d)));
-        }
         
-        statement.executeBatch();
-        statement.getConnection().close();
+            statement.executeBatch();
+        }
     }   
     
     /**
@@ -339,30 +343,43 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        RowSet rowSet = createRowSet("SELECT * FROM klant");
         ArrayList<Klant> klanten = new ArrayList<>();
-        
-        while(rowSet.next())
-            klanten.add(retrieveKlant(rowSet));
-        
-        rowSet.close();
+        try(RowSet rowSet = createRowSet("SELECT * FROM klant")) {
+            while(rowSet.next())
+                klanten.add(retrieveKlant(rowSet));        
+        }
         return klanten;
     }
     
+    /**
+     * Adds the given klant to the database. The klant id (primary key) is generated automatically
+     * by the database.
+     * @param k                     the klant to be added
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
         executeCommand(database.SqlCodeGenerator.generateKlantInsertionCode(k));
     }
     
     /**
-     * 
-     * @param b
+     * Adds the given bestelling to the database. The bestellling id (primary key) is generated 
+     * automatically by the database.
+     * @param b                     the bestelling to be added
      * @throws SQLException
-     * @throws DatabaseException 
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
         executeCommand(database.SqlCodeGenerator.generateBestellingInsertionCode(b));
     }
     
+    /**
+     * Adds the given artikel to the database. It is stored as part of the bestelling that has the
+     * same value for bestelling id as the Artikel object.
+     * @param a                     the artikel to be added
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
     public void addArtikel(Artikel a) throws SQLException, DatabaseException {
         executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(a));
     }
@@ -379,10 +396,11 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id);
-        rowSet.next();
-        Klant klant = retrieveKlant(rowSet);
-        rowSet.close();
+        Klant klant = null;
+        try(RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id)) {
+            rowSet.next();
+            klant = retrieveKlant(rowSet);
+        }
         
         return klant;
     }
@@ -400,13 +418,13 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        String sqlcode = SqlCodeGenerator.generateKlantSelectionCode(k);
-        RowSet rowSet = createRowSet(sqlcode);
+        String sqlcode = SqlCodeGenerator.generateKlantSelectionCode(k);        
         ArrayList<Klant> klanten = new ArrayList<>();
         
-        while(rowSet.next())
-            klanten.add(retrieveKlant(rowSet));
-        rowSet.close();
+        try(RowSet rowSet = createRowSet(sqlcode)) {
+            while(rowSet.next())
+                klanten.add(retrieveKlant(rowSet));
+        }
         
         return klanten;
     }
@@ -423,11 +441,12 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        RowSet rowSet = createRowSet("SELECT * FROM bestelling WHERE bestelling_id = "
-                + bestelling_id);
-        rowSet.next();
-        Bestelling bestelling = retrieveBestelling(rowSet);
-        rowSet.close();
+        Bestelling bestelling = null;
+        try(RowSet rowSet = createRowSet("SELECT * FROM bestelling WHERE bestelling_id = "
+                + bestelling_id)) {
+            rowSet.next();
+            bestelling = retrieveBestelling(rowSet);
+        }
         
         return bestelling;
     }
@@ -535,37 +554,30 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Connection con = dataSource.getConnection();
         String klantSQL = "DELETE FROM klant WHERE klant_id = ?";
         String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";
         
-        PreparedStatement deleteKlant = null;
-        PreparedStatement deleteBestelling = null;
-        try {
+        try(Connection con = dataSource.getConnection()) {
+            boolean initialAutoCommit = con.getAutoCommit();
             con.setAutoCommit(false);
-            deleteKlant = con.prepareStatement(klantSQL);
-            deleteBestelling = con.prepareStatement(bestellingSQL);
             
+            try(PreparedStatement deleteKlant = con.prepareStatement(klantSQL);
+                PreparedStatement deleteBestelling = con.prepareStatement(bestellingSQL)
+            ) {
             deleteKlant.setInt(1, klant_id);
             deleteKlant.executeUpdate();
             deleteBestelling.setInt(1, klant_id);
             deleteBestelling.executeUpdate();
             
             con.commit();
-        }
-        catch(SQLException ex) {
-            if(con != null)
+            }
+            catch(SQLException ex) {
                 con.rollback();
-            throw ex;
-        }
-        finally {
-            if(deleteKlant != null) 
-                deleteKlant.close();
-            if(deleteBestelling != null) 
-                deleteBestelling.close();
-            
-            con.setAutoCommit(true);
-            con.close();
+                throw ex;
+            }
+            finally {
+                con.setAutoCommit(initialAutoCommit);
+            }
         }
     }
     
@@ -599,39 +611,38 @@ public class DatabaseConnector {
         
         // Retrieve all klant_ids from the database that have the specified voornaam, achternaam, 
         // and tussenvoegsel.
-        RowSet rowSet = createRowSet("SELECT klant_id FROM klant WHERE "
+        ArrayList<Integer> klant_ids = new ArrayList<>();
+        try(RowSet rowSet = createRowSet("SELECT klant_id FROM klant WHERE "
                 + "voornaam = '" + voornaam + "' AND "
                 + "achternaam = '" + achternaam + "' AND "
-                + "tussenvoegsel = '" + tussenvoegsel + "'");        
-        ArrayList<Integer> klant_ids = new ArrayList<>();
-        while(rowSet.next())
-            klant_ids.add(rowSet.getInt(1));
-        rowSet.close();
+                + "tussenvoegsel = '" + tussenvoegsel + "'")
+        ) {        
+            while(rowSet.next())
+                klant_ids.add(rowSet.getInt(1));
+        }
         
         // Declare connection object and prepare String for klant deletion.
-        Connection con = dataSource.getConnection();
-        String klantSQL = "DELETE FROM klant WHERE "
-                + "voornaam = ? AND "
-                + "achternaam = ? AND "
-                + "tussenvoegsel = ?";
-        
-        // Prepare String for deletion of all bestellingen that have the klant_ids of klanten that
-        // will also be deleted.
-        String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";;
-        
-        // Declare PreparedStatements and assign a null reference to them so they can be closed
-        // in a finally clause.
-        PreparedStatement deleteKlant = null;
-        PreparedStatement[] deleteBestellingen = new PreparedStatement[klant_ids.size()];
-        try {
+        try(Connection con = dataSource.getConnection()) {
+            boolean initialAutoCommit = con.getAutoCommit();
             con.setAutoCommit(false);
             
-            // delete klant(en)
-            deleteKlant = con.prepareStatement(klantSQL);
-            deleteKlant.setString(1, voornaam);
-            deleteKlant.setString(2, achternaam);
-            deleteKlant.setString(3, tussenvoegsel);
-            deleteKlant.executeUpdate();
+            String klantSQL = "DELETE FROM klant WHERE "
+                    + "voornaam = ? AND "
+                    + "achternaam = ? AND "
+                    + "tussenvoegsel = ?";
+        
+            // Prepare String for deletion of all bestellingen that have the klant_ids of klanten
+            // that will also be deleted.
+            String bestellingSQL = "DELETE FROM bestelling WHERE klant_id = ?";;
+            
+            // Declare PreparedStatements.
+            PreparedStatement[] deleteBestellingen = new PreparedStatement[klant_ids.size()];
+            try(PreparedStatement deleteKlant = con.prepareStatement(klantSQL)) {           
+                // delete klant(en)
+                deleteKlant.setString(1, voornaam);
+                deleteKlant.setString(2, achternaam);
+                deleteKlant.setString(3, tussenvoegsel);
+                deleteKlant.executeUpdate();
             
             // delete bestelling(en)
             for(int i = 0; i < deleteBestellingen.length; i++) {
@@ -641,22 +652,16 @@ public class DatabaseConnector {
             }
             
             con.commit();
-        }
-        catch(SQLException ex) {
-            if(con != null)
-                con.rollback();
-            throw ex;
-        }
-        finally {
-            if(deleteKlant != null) 
-                deleteKlant.close();
-            for(int i = 0; i < deleteBestellingen.length; i++) {
-                if(deleteBestellingen[i] != null) 
-                    deleteBestellingen[i].close();
             }
-            
-            con.setAutoCommit(true);
-            con.close();
+            catch(SQLException ex) {
+                con.rollback();
+                throw ex;
+            }
+            finally {
+                for(int i = 0; i < deleteBestellingen.length; i++)
+                    deleteBestellingen[i].close();
+            con.setAutoCommit(initialAutoCommit);
+            }
         }
     }
     
@@ -672,13 +677,30 @@ public class DatabaseConnector {
         executeCommand("DELETE FROM klant");
         executeCommand("DELETE FROM bestelling");
     }
-
+    
+    /**
+     * Returns the type of DataSource this DatabaseConnector is using, or is set to use when 
+     * connecting to a database. The codes for DataSource types are defined by the constants 
+     * contained in this class.
+     * @return the code for the type of DataSource
+     */
     public byte getDataSourceType() {
         return dataSourceType;
     }
     
-    public void setDataSourceType(byte dataSourceType) {
-        this.dataSourceType = dataSourceType;
+    /**
+     * Sets the type of DataSource this DatabaseConnector will use next time it initiates a 
+     * connection to a database. The codes for DataSource types are defined by the constants 
+     * contained in this class.
+     * @param dataSourceType the code for the type of DataSource to be used
+     * @throws DatabaseException thrown when parameter value is invalid
+     */
+    public void setDataSourceType(byte dataSourceType) throws DatabaseException {
+        if(dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
+            throw new DatabaseException("Instellen data source mislukt.");
+        else {
+            this.dataSourceType = dataSourceType;
+        }
     }    
     
     /**

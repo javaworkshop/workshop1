@@ -1,6 +1,7 @@
 
 package database;
 
+import java.lang.reflect.Field;
 import model.Artikel;
 import model.Bestelling;
 import model.Klant;
@@ -18,6 +19,66 @@ class SqlCodeGenerator {
      * @param klant klant to be inserted
      * @return      sql code to insert klant
      */
+    
+    
+    //methode die gebruikt maakt van reflection    
+    public String buildInsertStatementKlant(Klant object){
+        int variableToInsert = 0;
+        String sqlTableName = Klant.class.getSimpleName().toUpperCase();
+        String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; String valueFieldEnd = "values (";
+        Field[] declaredFields = Klant.class.getDeclaredFields();
+        
+        for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        variableToInsert++;
+                        if (variableToInsert > 1){
+                            buildSqlStatement += ", ";
+                            valueFieldEnd += ", ";
+                        }
+                        buildSqlStatement += field.getName();
+                        if (field.get(object) instanceof String) {
+                            valueFieldEnd += "\'" + field.get(object) + "\'";
+                        }
+                        else{
+                            valueFieldEnd += field.get(object);
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+        return buildSqlStatement + ") " + valueFieldEnd + ")";
+    }
+    
+    private boolean isPrimitiveZero(Object object) { 
+    boolean isPrimitiveZero = false; 
+    if (object instanceof Long) {
+        if ((Long) object == 0) { 
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Integer) {
+        if ((Integer) object == 0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Float) {
+        if ((Float) object == 0.0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Double) {
+        if ((Double) object == 0.0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    return isPrimitiveZero;
+    }
+    
+    
     static String generateKlantInsertionCode(Klant klant) {
         String sqlCode = "INSERT INTO klant VALUES(NULL, ";
         

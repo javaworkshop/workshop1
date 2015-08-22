@@ -31,6 +31,7 @@ public class KlantGenerator {
         klant.setWoonplaats("Amsterdam");
         
         return klant;
+	
     }
     
     public static Klant[] generateNKlanten(int n) throws IllegalArgumentException {
@@ -42,5 +43,6 @@ public class KlantGenerator {
             klanten[i] = generateKlant();
         
         return klanten;
+	logger.info(n + " random klanten gegenereerd");
     }
 }

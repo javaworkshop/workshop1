@@ -363,7 +363,6 @@ public class Controller extends Application {
             if(currentRow.getUpdate()) {
                 dataToUpdate.add(currentRow.getKlant());
                 dataToUpdate.add(currentRow.getBestelling());
-                currentRow.setUpdate(false);
             }
         }
         try {
@@ -375,6 +374,7 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
+        refresh();
     }
     
     private void delete() {
@@ -395,9 +395,9 @@ public class Controller extends Application {
                 catch(DatabaseException ex) {
                     showExceptionPopUp(ex.getMessage());
                 }
-                currentRow.setDelete(false);
             }
         }
+        refresh();
     }
     
     private void refresh() {

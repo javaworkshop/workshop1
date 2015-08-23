@@ -594,20 +594,17 @@ public class DatabaseConnector {
         bestelling.setKlant_id(rowSet.getInt(2));
         
         bestelling.setArtikel_id1(rowSet.getInt(3));        
-        if(!rowSet.getString(4).equals("null"))
-            bestelling.setArtikel_naam1(rowSet.getString(4));
+        bestelling.setArtikel_naam1(rowSet.getString(4));
         bestelling.setArtikel_aantal1(rowSet.getInt(5));
         bestelling.setArtikel_prijs1(rowSet.getDouble(6));
         
         bestelling.setArtikel_id2(rowSet.getInt(7));
-        if(!rowSet.getString(8).equals("null"))
-            bestelling.setArtikel_naam2(rowSet.getString(8));
+        bestelling.setArtikel_naam2(rowSet.getString(8));
         bestelling.setArtikel_aantal2(rowSet.getInt(9));
         bestelling.setArtikel_prijs2(rowSet.getDouble(10));
         
         bestelling.setArtikel_id3(rowSet.getInt(11));
-        if(!rowSet.getString(12).equals("null"))
-            bestelling.setArtikel_naam3(rowSet.getString(12));
+        bestelling.setArtikel_naam3(rowSet.getString(12));
         bestelling.setArtikel_aantal3(rowSet.getInt(13));
         bestelling.setArtikel_prijs3(rowSet.getDouble(14));
         

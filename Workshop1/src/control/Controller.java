@@ -31,11 +31,16 @@ import model.Data;
 import model.DataDisplayRow;
 import model.Klant;
 import model.QueryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import java.util.logging.Level;
 
 /**
  * Class from which the program runs. User input is processed through this class.
  */
 public class Controller extends Application {
+    private Logger controllerLogger;
+    
     private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb";
     //private static final String FIREBIRD_URL = "???";
     
@@ -74,7 +79,9 @@ public class Controller extends Application {
     }
     
     @Override
-    public void start(Stage primaryStage) {   	
+    public void start(Stage primaryStage) {
+        controllerLogger = LoggerFactory.getLogger("Controller");
+        
         cboDataSource.getItems().addAll(FXCollections.observableArrayList("Hikari_CP", "C3P0"));
         cboDataSource.getSelectionModel().selectFirst();
         

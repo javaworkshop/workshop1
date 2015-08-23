@@ -141,6 +141,7 @@ public class DatabaseConnectorTest {
     public void deleteKlant() throws SQLException, DatabaseException {
         dbConnector.deleteKlant(1);
         List kList = dbConnector.readAll();
+        assertTrue(kList.size() == 1);
         assertEquals(k2, kList.get(0));
         System.out.println(kList.get(0));
         assertEquals(null, dbConnector.readBestelling(1));

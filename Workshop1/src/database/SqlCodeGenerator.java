@@ -20,6 +20,39 @@ class SqlCodeGenerator {
      * @return      sql code to insert klant
      */
     
+    //methode die gebruikt maakt van reflection en alle typen objecten accepteert
+    public String buildInsertStatementKlant(Object object){
+        int variableToInsert = 0;
+        String sqlTableName = object.getClass().getSimpleName().toUpperCase();
+        String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
+        String valueFieldEnd = "values (";
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+        
+        for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        variableToInsert++;
+                        if (variableToInsert > 1){
+                            buildSqlStatement += ", ";
+                            valueFieldEnd += ", ";
+                        }
+                        buildSqlStatement += field.getName();
+                        if (field.get(object) instanceof String) {
+                            valueFieldEnd += "\'" + field.get(object) + "\'";
+                        }
+                        else{
+                            valueFieldEnd += field.get(object);
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+        return buildSqlStatement + ") " + valueFieldEnd + ")";
+    }
+    
     
     //methode die gebruikt maakt van reflection    
     public String buildInsertStatementKlant(Klant object){

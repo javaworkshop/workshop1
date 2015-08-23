@@ -1,6 +1,7 @@
 
 package database;
 
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -375,12 +376,4 @@ class SqlCodeGenerator {
         }
     
 }
-
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-@interface Column{}
-
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-@interface Id{}
 

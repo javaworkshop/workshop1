@@ -594,8 +594,7 @@ public class DatabaseConnector {
         bestelling.setKlant_id(rowSet.getInt(2));
         
         bestelling.setArtikel_id1(rowSet.getInt(3));        
-        if(!rowSet.getString(4).equals("null"))
-            bestelling.setArtikel_naam1(rowSet.getString(4));
+        bestelling.setArtikel_naam1(rowSet.getString(4));
         bestelling.setArtikel_aantal1(rowSet.getInt(5));
         bestelling.setArtikel_prijs1(rowSet.getDouble(6));
         

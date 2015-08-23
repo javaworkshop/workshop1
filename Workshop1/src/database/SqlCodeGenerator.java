@@ -157,25 +157,38 @@ class SqlCodeGenerator {
         return sqlCode;
     }
     
-    public static String generateBestellingInsertionCode(Bestelling bestelling){
-            //implement 
-            String sqlString = 
-                    "Insert into bestelling (klant_id,  artikel_id1,  artikel_id2,  artikel_id3, "
-                    + " artikel_naam1,  artikel_naam2,  artikel_naam3,  artikel_aantal1,  "
-                    + "artikel_aantal2,  artikel_aantal3,  artikel_prijs1,  artikel_prijs2, "
-                    + " artikel_prijs3) values (" +
-                bestelling.getKlant_id() + ", " + bestelling.getArtikel_id1() + ", " + 
-                    bestelling.getArtikel_id2() + ", " +bestelling.getArtikel_id3()
-                    + ", \'" + bestelling.getArtikel_naam1() + "\', \'" + 
-                    bestelling.getArtikel_naam2() + "\', \'" + bestelling.getArtikel_naam3() +
-                    "\', " + bestelling.getArtikel_aantal1() + ", " + 
-                    bestelling.getArtikel_aantal2() + ", " + bestelling.getArtikel_aantal3() + 
-                    ", " + bestelling.getArtikel_prijs1() + ", " + bestelling.getArtikel_prijs2() +
-                    ", " + bestelling.getArtikel_prijs3() + ")";
-            
-            
-            return sqlString;
-        }
+    public static String generateBestellingInsertionCode(Bestelling bestelling) {
+        String sqlCode = "INSERT INTO bestelling VALUES(NULL, ";
+        
+        sqlCode += (bestelling.getKlant_id() == 0) ? "NULL, " : 
+            bestelling.getKlant_id()+ ", ";
+        sqlCode += (bestelling.getArtikel_id1() == 0) ? "NULL, " : 
+            bestelling.getArtikel_id1()+ ", ";
+        sqlCode += (bestelling.getArtikel_naam1()== null) ? "NULL, " : "'" + 
+            bestelling.getArtikel_naam1()+ "', ";
+        sqlCode += (bestelling.getArtikel_aantal1() == 0) ? "NULL, " : 
+            bestelling.getArtikel_aantal1()+ ", ";
+        sqlCode += (bestelling.getArtikel_prijs1() <= 0.001) ? "NULL, " : 
+            bestelling.getArtikel_prijs1()+ ", ";
+        sqlCode += (bestelling.getArtikel_id2() == 0) ? "NULL, " : 
+            bestelling.getArtikel_id2()+ ", ";
+        sqlCode += (bestelling.getArtikel_naam2()== null) ? "NULL, " : "'" + 
+            bestelling.getArtikel_naam2()+ "', ";
+        sqlCode += (bestelling.getArtikel_aantal2() == 0) ? "NULL, " : 
+            bestelling.getArtikel_aantal2()+ ", ";
+        sqlCode += (bestelling.getArtikel_prijs2() <= 0.001) ? "NULL, " : 
+            bestelling.getArtikel_prijs2()+ ", ";
+        sqlCode += (bestelling.getArtikel_id3() == 0) ? "NULL, " : 
+            bestelling.getArtikel_id3()+ ", ";
+        sqlCode += (bestelling.getArtikel_naam3()== null) ? "NULL, " : "'" + 
+            bestelling.getArtikel_naam3()+ "', ";
+        sqlCode += (bestelling.getArtikel_aantal3() == 0) ? "NULL, " : 
+            bestelling.getArtikel_aantal3()+ ", ";
+        sqlCode += (bestelling.getArtikel_prijs3() <= 0.001) ? "NULL, " : 
+            bestelling.getArtikel_prijs3()+ ")";
+        
+        return sqlCode;
+    }
         
         public static String generateArtikelUpdateCode(Artikel a){
             int bestellingId = a.getBestelling_id();

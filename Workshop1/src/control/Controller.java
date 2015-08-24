@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class Controller extends Application {
     private Logger controllerLogger;
     
-    private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb";
+    private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb"; // dit moet nog/weer instelbaar worden via gui
     //private static final String FIREBIRD_URL = "???";
     
     private DatabaseConnector dbConnector = new DatabaseConnector();
@@ -56,9 +56,10 @@ public class Controller extends Application {
     private TextArea taSQLResult = new TextArea();
     private TextArea tasqlCommand = new TextArea();
     private TextField tfUsername = new TextField();
-    private TextField tfURL = new TextField(MYSQL_URL);
+    //private TextField tfURL = new TextField(MYSQL_URL);
     private TextField tfAantal = new TextField();
     private PasswordField pfPassword = new PasswordField();
+    private ComboBox<String> cboDatabase = new ComboBox<>();
     private ComboBox<String> cboDataSource = new ComboBox<>();
     private Button btExecuteSQL = new Button("Voer SQL Commando Uit");
     private Button btUpdate = new Button("Update");
@@ -67,7 +68,7 @@ public class Controller extends Application {
     private Button btVoegArtikel = new Button("Voeg Artikel Toe");
     private Button btClearSQLCommand = new Button("Leegmaken");
     private Button btConnectDB = new Button("Verbind Met Database");
-    private Button btClearSQLResult = new Button("Scherm Leegmaken");
+    private Button btClearSQLResult = new Button("Tabel Leegmaken");
     private Button btRefresh = new Button("Ververs Tabel");
     private Button btNieuweKlant = new Button("Maak Nieuwe Klant");
     private Button btMaakKlanten = new Button("Maak Klanten Aan");
@@ -80,22 +81,24 @@ public class Controller extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        controllerLogger = LoggerFactory.getLogger("Controller");
+        controllerLogger = LoggerFactory.getLogger(Controller.class);
         
         cboDataSource.getItems().addAll(FXCollections.observableArrayList("Hikari_CP", "C3P0"));
         cboDataSource.getSelectionModel().selectFirst();
+        cboDatabase.getItems().addAll(FXCollections.observableArrayList("MySQL", "Firebird"));
+        cboDatabase.getSelectionModel().selectFirst();
         
         GridPane gridPane = new GridPane();
         
-        gridPane.add(tfURL, 1, 0);
+        gridPane.add(cboDatabase, 1, 0);
         gridPane.add(cboDataSource, 1, 1);
         gridPane.add(tfUsername, 1, 2);
         gridPane.add(pfPassword, 1, 3);
-        gridPane.add(new Label("url datasource"), 0, 0);
+        gridPane.add(new Label("Database"), 0, 0);
         gridPane.add(new Label("Datasource"),0, 1);
-        gridPane.add(new Label("gebruikersnaam"), 0, 2);
-        gridPane.add(new Label("wachtwoord"), 0, 3);
-        gridPane.add(new Label("     maak random klanten"),2,0);
+        gridPane.add(new Label("Gebruikersnaam"), 0, 2);
+        gridPane.add(new Label("Wachtwoord"), 0, 3);
+        gridPane.add(new Label("     Maak random klanten"),2,0);
         gridPane.add(new Label("     Voer aantal in: "), 2, 1);
         gridPane.add(tfAantal, 3, 1);
         gridPane.add(btMaakKlanten, 2, 2);
@@ -291,20 +294,23 @@ public class Controller extends Application {
      * Called when the Verbind Met Database button is pressed. Uses the driver and url comboboxes 
      * and username and password textfields to initate database connection.
      */
-    private void connectToDB() {               
-	dbConnector.setUrl(tfURL.getText().trim());
+    private void connectToDB() {
 	dbConnector.setUsername(tfUsername.getText().trim());
 	dbConnector.setPassword(pfPassword.getText().trim());
+        dbConnector.setUrl(MYSQL_URL); // later nog aan te passen
+        String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem(); 
 	try {
             if(dataSource.equals("Hikari_CP")) {
-                dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-                dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER);
+                dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);                              
             }
             else/*if(dataSource.equals("C3P0"))*/ {
-                dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
-                dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER);            
+                dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);          
             }
+            if(database.equals("MySQL"))
+                dbConnector.setDatabaseType(DatabaseConnector.MYSQL_DATABASE);
+            else/*if(database.equals("Firebird")*/
+                dbConnector.setDatabaseType(DatabaseConnector.FIREBIRD_DATABASE);
             dbConnector.connectToDatabase();
         }
         catch (DatabaseException ex) {
@@ -381,6 +387,7 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
+        // Dit gaat niet helemaal goed
         refresh();
     }
     
@@ -404,6 +411,7 @@ public class Controller extends Application {
                 }
             }
         }
+        // Dit gaat niet helemaal goed
         refresh();
     }
     

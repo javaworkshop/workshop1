@@ -17,20 +17,31 @@ import model.Data;
 import model.Klant;
 import model.QueryResult;
 import model.QueryResultRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
  * operations are processed.
  */
-public class DatabaseConnector {
-    public static final byte C3P0_DATASOURCE = 2;
-    public static final String C3P0_DRIVER = "com.mysql.jdbc.Driver";
+public class DatabaseConnector {    
     public static final byte HIKARI_CP_DATASOURCE = 1;
-    public static final String HIKARI_CP_DRIVER = "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
+    private static final String HIKARI_CP_FIREBIRD_DRIVER = 
+            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
+    private static final String HIKARI_CP_MYSQL_DRIVER = 
+            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
+    public static final byte C3P0_DATASOURCE = 2;
+    private static final String C3P0_MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String C3P0_FIREBIRD_DRIVER = "com.mysql.jdbc.Driver";
+    public static final byte MYSQL_DATABASE = 1;
+    public static final byte FIREBIRD_DATABASE = 2;
+    
+    private Logger dbConnectorLogger;
     
     private DataSource dataSource;    
     
     private byte dataSourceType;
+    private byte databaseType;
     private String driver;
     private boolean isInitialized;
     private String password;
@@ -38,6 +49,7 @@ public class DatabaseConnector {
     private String username;
     
     public DatabaseConnector() {
+        dbConnectorLogger = LoggerFactory.getLogger(DatabaseConnector.class);
         dataSource = null;
         isInitialized = false;
     }
@@ -50,6 +62,7 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addArtikel(Artikel a) throws SQLException, DatabaseException {
+        dbConnectorLogger.debug(SqlCodeGenerator.generateArtikelUpdateCode(a));
         executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(a));       
     }
     
@@ -61,6 +74,7 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
+        dbConnectorLogger.debug(SqlCodeGenerator.generateBestellingInsertionCode(b));
         executeCommand(database.SqlCodeGenerator.generateBestellingInsertionCode(b));
     }
     
@@ -72,6 +86,7 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
+        dbConnectorLogger.debug(SqlCodeGenerator.generateKlantInsertionCode(k));
         executeCommand(database.SqlCodeGenerator.generateKlantInsertionCode(k));
     }
     
@@ -134,9 +149,11 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        executeCommand("DELETE FROM klant");
         executeCommand("DELETE FROM bestelling");
-    }    
+        executeCommand("DELETE FROM klant");        
+        executeCommand("ALTER TABLE klant AUTO_INCREMENT = 1");
+        executeCommand("ALTER TABLE bestelling AUTO_INCREMENT = 1;");
+    }
     
     /**
      * Initializes connection to database. Before this method is run driver, url, username, and
@@ -144,10 +161,24 @@ public class DatabaseConnector {
      * @throws DatabaseException thrown if driver could not be loaded
      */
     public void connectToDatabase() throws DatabaseException {
-        if(dataSourceType == HIKARI_CP_DATASOURCE)
+        if(dataSourceType == HIKARI_CP_DATASOURCE) {
+            if(databaseType == MYSQL_DATABASE)
+                driver = HIKARI_CP_MYSQL_DRIVER;
+            else/*if((databaseType == FIREBIRD_DATABASE)*/
+                driver = HIKARI_CP_FIREBIRD_DRIVER;
             setUpHikariCPDataSource();
-        else/*if(dataSourceType == C3P0_DATASOURCE)*/
+        }
+        else/*if(dataSourceType == C3P0_DATASOURCE)*/ {
+            if(databaseType == MYSQL_DATABASE)
+                driver = C3P0_MYSQL_DRIVER;
+            else/*if((databaseType == FIREBIRD_DATABASE)*/
+                driver = C3P0_FIREBIRD_DRIVER;
             setUpC3p0DataSource();
+        }            
+        
+        dbConnectorLogger.info("Database setup data: driver = " + driver + ", url = " + url
+                + ", data source = " + (dataSourceType == HIKARI_CP_DATASOURCE ? "Hikari CP" : 
+                "C3P0") + ", username = " + username + ", password = " + password);
         
         isInitialized = true;       
     }
@@ -547,13 +578,13 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Bestelling bestelling = null;
+        Bestelling bestelling;
         try(RowSet rowSet = createRowSet("SELECT * FROM bestelling WHERE bestelling_id = "
                 + bestelling_id)) {
-            if(!rowSet.next())
-                return null;            
-            else 
-                bestelling = retrieveBestelling(rowSet);
+            if(rowSet.next())
+                bestelling = retrieveBestelling(rowSet);           
+            else
+                return null;
         }
         
         return bestelling;
@@ -571,10 +602,12 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Klant klant = null;
+        Klant klant;
         try(RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id)) {
-            rowSet.next();
-            klant = retrieveKlant(rowSet);
+            if(rowSet.next())
+                klant = retrieveKlant(rowSet);
+            else 
+                return null;
         }
         
         return klant;
@@ -599,14 +632,12 @@ public class DatabaseConnector {
         bestelling.setArtikel_prijs1(rowSet.getDouble(6));
         
         bestelling.setArtikel_id2(rowSet.getInt(7));
-        if(!rowSet.getString(8).equals("null"))
-            bestelling.setArtikel_naam2(rowSet.getString(8));
+        bestelling.setArtikel_naam2(rowSet.getString(8));
         bestelling.setArtikel_aantal2(rowSet.getInt(9));
         bestelling.setArtikel_prijs2(rowSet.getDouble(10));
         
         bestelling.setArtikel_id3(rowSet.getInt(11));
-        if(!rowSet.getString(12).equals("null"))
-            bestelling.setArtikel_naam3(rowSet.getString(12));
+        bestelling.setArtikel_naam3(rowSet.getString(12));
         bestelling.setArtikel_aantal3(rowSet.getInt(13));
         bestelling.setArtikel_prijs3(rowSet.getDouble(14));
         
@@ -634,6 +665,31 @@ public class DatabaseConnector {
         klant.setWoonplaats(rowSet.getString(10));
         
         return klant;
+    }
+    
+    /**
+     * Returns the type of Database this DatabaseConnector is using, or is set to use when
+     * connecting to a database. The codes for Database types are defined by the constants
+     * contained in this class.
+     * @return the code for the type of Database
+     */
+    public byte getDatabaseType() {
+        return databaseType;
+    }
+    
+    /**
+     * Sets the type of Database this DatabaseConnector will use next time it initiates a 
+     * connection to a database. The codes for Database types are defined by the constants 
+     * contained in this class.
+     * @param dataSourceType the code for the type of Database to be used
+     * @throws DatabaseException thrown when parameter value is invalid
+     */
+    public void setDatabaseType(byte databaseType) throws DatabaseException {
+        if(databaseType < MYSQL_DATABASE && databaseType > FIREBIRD_DATABASE)
+            throw new DatabaseException("Instellen database mislukt.");
+        else {
+            this.databaseType = databaseType;
+        }
     }
     
     /**

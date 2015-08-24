@@ -184,23 +184,23 @@ class SqlCodeGenerator {
             bestelling.getArtikel_naam3()+ "', ";
         sqlCode += (bestelling.getArtikel_aantal3() == 0) ? "NULL, " : 
             bestelling.getArtikel_aantal3()+ ", ";
-        sqlCode += (bestelling.getArtikel_prijs3() <= 0.001) ? "NULL, " : 
+        sqlCode += (bestelling.getArtikel_prijs3() <= 0.001) ? "NULL)" : 
             bestelling.getArtikel_prijs3()+ ")";
         
         return sqlCode;
     }
         
-        public static String generateArtikelUpdateCode(Artikel a){
-            int bestellingId = a.getBestelling_id();
-            int artikelId = a.getArtikel_id();
-            String artikelNaam = a.getArtikel_naam();
-            int artikelAantal = a.getArtikel_aantal();
-            double artikelPrijs = a.getArtikel_prijs();
-            
-            String sqlString =   "  UPDATE   bestelling SET "
-            //artikel id
+    public static String generateArtikelUpdateCode(Artikel a){
+        int bestellingId = a.getBestelling_id();
+        int artikelId = a.getArtikel_id();
+        String artikelNaam = a.getArtikel_naam();
+        int artikelAantal = a.getArtikel_aantal();
+        double artikelPrijs = a.getArtikel_prijs();
+          
+        String sqlString =   "  UPDATE   bestelling SET "
+        //artikel id
             +  "artikel_id1 = ( CASE  WHEN (artikel_id1 is null and  IFNULL(artikel_id2,0) <> " + 
-                    artikelId + "  and IFNULL(artikel_id3,0) <> " + artikelId + 
+            artikelId + "  and IFNULL(artikel_id3,0) <> " + artikelId + 
             ")    THEN  " + artikelId + " ELSE artikel_id1 END )," + 
             " artikel_id2 = (CASE  WHEN (artikel_id2 is null and IFNULL(artikel_id1,0) <> " + 
                     artikelId +  " and IFNULL(artikel_id3,0) <> " + artikelId + 
@@ -246,7 +246,6 @@ class SqlCodeGenerator {
             ")  THEN " + artikelPrijs + "  ELSE artikel_prijs3 END)" +
               "  WHERE  bestelling_id = " + bestellingId;
             
-            return sqlString;
-        }
-    
+        return sqlString;
+    }    
 }

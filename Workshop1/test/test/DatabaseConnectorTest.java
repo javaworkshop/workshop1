@@ -1,19 +1,26 @@
 
 package test;
 
-import control.KlantGenerator;
+import database.DatabaseConnector;
+import database.DatabaseException;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import org.apache.ibatis.jdbc.ScriptRunner;
-import java.net.URL;
-import java.io.File;
-import database.*;
-import model.*;
+import java.sql.Statement;
 import java.util.List;
+import model.Artikel;
+import model.Bestelling;
+import model.Klant;
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DatabaseConnectorTest {  
     
@@ -25,30 +32,45 @@ public class DatabaseConnectorTest {
     private Bestelling b3;
     private Artikel a1;
     
-    @Before
-    public void setUp() throws SQLException, DatabaseException {
-        createDatabase();
-        dbConnector = new DatabaseConnector();
-        dbConnector.setUrl("jdbc:Mysql://localhost:3306/mydb");
-        dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-        dbConnector.setDriver(database.DatabaseConnector.HIKARI_CP_DRIVER);
-        dbConnector.setUsername("root");
-        dbConnector.setPassword("qwerty");
-        dbConnector.connectToDatabase();
-        initializeData();
-        addData();
-    }
+    private String mySqlUrl = "jdbc:Mysql://localhost:3306/mydb";
+    private String mySqlDriver = "com.mysql.jdbc.Driver";
+    private String username = "root";
+    private String password = "qwerty";
+    private boolean isDatabaseInitialized = false;
     
-    private void createDatabase() {
+    @Before
+    public void setUp() throws SQLException, DatabaseException, ClassNotFoundException, 
+            FileNotFoundException {
+        if(!isDatabaseInitialized) {
+            initMySqlDatabase();
+            dbConnector = new DatabaseConnector();
+            dbConnector.setUrl(mySqlUrl);
+            dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
+            dbConnector.setDatabaseType(database.DatabaseConnector.MYSQL_DATABASE);
+            dbConnector.setUsername(username);
+            dbConnector.setPassword(password);
+            dbConnector.connectToDatabase();
+            initializeData();
+            addData();
+            isDatabaseInitialized = true;
+        }
+        else {
+            initializeData();
+            addData();
+        }
+        
+    } 
+    
+    private void initMySqlDatabase() throws SQLException, ClassNotFoundException, 
+            FileNotFoundException {
+        Class.forName(mySqlDriver);
+        
         File file = new File(getClass().getResource("KlantDatabase.sql").getFile());
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            new ScriptRunner(DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/mysql", "root", "qwerty"))
-                    .runScript(new BufferedReader(new FileReader(file)));
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
+        try(Connection con = DriverManager.getConnection(mySqlUrl, username, password);
+            Statement statement = con.createStatement()
+        ) {
+            statement.execute("DROP DATABASE IF EXISTS mydb");
+            new ScriptRunner(con).runScript(new BufferedReader(new FileReader(file)));
         }
     }
     
@@ -138,7 +160,7 @@ public class DatabaseConnectorTest {
     }
     
     @Test
-    public void deleteKlant() throws SQLException, DatabaseException {
+    public void testDeleteKlant() throws SQLException, DatabaseException {
         dbConnector.deleteKlant(1);
         List kList = dbConnector.readAll();
         assertTrue(kList.size() == 1);
@@ -150,7 +172,7 @@ public class DatabaseConnectorTest {
     }   
     
     @After
-    public void tearDown() throws SQLException, DatabaseException {
-        dbConnector.executeCommand("DROP DATABASE mydb");
+    public void tearDownTest() throws SQLException, DatabaseException {
+        dbConnector.clearDatabase();
     }
 }

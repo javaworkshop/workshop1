@@ -6,8 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 /**
  * Parent class of all classes that are used to store data from the database.
  */
-public abstract class Data {
-    
+public abstract class Data {    
     
     private final SimpleIntegerProperty primaryKey;
     

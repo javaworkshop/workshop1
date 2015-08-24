@@ -16,7 +16,7 @@ import model.Artikel;
 import model.Bestelling;
 import model.Klant;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.junit.*;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class DatabaseConnectorTest {
             dbConnector = new DatabaseConnector();
             dbConnector.setUrl(mySqlUrl);
             dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-            dbConnector.setDatabaseType(database.DatabaseConnector.MYSQL_DATABASE);
+            dbConnector.setDatabaseType(DatabaseConnector.MYSQL_DATABASE);
             dbConnector.setUsername(username);
             dbConnector.setPassword(password);
             dbConnector.connectToDatabase();

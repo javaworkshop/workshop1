@@ -47,7 +47,8 @@ public class SqlCodeGenerator {
                     if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
                         List<Annotation> annotations = Arrays.asList(field.getDeclaredAnnotations());
                         //misschien ook iets anders doen met annotatie @id
-                        if (annotations.contains(Column.class)|| annotations.contains(Id.class)){
+                        //the onderstaande if methode pakt de annotaties nog niet
+                        if (annotations.contains(database.Column.class)|| annotations.contains(database.Id.class)){
                             variableToInsert++;
                             if (variableToInsert > 1){
                                 buildSqlStatement += ", ";

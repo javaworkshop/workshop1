@@ -1,5 +1,7 @@
 package model;
 
+import database.Column;
+import database.Id;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -11,19 +13,19 @@ import javafx.beans.property.SimpleStringProperty;
  * Class to store data from the bestelling table.
  */
 public class Bestelling extends Data {
-    private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
-    private final SimpleIntegerProperty artikel_id1;
-    private final SimpleIntegerProperty artikel_id2;
-    private final SimpleIntegerProperty artikel_id3;
-    private final SimpleStringProperty artikel_naam1;
-    private final SimpleStringProperty artikel_naam2;
-    private final SimpleStringProperty artikel_naam3;
-    private final SimpleIntegerProperty artikel_aantal1;
-    private final SimpleIntegerProperty artikel_aantal2;
-    private final SimpleIntegerProperty artikel_aantal3;
-    private final SimpleDoubleProperty artikel_prijs1;
-    private final SimpleDoubleProperty artikel_prijs2;
-    private final SimpleDoubleProperty artikel_prijs3;
+    @Id private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
+    @Column private final SimpleIntegerProperty artikel_id1;
+    @Column private final SimpleIntegerProperty artikel_id2;
+    @Column private final SimpleIntegerProperty artikel_id3;
+    @Column private final SimpleStringProperty artikel_naam1;
+    @Column private final SimpleStringProperty artikel_naam2;
+    @Column private final SimpleStringProperty artikel_naam3;
+    @Column private final SimpleIntegerProperty artikel_aantal1;
+    @Column private final SimpleIntegerProperty artikel_aantal2;
+    @Column private final SimpleIntegerProperty artikel_aantal3;
+    @Column private final SimpleDoubleProperty artikel_prijs1;
+    @Column private final SimpleDoubleProperty artikel_prijs2;
+    @Column private final SimpleDoubleProperty artikel_prijs3;
     
     public Bestelling() {
         klant_id = new SimpleIntegerProperty(0);

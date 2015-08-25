@@ -1,5 +1,5 @@
 
-package control;
+package org.javaworkshop.workshop1.control;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Bestelling;
+import org.javaworkshop.workshop1.model.Bestelling;
 
 public class AddBestellingScreen extends Stage{
 	

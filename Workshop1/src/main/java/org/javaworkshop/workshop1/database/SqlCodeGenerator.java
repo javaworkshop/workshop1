@@ -1,9 +1,9 @@
 
-package database;
+package org.javaworkshop.workshop1.database;
 
-import model.Artikel;
-import model.Bestelling;
-import model.Klant;
+import org.javaworkshop.workshop1.model.Artikel;
+import org.javaworkshop.workshop1.model.Bestelling;
+import org.javaworkshop.workshop1.model.Klant;
 
 /**
  * Class that contains static methods to generate sql code from data objects. Cannot be 

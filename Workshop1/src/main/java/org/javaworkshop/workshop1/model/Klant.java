@@ -1,4 +1,4 @@
-package model;
+package org.javaworkshop.workshop1.model;
 
 //import java.util.ArrayList;
 import javafx.beans.property.StringProperty;

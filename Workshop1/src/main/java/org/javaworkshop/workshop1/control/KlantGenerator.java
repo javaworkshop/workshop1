@@ -1,6 +1,6 @@
-package control;
+package org.javaworkshop.workshop1.control;
 
-import model.Klant;
+import org.javaworkshop.workshop1.model.Klant;
 
 /**
  * Class that contains static methods to generate random klanten. Cannot be instantiated.

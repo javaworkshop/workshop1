@@ -1,7 +1,7 @@
-package control;
+package org.javaworkshop.workshop1.control;
 
-import database.DatabaseConnector;
-import database.DatabaseException;
+import org.javaworkshop.workshop1.database.DatabaseConnector;
+import org.javaworkshop.workshop1.database.DatabaseException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.application.Application;
@@ -25,12 +25,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Artikel;
-import model.Bestelling;
-import model.Data;
-import model.DataDisplayRow;
-import model.Klant;
-import model.QueryResult;
+import org.javaworkshop.workshop1.model.Artikel;
+import org.javaworkshop.workshop1.model.Bestelling;
+import org.javaworkshop.workshop1.model.Data;
+import org.javaworkshop.workshop1.model.DataDisplayRow;
+import org.javaworkshop.workshop1.model.Klant;
+import org.javaworkshop.workshop1.model.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import java.util.logging.Level;
@@ -76,7 +76,7 @@ public class Controller extends Application {
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
     
     @Override

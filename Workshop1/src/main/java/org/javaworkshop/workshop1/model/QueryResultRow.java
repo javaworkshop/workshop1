@@ -1,4 +1,4 @@
-package model;
+package org.javaworkshop.workshop1.model;
 
 /**
  * Class used by queryResult to represent rows. All properties are converted to String properties to

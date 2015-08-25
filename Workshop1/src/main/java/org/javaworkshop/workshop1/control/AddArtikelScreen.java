@@ -1,5 +1,5 @@
 
-package control;
+package org.javaworkshop.workshop1.control;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Artikel;
+import org.javaworkshop.workshop1.model.Artikel;
 
 public class AddArtikelScreen extends Stage{
     private VBox pnArtikel;

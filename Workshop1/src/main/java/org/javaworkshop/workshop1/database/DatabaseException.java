@@ -1,4 +1,4 @@
-package database;
+package org.javaworkshop.workshop1.database;
 
 /**
  * Custom Exception class used by DatabaseConnector. Meant to be used for cases where an Exception 

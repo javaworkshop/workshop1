@@ -1,4 +1,4 @@
-package control;
+package org.javaworkshop.workshop1.control;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,7 +21,7 @@ class ErrorScreen extends Stage {
     ErrorScreen() {
         VBox mainPane = new VBox();
         
-        ImageView errorIcon = new ImageView(new Image("image/error_icon.png"));
+        ImageView errorIcon = new ImageView(new Image("image/error.png"));
         errorMessage = new Label();
         errorMessage.setGraphic(errorIcon);
         errorMessage.setContentDisplay(ContentDisplay.LEFT);

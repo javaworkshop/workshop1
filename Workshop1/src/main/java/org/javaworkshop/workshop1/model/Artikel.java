@@ -1,5 +1,5 @@
 
-package model;
+package org.javaworkshop.workshop1.model;
 
 public class Artikel {
     int bestelling_id;

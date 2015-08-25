@@ -1,4 +1,4 @@
-package database;
+package org.javaworkshop.workshop1.database;
 
 import com.mchange.v2.c3p0.DataSources;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -11,12 +11,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
-import model.Artikel;
-import model.Bestelling;
-import model.Data;
-import model.Klant;
-import model.QueryResult;
-import model.QueryResultRow;
+import org.javaworkshop.workshop1.model.Artikel;
+import org.javaworkshop.workshop1.model.Bestelling;
+import org.javaworkshop.workshop1.model.Data;
+import org.javaworkshop.workshop1.model.Klant;
+import org.javaworkshop.workshop1.model.QueryResult;
+import org.javaworkshop.workshop1.model.QueryResultRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class DatabaseConnector {
      */
     public void addArtikel(Artikel a) throws SQLException, DatabaseException {
         dbConnectorLogger.debug(SqlCodeGenerator.generateArtikelUpdateCode(a));
-        executeCommand(database.SqlCodeGenerator.generateArtikelUpdateCode(a));       
+        executeCommand(SqlCodeGenerator.generateArtikelUpdateCode(a));       
     }
     
     /**
@@ -75,7 +75,7 @@ public class DatabaseConnector {
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
         dbConnectorLogger.debug(SqlCodeGenerator.generateBestellingInsertionCode(b));
-        executeCommand(database.SqlCodeGenerator.generateBestellingInsertionCode(b));
+        executeCommand(SqlCodeGenerator.generateBestellingInsertionCode(b));
     }
     
     /**
@@ -87,7 +87,7 @@ public class DatabaseConnector {
      */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
         dbConnectorLogger.debug(SqlCodeGenerator.generateKlantInsertionCode(k));
-        executeCommand(database.SqlCodeGenerator.generateKlantInsertionCode(k));
+        executeCommand(SqlCodeGenerator.generateKlantInsertionCode(k));
     }
     
     /**

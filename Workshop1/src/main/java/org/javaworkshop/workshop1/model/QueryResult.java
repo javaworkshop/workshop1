@@ -1,5 +1,5 @@
 
-package model;
+package org.javaworkshop.workshop1.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

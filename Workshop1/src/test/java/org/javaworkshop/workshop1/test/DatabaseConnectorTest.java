@@ -1,8 +1,6 @@
 
-package test;
+package org.javaworkshop.workshop1.test;
 
-import database.DatabaseConnector;
-import database.DatabaseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,10 +10,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import model.Artikel;
-import model.Bestelling;
-import model.Klant;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.javaworkshop.workshop1.database.DatabaseConnector;
+import org.javaworkshop.workshop1.database.DatabaseException;
+import org.javaworkshop.workshop1.model.Artikel;
+import org.javaworkshop.workshop1.model.Bestelling;
+import org.javaworkshop.workshop1.model.Klant;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

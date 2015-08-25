@@ -1,5 +1,5 @@
 
-package model;
+package org.javaworkshop.workshop1.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

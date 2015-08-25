@@ -76,7 +76,7 @@ public class Controller extends Application {
     private BorderPane borderPaneExecutionResult = new BorderPane();
 
     public static void main(String[] args) {
-        Application.launch(args);
+        launch(args);
     }
     
     @Override

@@ -10,6 +10,11 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import model.Artikel;
 import model.Bestelling;
 import model.Klant;
@@ -18,7 +23,7 @@ import model.Klant;
  * Class that contains static methods to generate sql code from data objects. Cannot be 
  * instantiated.
  */
-class SqlCodeGenerator {
+public class SqlCodeGenerator {
     
     private SqlCodeGenerator(){}
     
@@ -29,7 +34,7 @@ class SqlCodeGenerator {
      */
     
     //methode die gebruik maakt van annotation
-    public String buildAnnotationInsertStatement(Object object){
+    public static String buildAnnotationInsertStatement(Object object){
         int variableToInsert = 0;
         String sqlTableName = object.getClass().getSimpleName().toUpperCase();
         String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
@@ -40,7 +45,7 @@ class SqlCodeGenerator {
             try{
                     field.setAccessible(true);
                     if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
-                        ArrayList<Annotation> annotations = (ArrayList<Annotation>)Arrays.asList(field.getDeclaredAnnotations());
+                        List<Annotation> annotations = Arrays.asList(field.getDeclaredAnnotations());
                         //misschien ook iets anders doen met annotatie @id
                         if (annotations.contains(Column.class)|| annotations.contains(Id.class)){
                             variableToInsert++;
@@ -49,12 +54,18 @@ class SqlCodeGenerator {
                                 valueFieldEnd += ", ";
                             }
                             buildSqlStatement += field.getName();
-                            if (field.get(object) instanceof String) {
-                                valueFieldEnd += "\'" + field.get(object) + "\'";
+                            if (field.get(object) instanceof SimpleStringProperty) {
+                                valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                            }
+                            else if (field.get(object) instanceof SimpleIntegerProperty){
+                                valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                            }
+                            else if (field.get(object) instanceof SimpleDoubleProperty){
+                                valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
                             }
                             else{
                                 valueFieldEnd += field.get(object);
-                            } 
+                            }
                         }
                     }
             }
@@ -62,11 +73,14 @@ class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-        return buildSqlStatement + ") " + valueFieldEnd + ")";
+           //test
+           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
+           System.out.println(returnString);
+        return returnString;
     }
     
     //methode die gebruikt maakt van reflection en alle typen objecten accepteert
-    public String buildInsertStatement(Object object){
+    public static String buildInsertStatement(Object object){
         int variableToInsert = 0;
         String sqlTableName = object.getClass().getSimpleName().toUpperCase();
         String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
@@ -83,8 +97,14 @@ class SqlCodeGenerator {
                             valueFieldEnd += ", ";
                         }
                         buildSqlStatement += field.getName();
-                        if (field.get(object) instanceof String) {
-                            valueFieldEnd += "\'" + field.get(object) + "\'";
+                        if (field.get(object) instanceof SimpleStringProperty) {
+                            valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                        }
+                        else if (field.get(object) instanceof SimpleIntegerProperty){
+                            valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                        }
+                        else if (field.get(object) instanceof SimpleDoubleProperty){
+                            valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
                         }
                         else{
                             valueFieldEnd += field.get(object);
@@ -95,12 +115,15 @@ class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-        return buildSqlStatement + ") " + valueFieldEnd + ")";
+           //test
+           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
+           System.out.println(returnString);
+        return returnString;
     }
     
     
     //methode die gebruikt maakt van reflection    
-    public String buildInsertStatementKlant(Klant object){
+    public static String buildInsertStatementKlant(Klant object){
         int variableToInsert = 0;
         String sqlTableName = Klant.class.getSimpleName().toUpperCase();
         String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; String valueFieldEnd = "values (";
@@ -116,8 +139,14 @@ class SqlCodeGenerator {
                             valueFieldEnd += ", ";
                         }
                         buildSqlStatement += field.getName();
-                        if (field.get(object) instanceof String) {
-                            valueFieldEnd += "\'" + field.get(object) + "\'";
+                        if (field.get(object) instanceof SimpleStringProperty) {
+                            valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                        }
+                        else if (field.get(object) instanceof SimpleIntegerProperty){
+                            valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                        }
+                        else if (field.get(object) instanceof SimpleDoubleProperty){
+                            valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
                         }
                         else{
                             valueFieldEnd += field.get(object);
@@ -128,10 +157,13 @@ class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-        return buildSqlStatement + ") " + valueFieldEnd + ")";
+           //test
+           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
+           System.out.println(returnString);
+        return returnString;
     }
     
-    private boolean isPrimitiveZero(Object object) { 
+    private static boolean isPrimitiveZero(Object object) { 
     boolean isPrimitiveZero = false; 
     if (object instanceof Long) {
         if ((Long) object == 0) { 
@@ -297,7 +329,6 @@ class SqlCodeGenerator {
     }
     
     public static String generateBestellingInsertionCode(Bestelling bestelling){
-            //implement 
             String sqlString = 
                     "Insert into bestelling (klant_id,  artikel_id1,  artikel_id2,  artikel_id3, "
                     + " artikel_naam1,  artikel_naam2,  artikel_naam3,  artikel_aantal1,  "
@@ -312,7 +343,8 @@ class SqlCodeGenerator {
                     ", " + bestelling.getArtikel_prijs1() + ", " + bestelling.getArtikel_prijs2() +
                     ", " + bestelling.getArtikel_prijs3() + ")";
             
-            
+            //test
+            System.out.println(sqlString);
             return sqlString;
         }
         

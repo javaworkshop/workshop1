@@ -33,10 +33,66 @@ public class SqlCodeGenerator {
      * @return      sql code to insert klant
      */
     
+    public static String createTable(Object object){
+        String sqlTableName = "";
+        if (object.getClass().isAnnotationPresent(Table.class) 
+                && object.getClass().getAnnotation(Table.class).name().length() > 0 ){
+            sqlTableName = object.getClass().getAnnotation(Table.class).name();
+        }
+        else {
+            sqlTableName = object.getClass().getSimpleName();
+        }
+        int variableToInsert = 0;
+        String buildSqlStatement = "CREATE TABLE " + sqlTableName + "(";
+                Field[] declaredFields = object.getClass().getDeclaredFields();
+           for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        if (field.isAnnotationPresent(Column.class)){
+                            variableToInsert++;
+                            if (variableToInsert > 1){
+                                buildSqlStatement += ", ";
+                            }
+                            if (field.getAnnotation(Column.class).name().length() > 0 ){
+                                buildSqlStatement += field.getAnnotation(Column.class).name();
+                            }
+                            else{
+                                buildSqlStatement += field.getName();
+                            }
+                            if (field.get(object) instanceof SimpleStringProperty || field.get(object) instanceof String) {
+                                buildSqlStatement += " VARCHAR(" + field.getAnnotation(Column.class).length() + ")";
+                            }
+                            else if (field.get(object) instanceof SimpleIntegerProperty || field.get(object) instanceof Integer){
+                                buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                            }
+                            else if (field.get(object) instanceof SimpleDoubleProperty || field.get(object) instanceof Double){
+                                buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                            }
+                            else{
+                                System.out.println("Data type not supported");
+                            }
+                        }
+                        else if (field.isAnnotationPresent(Id.class)){
+                            variableToInsert++;
+                            if (variableToInsert > 1){
+                                buildSqlStatement += ", ";
+                            }
+                            buildSqlStatement += "PRIMARY KEY(" + field.getAnnotation(Id.class).name() + ")";
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+        return buildSqlStatement + ")";
+    }
+    
     //methode die gebruik maakt van annotation
     public static String buildAnnotationInsertStatement(Object object){
         String sqlTableName = "";
-        if (object.getClass().isAnnotationPresent(Entity.class) 
+        if (object.getClass().isAnnotationPresent(Table.class) 
                 && object.getClass().getAnnotation(Table.class).name().length() > 0 ){
             sqlTableName = object.getClass().getAnnotation(Table.class).name();
         }
@@ -82,10 +138,7 @@ public class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-           //test
-           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
-           System.out.println(returnString);
-        return returnString;
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
     }
     
     //methode die gebruikt maakt van reflection en alle typen objecten accepteert
@@ -124,10 +177,7 @@ public class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-           //test
-           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
-           System.out.println(returnString);
-        return returnString;
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
     }
     
     
@@ -166,10 +216,7 @@ public class SqlCodeGenerator {
                 e.printStackTrace();
             }
         }
-           //test
-           String returnString = buildSqlStatement + ") " + valueFieldEnd + ")";
-           System.out.println(returnString);
-        return returnString;
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
     }
     
     private static boolean isPrimitiveZero(Object object) { 
@@ -351,9 +398,6 @@ public class SqlCodeGenerator {
                     bestelling.getArtikel_aantal2() + ", " + bestelling.getArtikel_aantal3() + 
                     ", " + bestelling.getArtikel_prijs1() + ", " + bestelling.getArtikel_prijs2() +
                     ", " + bestelling.getArtikel_prijs3() + ")";
-            
-            //test
-            System.out.println(sqlString);
             return sqlString;
         }
         

@@ -1,6 +1,7 @@
 package model;
 
 //import java.util.ArrayList;
+import database.Column;
 import database.Entity;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,17 +11,17 @@ import javafx.beans.property.SimpleIntegerProperty;
 /**
  * Class to store data from the klant table.
  */
-@Entity
+@Entity(name = "Klant")
 public class Klant extends Data {
-    private final SimpleStringProperty voornaam;
-    private final SimpleStringProperty tussenvoegsel;
-    private final SimpleStringProperty achternaam;
-    private final SimpleStringProperty email;
-    private final SimpleStringProperty straatnaam;
-    private final SimpleIntegerProperty huisnummer;
-    private final SimpleStringProperty toevoeging;
-    private final SimpleStringProperty postcode;
-    private final SimpleStringProperty woonplaats;
+    @Column private final SimpleStringProperty voornaam;
+    @Column private final SimpleStringProperty tussenvoegsel;
+    @Column private final SimpleStringProperty achternaam;
+    @Column private final SimpleStringProperty email;
+    @Column private final SimpleStringProperty straatnaam;
+    @Column private final SimpleIntegerProperty huisnummer;
+    @Column private final SimpleStringProperty toevoeging;
+    @Column private final SimpleStringProperty postcode;
+    @Column private final SimpleStringProperty woonplaats;
     //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {

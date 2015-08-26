@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Id{
 String name() default "";
+int length() default 20;
 }

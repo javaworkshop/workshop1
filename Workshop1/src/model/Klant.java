@@ -3,6 +3,7 @@ package model;
 //import java.util.ArrayList;
 import database.Column;
 import database.Entity;
+import database.Table;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.IntegerProperty;
@@ -11,9 +12,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 /**
  * Class to store data from the klant table.
  */
-@Entity(name = "Klant")
+@Entity()
+@Table(name = "klanten")
 public class Klant extends Data {
-    @Column private final SimpleStringProperty voornaam;
+    @Column(name = "klant_id") private final SimpleStringProperty voornaam;
     @Column private final SimpleStringProperty tussenvoegsel;
     @Column private final SimpleStringProperty achternaam;
     @Column private final SimpleStringProperty email;

@@ -5,16 +5,16 @@ import org.workshop1.model.Klant;
 import org.workshop1.model.Adres;
 
 public interface KlantDao {
-    public Klant read(int klant_id);
-    public Klant read(String voornaam);
-    public Klant read(String voornaam, String achternaam);
-    public Klant read(Adres adres);
-    public Klant read(String postcode, int huisnummer);
-    public ArrayList<Klant> readAll();
+    public Klant read(int klant_id) throws DaoException;
+    public Klant read(String voornaam) throws DaoException;
+    public Klant read(String voornaam, String achternaam) throws DaoException;
+    public Klant read(Adres adres) throws DaoException;
+    public Klant read(String postcode, int huisnummer) throws DaoException;
+    public ArrayList<Klant> readAll() throws DaoException;
     
-    public void add(Klant klant);
+    public void add(Klant klant) throws DaoException;
     
-    public void update(Klant klant);
+    public void update(Klant klant) throws DaoException;
     
-    public void delete(Klant klant);
+    public void delete(Klant klant) throws DaoException;
 }

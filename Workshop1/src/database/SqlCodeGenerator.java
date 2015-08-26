@@ -35,23 +35,34 @@ public class SqlCodeGenerator {
     
     //methode die gebruik maakt van annotation
     public static String buildAnnotationInsertStatement(Object object){
+        String sqlTableName = "";
+        if (object.getClass().isAnnotationPresent(Entity.class) 
+                && object.getClass().getAnnotation(Table.class).name().length() > 0 ){
+            sqlTableName = object.getClass().getAnnotation(Table.class).name();
+        }
+        else {
+            sqlTableName = object.getClass().getSimpleName();
+        }
         int variableToInsert = 0;
-        String sqlTableName = object.getClass().getSimpleName().toUpperCase();
         String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
-        String valueFieldEnd = "values (";
+        String valueFieldEnd = "VALUES (";
         Field[] declaredFields = object.getClass().getDeclaredFields();
-        
            for (Field field : declaredFields){
             try{
                     field.setAccessible(true);
-                    if (field.get(object) != null && !isPrimitiveZero(field.get(object)) && object.getClass().isAnnotationPresent(Entity.class)){
-                        if (field.isAnnotationPresent(Column.class) || field.isAnnotationPresent(Id.class)){
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        if (field.isAnnotationPresent(Column.class)){
                             variableToInsert++;
                             if (variableToInsert > 1){
                                 buildSqlStatement += ", ";
                                 valueFieldEnd += ", ";
                             }
-                            buildSqlStatement += field.getName();
+                            if (field.getAnnotation(Column.class).name().length() > 0 ){
+                                buildSqlStatement += field.getAnnotation(Column.class).name();
+                            }
+                            else{
+                                buildSqlStatement += field.getName();
+                            }
                             if (field.get(object) instanceof SimpleStringProperty) {
                                 valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
                             }

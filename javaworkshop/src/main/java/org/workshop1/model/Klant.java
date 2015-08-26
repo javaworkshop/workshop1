@@ -9,26 +9,18 @@ import javafx.beans.property.StringProperty;
  * Class to store data from the klant table.
  */
 public class Klant extends Data {
+    private Adres adres;
     private final SimpleStringProperty achternaam;
     private final SimpleStringProperty email;
-    private final SimpleIntegerProperty huisnummer;
-    private final SimpleStringProperty postcode;
-    private final SimpleStringProperty straatnaam;
-    private final SimpleStringProperty toevoeging;
     private final SimpleStringProperty tussenvoegsel;
     private final SimpleStringProperty voornaam;
-    private final SimpleStringProperty woonplaats;
 
     public Klant() {
+        adres = new Adres();
         voornaam = new SimpleStringProperty(null);
         tussenvoegsel = new SimpleStringProperty(null);
         achternaam = new SimpleStringProperty(null);
         email = new SimpleStringProperty(null);
-        straatnaam = new SimpleStringProperty(null);
-        huisnummer = new SimpleIntegerProperty(0);
-        toevoeging = new SimpleStringProperty(null);
-        postcode = new SimpleStringProperty(null);
-        woonplaats= new SimpleStringProperty(null);
     }
     
     public StringProperty achternaamProperty() {
@@ -76,7 +68,7 @@ public class Klant extends Data {
     }
     
     public int getHuisnummer() {
-        return huisnummer.getValue();
+        return adres.getHuisnummer();
     }
     
     public int getKlant_id() {
@@ -84,15 +76,15 @@ public class Klant extends Data {
     }
     
     public String getPostcode() {
-        return postcode.getValue();
+        return adres.getPostcode();
     }
     
     public String getStraatnaam() {
-        return straatnaam.getValue();
+        return adres.getStraatnaam();
     }
 
     public String getToevoeging() {
-        return toevoeging.getValue();
+        return adres.getToevoeging();
     }
 
     public String getTussenvoegsel() {
@@ -104,7 +96,7 @@ public class Klant extends Data {
     }
 
     public String getWoonplaats() {
-        return woonplaats.getValue();
+        return adres.getWoonplaats();
     }
 
     @Override
@@ -125,7 +117,7 @@ public class Klant extends Data {
     }
     
     public IntegerProperty huisnummerProperty() {
-        return huisnummer;
+        return adres.huisnummerProperty();
     }
     
     public IntegerProperty klant_idProperty() {
@@ -133,7 +125,7 @@ public class Klant extends Data {
     }
 
     public StringProperty postcodeProperty() {
-        return postcode;
+        return adres.postcodeProperty();
     }
     
     public void setAchternaam(String achternaam) {
@@ -145,7 +137,7 @@ public class Klant extends Data {
     }
 
     public void setHuisnummer(int huisnummer) {
-        this.huisnummer.setValue(huisnummer);
+        adres.setHuisnummer(huisnummer);
     }
     
     public void setKlant_id(int id) {
@@ -153,15 +145,15 @@ public class Klant extends Data {
     }
 
     public void setPostcode(String postcode) {
-        this.postcode.setValue(postcode);
+        adres.setPostcode(postcode);
     }
 
     public void setStraatnaam(String straatnaam) {
-        this.straatnaam.setValue(straatnaam);
+        adres.setStraatnaam(straatnaam);
     }
     
     public void setToevoeging(String toevoeging) {
-        this.toevoeging.setValue(toevoeging);
+        adres.setToevoeging(toevoeging);
     }
 
     public void setTussenvoegsel(String tussenvoegsel) {
@@ -173,24 +165,24 @@ public class Klant extends Data {
     }
     
     public void setWoonplaats(String woonplaats) {
-        this.woonplaats.setValue(woonplaats);
+        adres.setWoonplaats(woonplaats);
     }
 
     public StringProperty straatnaamProperty() {
-        return straatnaam;
+        return adres.straatnaamProperty();
     }
 
     @Override
     public String toString() {
         return "Klant{" + "klant_id=" + super.primaryKeyProperty() + ", voornaam=" + voornaam +
                 ", tussenvoegsel=" + tussenvoegsel + ", achternaam=" + achternaam +
-                ", email=" + email + ", straatnaam=" + straatnaam + ", huisnummer=" + huisnummer +
-                ", toevoeging=" + toevoeging + ", postcode=" + postcode +
-                ", woonplaats=" + woonplaats + '}';
+                ", email=" + email + ", straatnaam=" + adres.getStraatnaam() + ", huisnummer=" + 
+                adres.getHuisnummer() + ", toevoeging=" + adres.getToevoeging() + ", postcode=" + 
+                adres.getPostcode() + ", woonplaats=" + adres.getWoonplaats() + '}';
     }
     
     public StringProperty toevoegingProperty() {
-        return toevoeging;
+        return adres.toevoegingProperty();
     }
     
     public StringProperty tussenvoegselProperty() {
@@ -199,9 +191,17 @@ public class Klant extends Data {
     
     public StringProperty voornaamProperty() {
         return voornaam;
-    } 
+    }
 
     public StringProperty woonplaatsProperty() {
-        return woonplaats;
+        return adres.woonplaatsProperty();
+    }
+    
+    public Adres getAdres() {
+        return adres;
+    }
+    
+    public void setAdres(Adres adres) {
+        this.adres = adres;
     }
 }

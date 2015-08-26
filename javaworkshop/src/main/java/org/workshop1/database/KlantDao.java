@@ -16,5 +16,6 @@ public interface KlantDao {
     
     public void update(Klant klant) throws DaoException;
     
+    public void delete (int klant_id) throws DaoException;
     public void delete(Klant klant) throws DaoException;
 }

@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Adres {
+public class Adres /*extends Data*/ {
     private final SimpleIntegerProperty huisnummer;
     private final SimpleStringProperty postcode;
     private final SimpleStringProperty straatnaam;
@@ -60,23 +60,23 @@ public class Adres {
         return woonplaats.getValue();
     }
 
-    public IntegerProperty HuisnummerProperty() {
+    public IntegerProperty huisnummerProperty() {
         return huisnummer;
     }
 
-    public StringProperty PostcodeProperty() {
+    public StringProperty postcodeProperty() {
         return postcode;
     }
 
-    public StringProperty StraatnaamProperty() {
+    public StringProperty straatnaamProperty() {
         return straatnaam;
     }
 
-    public StringProperty ToevoegingProperty() {
+    public StringProperty toevoegingProperty() {
         return toevoeging;
     }
 
-    public StringProperty WoonplaatsProperty() {
+    public StringProperty woonplaatsProperty() {
         return woonplaats;
     }
 }

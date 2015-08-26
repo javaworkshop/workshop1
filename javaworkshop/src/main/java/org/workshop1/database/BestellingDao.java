@@ -11,5 +11,6 @@ public interface BestellingDao {
             
     public void update(Bestelling bestelling) throws DaoException;
     
+    public void delete(int bestelling_id) throws DaoException;
     public void delete(Bestelling bestelling) throws DaoException;
 }

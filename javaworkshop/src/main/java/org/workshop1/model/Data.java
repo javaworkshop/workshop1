@@ -1,12 +1,13 @@
 package org.workshop1.model;
 
+import java.io.Serializable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * Parent class of all classes that are used to store data from the database.
  */
-public abstract class Data {    
+public abstract class Data implements Serializable {    
     
     private final SimpleIntegerProperty primaryKey;
     

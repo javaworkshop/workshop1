@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleStringProperty;
 @Entity()
 @Table(name = "bestellingen")
 public class Bestelling extends Data {
+    @Id(name = "bestelling_id", length = 20) private final SimpleIntegerProperty bestelling_id;
     @Column(name = "klant_id", length = 20) private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
     @Column(name = "artikel_id1", length = 20) private final SimpleIntegerProperty artikel_id1;
     @Column(name = "artikel_id2", length = 20) private final SimpleIntegerProperty artikel_id2;
@@ -32,6 +33,7 @@ public class Bestelling extends Data {
     @Column(name = "artikel_prijs3", length = 20) private final SimpleDoubleProperty artikel_prijs3;
     
     public Bestelling() {
+        bestelling_id =new SimpleIntegerProperty(0);
         klant_id = new SimpleIntegerProperty(0);
         artikel_id1 = new SimpleIntegerProperty(0);
         artikel_id2 = new SimpleIntegerProperty(0);

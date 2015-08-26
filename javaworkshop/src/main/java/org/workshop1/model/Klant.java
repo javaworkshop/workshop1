@@ -1,6 +1,5 @@
 package org.workshop1.model;
 
-//import java.util.ArrayList;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +18,6 @@ public class Klant extends Data {
     private final SimpleStringProperty tussenvoegsel;
     private final SimpleStringProperty voornaam;
     private final SimpleStringProperty woonplaats;
-    //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {
         voornaam = new SimpleStringProperty(null);

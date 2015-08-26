@@ -15,4 +15,5 @@ import java.lang.annotation.Target;
  * @author gerbrich2
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Entity{}
+public @interface Entity{
+}

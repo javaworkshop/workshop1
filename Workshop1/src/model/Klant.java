@@ -3,6 +3,7 @@ package model;
 //import java.util.ArrayList;
 import database.Column;
 import database.Entity;
+import database.Id;
 import database.Table;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,7 +16,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 @Entity()
 @Table(name = "klanten")
 public class Klant extends Data {
-    @Column(name = "klant_id", length = 20) private final SimpleStringProperty voornaam;
+    @Id(name = "klant_id", length = 20) private final SimpleStringProperty voornaam;
     @Column(name = "tussenvoegsel", length = 20) private final SimpleStringProperty tussenvoegsel;
     @Column(name = "achternaam", length = 51) private final SimpleStringProperty achternaam;
     @Column(name = "email", length = 320) private final SimpleStringProperty email;

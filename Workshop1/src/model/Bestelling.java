@@ -1,6 +1,7 @@
 package model;
 
 import database.Column;
+import database.Entity;
 import database.Id;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -12,6 +13,7 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Class to store data from the bestelling table.
  */
+@Entity
 public class Bestelling extends Data {
     @Id private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
     @Column private final SimpleIntegerProperty artikel_id1;

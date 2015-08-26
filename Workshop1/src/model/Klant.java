@@ -1,6 +1,7 @@
 package model;
 
 //import java.util.ArrayList;
+import database.Entity;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.IntegerProperty;
@@ -9,6 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 /**
  * Class to store data from the klant table.
  */
+@Entity
 public class Klant extends Data {
     private final SimpleStringProperty voornaam;
     private final SimpleStringProperty tussenvoegsel;

@@ -13,13 +13,13 @@ import javafx.stage.Stage;
 import org.workshop1.model.Artikel;
 
 public class AddArtikelScreen extends Stage{
-    private VBox pnArtikel;
     private Button btVoegToe;
-    private TextField tfBestellingId;
+    private VBox pnArtikel;
+    private TextField tfArtikelAantal;
     private TextField tfArtikelId;
     private TextField tfArtikelNaam;
-    private TextField tfArtikelAantal;
     private TextField tfArtikelPrijs;
+    private TextField tfBestellingId;
     
     public AddArtikelScreen(){
       	pnArtikel = new VBox();
@@ -65,15 +65,15 @@ public class AddArtikelScreen extends Stage{
 	pnArtikel.getChildren().addAll(lblBestellingId, pnArtikelInfo, btVoegToe, btCancel);		
     }
         
-    public void setVoegToeHandler(EventHandler<ActionEvent> eh) {
-        btVoegToe.setOnAction(eh);        
-    } 
-        
-    public void processArtikelInfo(Artikel a){
+    public void processArtikelInfo(Artikel a) {
         a.setBestelling_id(Integer.parseInt(tfBestellingId.getText()));
         a.setArtikel_id(Integer.parseInt(tfArtikelId.getText()));
         a.setArtikel_naam(tfArtikelNaam.getText());
         a.setArtikel_aantal(Integer.parseInt(tfArtikelAantal.getText()));
         a.setArtikel_prijs(Double.parseDouble(tfArtikelPrijs.getText()));
+    } 
+        
+    public void setVoegToeHandler(EventHandler<ActionEvent> eh){
+        btVoegToe.setOnAction(eh);
     }
 }

@@ -1,7 +1,5 @@
 package org.workshop1.database.test;
 
-import org.workshop1.database.DatabaseConnector;
-import org.workshop1.database.DatabaseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,18 +9,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import org.workshop1.model.Artikel;
-import org.workshop1.model.Bestelling;
-import org.workshop1.model.Klant;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.workshop1.database.DatabaseConnector;
+import org.workshop1.database.DatabaseException;
+import org.workshop1.model.Artikel;
+import org.workshop1.model.Bestelling;
+import org.workshop1.model.Klant;
 
 public class DatabaseConnectorTest {  
     
+    private final Logger logger = LoggerFactory.getLogger(DatabaseConnectorTest.class);
     private DatabaseConnector dbConnector;
     private Klant k1;
     private Klant k2;
@@ -150,11 +153,18 @@ public class DatabaseConnectorTest {
     @Test
     public void testInitialData() throws SQLException, DatabaseException {
         List kList = dbConnector.readAll();
+        logger.info("comparing reference klant with database klant:\n" + k1 + "\n" + kList.get(0));
         assertEquals(k1, kList.get(0));
-        assertEquals(k2, kList.get(1));        
+        logger.info("comparing reference klant with database klant:\n" + k2 + "\n" + kList.get(1));
+        assertEquals(k2, kList.get(1));
+        logger.info("comparing reference bestelling with database bestelling:\n" + b1 + "\n" 
+                + dbConnector.readBestelling(1));
         assertEquals(b1, dbConnector.readBestelling(1));
-        Bestelling b = dbConnector.readBestelling(1);
+        logger.info("comparing reference bestelling with database bestelling:\n" + b2 + "\n" 
+                + dbConnector.readBestelling(2));
         assertEquals(b2, dbConnector.readBestelling(2));
+        logger.info("comparing reference bestelling with database bestelling:\n" + b3 + "\n" 
+                + dbConnector.readBestelling(3));
         assertEquals(b3, dbConnector.readBestelling(3));
     }
     

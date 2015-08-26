@@ -13,51 +13,24 @@ import java.util.LinkedHashSet;
  */
 
 public class QueryResult {
-    private final ArrayList<QueryResultRow> rows;
     private final LinkedHashSet<String> columnNames;
+    private final ArrayList<QueryResultRow> rows;
     
     public QueryResult() {
         rows = new ArrayList<>();
         columnNames = new LinkedHashSet<>();
     }
     
-    public void addRow(QueryResultRow qrr) {
-        rows.add(qrr);
-    }
-    
-    public QueryResultRow getRow(int index) {
-        return rows.get(index);       
-    }
-    
-    public ArrayList<QueryResultRow> getRows() {
-        return rows;
-    }
-    
-    public int rowCount() {
-        return rows.size();
-    }
-    
     public void addColumnName(String name) {
         columnNames.add(name);
     }
     
-    public String[] getColumnNames() {
-        String[] columnNamesArray = new String[columnNames.size()];
-        columnNames.toArray(columnNamesArray);
-        return columnNamesArray;
-    }
-    
-    public boolean isEmpty() {
-        return rows.isEmpty();
+    public void addRow(QueryResultRow qrr) {
+        rows.add(qrr);
     }
     
     @Override
-    public int hashCode() {
-        return rows.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj) {       
         if(obj == this)
             return true;
         if((obj == null) || (obj.getClass() != this.getClass()))
@@ -66,7 +39,34 @@ public class QueryResult {
         QueryResult qr = (QueryResult)obj;
         return qr.rows.equals(this.rows);
     }
+    
+    public String[] getColumnNames() {
+        String[] columnNamesArray = new String[columnNames.size()];
+        columnNames.toArray(columnNamesArray);
+        return columnNamesArray;
+    }
+    
+    public QueryResultRow getRow(int index) {
+        return rows.get(index);
+    }
+    
+    public ArrayList<QueryResultRow> getRows() {
+        return rows;
+    }
+    
+    @Override
+    public int hashCode() {
+        return rows.hashCode();
+    }
+    
+    public boolean isEmpty() {
+        return rows.isEmpty();
+    }
 
+    public int rowCount() {
+        return rows.size();
+    }
+    
     @Override
     public String toString() {
         return "QueryResult{" + "rows=" + rows + ", columnNames=" + columnNames + '}';

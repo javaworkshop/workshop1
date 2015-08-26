@@ -11,32 +11,30 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.workshop1.model.Artikel;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Data;
 import org.workshop1.model.Klant;
 import org.workshop1.model.QueryResult;
 import org.workshop1.model.QueryResultRow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
  * operations are processed.
  */
 public class DatabaseConnector {    
+    public static final byte C3P0_DATASOURCE = 2;
+    private static final String C3P0_FIREBIRD_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String C3P0_MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    public static final byte FIREBIRD_DATABASE = 2;
     public static final byte HIKARI_CP_DATASOURCE = 1;
     private static final String HIKARI_CP_FIREBIRD_DRIVER = 
             "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
     private static final String HIKARI_CP_MYSQL_DRIVER = 
             "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
-    public static final byte C3P0_DATASOURCE = 2;
-    private static final String C3P0_MYSQL_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String C3P0_FIREBIRD_DRIVER = "com.mysql.jdbc.Driver";
     public static final byte MYSQL_DATABASE = 1;
-    public static final byte FIREBIRD_DATABASE = 2;
-    
-    private Logger dbConnectorLogger;
     
     private DataSource dataSource;    
     
@@ -44,12 +42,12 @@ public class DatabaseConnector {
     private byte databaseType;
     private String driver;
     private boolean isInitialized;
+    private final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
     private String password;
     private String url;
     private String username;
     
-    public DatabaseConnector() {
-        dbConnectorLogger = LoggerFactory.getLogger(DatabaseConnector.class);
+    public DatabaseConnector() {        
         dataSource = null;
         isInitialized = false;
     }
@@ -62,8 +60,9 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addArtikel(Artikel a) throws SQLException, DatabaseException {
-        dbConnectorLogger.debug(SqlCodeGenerator.generateArtikelUpdateCode(a));
-        executeCommand(SqlCodeGenerator.generateArtikelUpdateCode(a));       
+        String artikelUpdateCode = SqlCodeGenerator.generateArtikelUpdateCode(a);
+        logger.debug(artikelUpdateCode);
+        executeCommand(artikelUpdateCode);       
     }
     
     /**
@@ -74,8 +73,9 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
-        dbConnectorLogger.debug(SqlCodeGenerator.generateBestellingInsertionCode(b));
-        executeCommand(SqlCodeGenerator.generateBestellingInsertionCode(b));
+        String bestellingInsertionCode = SqlCodeGenerator.generateBestellingInsertionCode(b);
+        logger.debug(bestellingInsertionCode);
+        executeCommand(bestellingInsertionCode);
     }
     
     /**
@@ -86,8 +86,9 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
-        dbConnectorLogger.debug(SqlCodeGenerator.generateKlantInsertionCode(k));
-        executeCommand(SqlCodeGenerator.generateKlantInsertionCode(k));
+        String klantInsertionCode = SqlCodeGenerator.generateKlantInsertionCode(k);
+        logger.debug(klantInsertionCode);
+        executeCommand(klantInsertionCode);
     }
     
     /**
@@ -153,6 +154,7 @@ public class DatabaseConnector {
         executeCommand("DELETE FROM klant");        
         executeCommand("ALTER TABLE klant AUTO_INCREMENT = 1");
         executeCommand("ALTER TABLE bestelling AUTO_INCREMENT = 1;");
+        logger.info("database tabellen leeggemaakt");
     }
     
     /**
@@ -177,11 +179,11 @@ public class DatabaseConnector {
             setUpC3p0DataSource();
         }            
         
-        dbConnectorLogger.info("Database setup data: driver = " + driver + ", url = " + url
+        logger.info("Database setup data: driver = " + driver + ", url = " + url
                 + ", data source = " + (dataSourceType == HIKARI_CP_DATASOURCE ? "Hikari CP" : 
                 "C3P0") + ", username = " + username + ", password = " + password);
         
-        isInitialized = true;       
+        isInitialized = true;
     }
     
     // De switch in deze methode is niet zo mooi (erg lang). Misschien is er een betere manier?
@@ -317,6 +319,19 @@ public class DatabaseConnector {
     }
     
     /**
+     * Deletes the bestelling from the database with the given bestelling id.
+     * @param bestelling_id         the id of the bestelling that is to be deleted
+     * @throws SQLException
+     * @throws DatabaseException    thrown if database connection has not been initialized yet
+     */
+    public void deleteBestelling(int bestelling_id) throws SQLException, DatabaseException {
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        executeCommand("DELETE FROM bestelling WHERE bestelling_id = " + bestelling_id);
+    }
+    
+    /**
      * Deletes the given klant from the database based on voornaam, achternaam, and tussenvoegsel.
      * @param k                     klant to be deleted
      * @throws SQLException         
@@ -385,19 +400,6 @@ public class DatabaseConnector {
                 con.setAutoCommit(initialAutoCommit);
             }
         }
-    }
-    
-    /**
-     * Deletes the bestelling from the database with the given bestelling id.
-     * @param bestelling_id         the id of the bestelling that is to be deleted
-     * @throws SQLException
-     * @throws DatabaseException    thrown if database connection has not been initialized yet
-     */
-    public void deleteBestelling(int bestelling_id) throws SQLException, DatabaseException {
-        if(!isInitialized)
-            throw new DatabaseException("Geen verbinding met database.");
-        
-        executeCommand("DELETE FROM bestelling WHERE bestelling_id = " + bestelling_id);
     }
     
     /**
@@ -479,6 +481,16 @@ public class DatabaseConnector {
      */
     public byte getDataSourceType() {
         return dataSourceType;
+    }
+    
+    /**
+     * Returns the type of Database this DatabaseConnector is using, or is set to use when
+     * connecting to a database. The codes for Database types are defined by the constants
+     * contained in this class.
+     * @return the code for the type of Database
+     */
+    public byte getDatabaseType() {
+        return databaseType;
     }
     
     /**
@@ -575,7 +587,7 @@ public class DatabaseConnector {
      * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public Bestelling readBestelling(int bestelling_id) throws SQLException, DatabaseException {
+    public Bestelling readBestelling(int bestelling_id) throws SQLException, DatabaseException{
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
@@ -599,7 +611,7 @@ public class DatabaseConnector {
      * @throws SQLException 
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public Klant readKlant(int klant_id) throws SQLException, DatabaseException{
+    public Klant readKlant(int klant_id) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
@@ -669,17 +681,22 @@ public class DatabaseConnector {
     }
     
     /**
-     * Returns the type of Database this DatabaseConnector is using, or is set to use when
-     * connecting to a database. The codes for Database types are defined by the constants
+     * Sets the type of DataSource this DatabaseConnector will use next time it initiates a
+     * connection to a database. The codes for DataSource types are defined by the constants
      * contained in this class.
-     * @return the code for the type of Database
+     * @param dataSourceType the code for the type of DataSource to be used
+     * @throws DatabaseException thrown when parameter value is invalid
      */
-    public byte getDatabaseType() {
-        return databaseType;
+    public void setDataSourceType(byte dataSourceType) throws DatabaseException {
+        if(dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
+            throw new DatabaseException("Instellen data source mislukt.");
+        else {
+            this.dataSourceType = dataSourceType;
+        }
     }
     
     /**
-     * Sets the type of Database this DatabaseConnector will use next time it initiates a 
+     * Sets the type of Database this DatabaseConnector will use next time it initiates a
      * connection to a database. The codes for Database types are defined by the constants 
      * contained in this class.
      * @param dataSourceType the code for the type of Database to be used
@@ -692,21 +709,6 @@ public class DatabaseConnector {
             this.databaseType = databaseType;
         }
     }
-    
-    /**
-     * Sets the type of DataSource this DatabaseConnector will use next time it initiates a 
-     * connection to a database. The codes for DataSource types are defined by the constants 
-     * contained in this class.
-     * @param dataSourceType the code for the type of DataSource to be used
-     * @throws DatabaseException thrown when parameter value is invalid
-     */
-    public void setDataSourceType(byte dataSourceType) throws DatabaseException {
-        if(dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
-            throw new DatabaseException("Instellen data source mislukt.");
-        else {
-            this.dataSourceType = dataSourceType;
-        }
-    }    
     
     /**
      * Sets the driver that will be used to connect with SQL database.

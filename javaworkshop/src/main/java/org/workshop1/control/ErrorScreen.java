@@ -1,5 +1,6 @@
 package org.workshop1.control;
 
+import java.io.File;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,7 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.io.File;
 
 /**
  * A general screen used to display error messages to the user. Use show method to get the screen to
@@ -55,12 +55,12 @@ class ErrorScreen extends Stage {
         errorMessage.setText(message);      
     }
 
-    void setMessage(String message) {
-        errorMessage.setText(message);
-    }
-    
     String getMessage() {
         return errorMessage.getText();
+    }
+    
+    void setMessage(String message) {
+        errorMessage.setText(message);
     }
     
 }

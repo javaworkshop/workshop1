@@ -18,11 +18,11 @@ public abstract class Data {
         return primaryKey.getValue();
     }
 
-    protected void setPrimaryKey(int primaryKey) {
-        this.primaryKey.setValue(primaryKey);
-    }
-    
     protected IntegerProperty primaryKeyProperty() {
         return primaryKey;
+    }
+    
+    protected void setPrimaryKey(int primaryKey) {
+        this.primaryKey.setValue(primaryKey);
     } 
 }

@@ -9,25 +9,24 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import org.workshop1.model.Klant;
 import org.apache.commons.validator.GenericValidator;
+import org.workshop1.model.Klant;
 
 public class AddKlantScreen extends Stage {
 
-    TextField tfVoornaam;
-    TextField tfAchternaam;
-    TextField tfTussenvoegsel;
-    TextField tfEmail;
-    TextField tfStraatnaam;
-    TextField tfPostcode;
-    TextField tfToevoeging;
-    TextField tfHuisnummer;
-    TextField tfWoonplaats;
     Button btVoegToe;
-
     GridPane gridPane;
-    Stage stMaakNieuweKlant;
     Scene scene;
+    Stage stMaakNieuweKlant;
+    TextField tfAchternaam;
+    TextField tfEmail;
+    TextField tfHuisnummer;
+    TextField tfPostcode;
+    TextField tfStraatnaam;
+    TextField tfToevoeging;
+    TextField tfTussenvoegsel;
+    TextField tfVoornaam;
+    TextField tfWoonplaats;
 
     public AddKlantScreen() {
 
@@ -86,10 +85,6 @@ public class AddKlantScreen extends Stage {
 
     }
 
-    public void setVoegToeHandler(EventHandler<ActionEvent> eh) {
-        btVoegToe.setOnAction(eh);
-    }
-
     public Klant getKlantInfo() {
 
         Klant klant = new Klant();
@@ -119,7 +114,7 @@ public class AddKlantScreen extends Stage {
             tfTussenvoegsel.setStyle("-fx-text-inner-color:red;");
             goedIngevuld = false;
         }
-                else{
+        else{
             tfTussenvoegsel.setStyle("-fx-text-inner-color:black;");
         }
         String email = tfEmail.getText();
@@ -135,7 +130,7 @@ public class AddKlantScreen extends Stage {
             tfStraatnaam.setStyle("-fx-text-inner-color:red;");
             goedIngevuld = false;
         }
-                else{
+        else{
             tfStraatnaam.setStyle("-fx-text-inner-color:black;");
         }
         String postcode = tfPostcode.getText().toUpperCase();
@@ -153,7 +148,7 @@ public class AddKlantScreen extends Stage {
             tfHuisnummer.setStyle("-fx-text-inner-color:red;");
             goedIngevuld = false;
         }
-                else{
+        else{
             tfHuisnummer.setStyle("-fx-text-inner-color:black;");
         }
         String woonplaats = tfWoonplaats.getText();
@@ -180,5 +175,9 @@ public class AddKlantScreen extends Stage {
             klant = null;
         }
         return klant;
+    }
+
+    public void setVoegToeHandler(EventHandler<ActionEvent> eh) {
+        btVoegToe.setOnAction(eh);
     }
 }

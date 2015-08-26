@@ -5,8 +5,8 @@ package org.workshop1.model;
  * support easy display and editing in a TableView. (bestelling properties nog niet!)
  */
 public class QueryResultRow {
-    private Klant klant;
     private Bestelling bestelling;
+    private Klant klant;
     
     
     public QueryResultRow() {
@@ -14,20 +14,24 @@ public class QueryResultRow {
         bestelling = new Bestelling();
     }
     
-    public Klant getKlant() {
-        return klant;
-    }
-    
-    public void setKlant(Klant k) {
-        klant = k;
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        if((obj == null) || (obj.getClass() != this.getClass()))
+            return false;
+        
+        QueryResultRow qrr = (QueryResultRow)obj;
+        return  qrr.klant.equals(this.klant) &&
+                qrr.bestelling.equals(this.bestelling);
     }
     
     public Bestelling getBestelling() {
         return bestelling;
     }
     
-    public void setBestelling(Bestelling b) {
-        bestelling = b;
+    public Klant getKlant() {
+        return klant;
     }
 
     @Override
@@ -40,16 +44,12 @@ public class QueryResultRow {
                 bestelling.hashCode();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == this)
-            return true;
-        if((obj == null) || (obj.getClass() != this.getClass()))
-            return false;
-        
-        QueryResultRow qrr = (QueryResultRow)obj;
-        return  qrr.klant.equals(this.klant) &&
-                qrr.bestelling.equals(this.bestelling);
+    public void setBestelling(Bestelling b) {
+        bestelling = b;
+    }
+
+    public void setKlant(Klant k) {
+        klant = k;
     }
 
     @Override

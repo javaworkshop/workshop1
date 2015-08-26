@@ -225,10 +225,10 @@ class SqlCodeGenerator {
 
             //artikelnaam
             + " artikel_naam1 =  (CASE WHEN (artikel_id1 = " + artikelId + 
-            ")  THEN \' " + artikelNaam + "\' ELSE artikel_naam1 END)," + 
+            ")  THEN \'" + artikelNaam + "\' ELSE artikel_naam1 END)," + 
             "artikel_naam2 =(CASE WHEN (artikel_id2 = " + artikelId + 
                     " and IFNULL(artikel_id1,0) <> " + artikelId + 
-            ")  THEN \' " + artikelNaam + "\' ELSE artikel_naam2 END)," + 
+            ")  THEN \'" + artikelNaam + "\' ELSE artikel_naam2 END)," + 
             "artikel_naam3 =  (CASE WHEN (artikel_id3 = " + artikelId + 
                     " and IFNULL(artikel_id1,0) <> " + artikelId + " and IFNULL(artikel_id2,0) <> " 
                     + artikelId +

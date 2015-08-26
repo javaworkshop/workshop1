@@ -15,15 +15,15 @@ import javafx.beans.property.SimpleIntegerProperty;
 @Entity()
 @Table(name = "klanten")
 public class Klant extends Data {
-    @Column(name = "klant_id") private final SimpleStringProperty voornaam;
-    @Column private final SimpleStringProperty tussenvoegsel;
-    @Column private final SimpleStringProperty achternaam;
-    @Column private final SimpleStringProperty email;
-    @Column private final SimpleStringProperty straatnaam;
-    @Column private final SimpleIntegerProperty huisnummer;
-    @Column private final SimpleStringProperty toevoeging;
-    @Column private final SimpleStringProperty postcode;
-    @Column private final SimpleStringProperty woonplaats;
+    @Column(name = "klant_id", length = 20) private final SimpleStringProperty voornaam;
+    @Column(name = "tussenvoegsel", length = 20) private final SimpleStringProperty tussenvoegsel;
+    @Column(name = "achternaam", length = 51) private final SimpleStringProperty achternaam;
+    @Column(name = "email", length = 320) private final SimpleStringProperty email;
+    @Column(name = "straatnaam", length = 26) private final SimpleStringProperty straatnaam;
+    @Column(name = "huisnummer", length = 10) private final SimpleIntegerProperty huisnummer;
+    @Column(name = "toevoeging", length = 6) private final SimpleStringProperty toevoeging;
+    @Column(name = "postcode", length = 6) private final SimpleStringProperty postcode;
+    @Column(name = "woonplaats", length = 26) private final SimpleStringProperty woonplaats;
     //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {

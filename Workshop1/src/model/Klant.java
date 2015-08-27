@@ -16,7 +16,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 @Entity()
 @Table(name = "klanten")
 public class Klant extends Data {
-    @Id(name = "klant_id", length = 20) private final SimpleStringProperty voornaam;
+    @Id(name = "klant_id", length = 10) private final SimpleIntegerProperty klant_id;
+    @Column(name = "voornaam", length = 50) private final SimpleStringProperty voornaam;
     @Column(name = "tussenvoegsel", length = 20) private final SimpleStringProperty tussenvoegsel;
     @Column(name = "achternaam", length = 51) private final SimpleStringProperty achternaam;
     @Column(name = "email", length = 320) private final SimpleStringProperty email;
@@ -28,6 +29,7 @@ public class Klant extends Data {
     //private ArrayList<Bestelling> bestellingen; misschien moet deze er nog bij...
 
     public Klant() {
+        klant_id = new SimpleIntegerProperty(0);
         voornaam = new SimpleStringProperty(null);
         tussenvoegsel = new SimpleStringProperty(null);
         achternaam = new SimpleStringProperty(null);

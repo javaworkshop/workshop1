@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import model.Artikel;
@@ -66,8 +67,8 @@ public class SqlCodeGenerator {
                             else if (field.get(object) instanceof SimpleIntegerProperty || field.get(object) instanceof Integer){
                                 buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
                             }
-                            else if (field.get(object) instanceof SimpleDoubleProperty || field.get(object) instanceof Double){
-                                buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                            else if (field.get(object) instanceof SimpleLongProperty || field.get(object) instanceof Long){
+                                buildSqlStatement += " BIGINT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
                             }
                             else{
                                 System.out.println("Data type not supported");
@@ -106,7 +107,8 @@ public class SqlCodeGenerator {
            for (Field field : declaredFields){
             try{
                     field.setAccessible(true);
-                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                    Object variable = field.get(object);
+                    if (variable != null && !isPrimitiveZero(variable)){
                         if (field.isAnnotationPresent(Column.class)){
                             variableToInsert++;
                             if (variableToInsert > 1){
@@ -119,17 +121,20 @@ public class SqlCodeGenerator {
                             else{
                                 buildSqlStatement += field.getName();
                             }
-                            if (field.get(object) instanceof SimpleStringProperty) {
-                                valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                            if (variable instanceof SimpleStringProperty) {
+                                valueFieldEnd += "\'" + ((SimpleStringProperty)variable).get() + "\'";
                             }
-                            else if (field.get(object) instanceof SimpleIntegerProperty){
-                                valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                            else if (variable instanceof SimpleIntegerProperty){
+                                valueFieldEnd += ((SimpleIntegerProperty)variable).get();
                             }
-                            else if (field.get(object) instanceof SimpleDoubleProperty){
-                                valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
+                            else if (variable instanceof SimpleLongProperty){
+                                valueFieldEnd += ((SimpleLongProperty)variable).get();
+                            }
+                            else if (variable instanceof Long || variable instanceof String || variable instanceof Integer){
+                                valueFieldEnd += variable;
                             }
                             else{
-                                valueFieldEnd += field.get(object);
+                                System.out.println("Datatype not supported");
                             }
                         }
                     }

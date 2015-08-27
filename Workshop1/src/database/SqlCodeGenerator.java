@@ -45,46 +45,44 @@ public class SqlCodeGenerator {
         }
         int variableToInsert = 0;
         String buildSqlStatement = "CREATE TABLE " + sqlTableName + "(";
-                Field[] declaredFields = object.getClass().getDeclaredFields();
-           for (Field field : declaredFields){
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+       for (Field field : declaredFields){
             try{
-                    field.setAccessible(true);
-                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
-                        if (field.isAnnotationPresent(Column.class)){
-                            variableToInsert++;
-                            if (variableToInsert > 1){
-                                buildSqlStatement += ", ";
-                            }
-                            if (field.getAnnotation(Column.class).name().length() > 0 ){
-                                buildSqlStatement += field.getAnnotation(Column.class).name();
-                            }
-                            else{
-                                buildSqlStatement += field.getName();
-                            }
-                            if (field.get(object) instanceof SimpleStringProperty || field.get(object) instanceof String) {
-                                buildSqlStatement += " VARCHAR(" + field.getAnnotation(Column.class).length() + ")";
-                            }
-                            else if (field.get(object) instanceof SimpleIntegerProperty || field.get(object) instanceof Integer){
-                                buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
-                            }
-                            else if (field.get(object) instanceof SimpleLongProperty || field.get(object) instanceof Long){
-                                buildSqlStatement += " BIGINT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
-                            }
-                            else{
-                                System.out.println("Data type not supported");
-                            }
-                        }
-                        else if (field.isAnnotationPresent(Id.class)){
-                            variableToInsert++;
-                            if (variableToInsert > 1){
-                                buildSqlStatement += ", ";
-                            }
-                            buildSqlStatement += "PRIMARY KEY(" + field.getAnnotation(Id.class).name() + ")";
-                        }
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(Column.class)){
+                    variableToInsert++;
+                    if (variableToInsert > 1){
+                        buildSqlStatement += ", ";
                     }
+                    if (field.getAnnotation(Column.class).name().length() > 0 ){
+                        buildSqlStatement += field.getAnnotation(Column.class).name();
+                    }
+                    else{
+                        buildSqlStatement += field.getName();
+                    }
+                    if (field.get(object) instanceof SimpleStringProperty || field.get(object) instanceof String) {
+                        buildSqlStatement += " VARCHAR(" + field.getAnnotation(Column.class).length() + ")";
+                    }
+                    else if (field.get(object) instanceof SimpleIntegerProperty || field.get(object) instanceof Integer){
+                        buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                    }
+                    else if (field.get(object) instanceof SimpleLongProperty || field.get(object) instanceof Long){
+                        buildSqlStatement += " BIGINT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                    }
+                    else{
+                        System.out.println("Data type not supported");
+                    }
+                }
+                else if (field.isAnnotationPresent(Id.class)){
+                    variableToInsert++;
+                    if (variableToInsert > 1){
+                        buildSqlStatement += ", ";
+                    }
+                    buildSqlStatement += "PRIMARY KEY(" + field.getAnnotation(Id.class).name() + ")";
+                }
             }
             catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
-                e.printStackTrace();
+            e.printStackTrace();
             }
         }
         return buildSqlStatement + ")";

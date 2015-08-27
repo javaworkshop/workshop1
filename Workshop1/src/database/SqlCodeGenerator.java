@@ -244,6 +244,22 @@ public class SqlCodeGenerator {
             isPrimitiveZero = true; 
         }
     }
+    else if (object instanceof SimpleIntegerProperty){
+        if (((SimpleIntegerProperty)object).get() == 0){
+            isPrimitiveZero = true;
+        }
+    }
+        else if (object instanceof SimpleLongProperty){
+        if (((SimpleLongProperty)object).get() == 0){
+            isPrimitiveZero = true;
+        }
+    }
+        else if (object instanceof SimpleDoubleProperty){
+        if (((SimpleDoubleProperty)object).get() == 0.0){
+            isPrimitiveZero = true;
+        }
+    }
+    
     return isPrimitiveZero;
     }
     

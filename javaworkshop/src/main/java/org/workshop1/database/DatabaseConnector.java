@@ -26,18 +26,19 @@ import org.workshop1.model.QueryResultRow;
  */
 public class DatabaseConnector {    
     public static final byte C3P0_DATASOURCE = 2;
-    private static final String C3P0_FIREBIRD_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String C3P0_MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    public static final String C3P0_DRIVER_FIREBIRD = "org.firebirdsql.jdbc.FBDriver";
+    public static final String C3P0_DRIVER_MYSQL = "com.mysql.jdbc.Driver";
     public static final byte FIREBIRD_DATABASE = 2;
     public static final byte HIKARI_CP_DATASOURCE = 1;
-    private static final String HIKARI_CP_FIREBIRD_DRIVER = 
+    public static final String HIKARI_CP_DRIVER_FIREBIRD = 
+            "org.firebirdsql.pool.FBSimpleDataSource";
+    public static final String HIKARI_CP_DRIVER_MYSQL = 
             "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
-    private static final String HIKARI_CP_MYSQL_DRIVER = 
-            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
-    public static final byte MYSQL_DATABASE = 1;
-    
+      
+   
     private DataSource dataSource;    
     
+     private String databaseChoice;
     private byte dataSourceType;
     private byte databaseType;
     private String driver;
@@ -164,20 +165,10 @@ public class DatabaseConnector {
      * @throws SQLException
      */
     public void connectToDatabase() throws DatabaseException, SQLException {
-        if(dataSourceType == HIKARI_CP_DATASOURCE) {
-            if(databaseType == MYSQL_DATABASE)
-                driver = HIKARI_CP_MYSQL_DRIVER;
-            else/*if((databaseType == FIREBIRD_DATABASE)*/
-                driver = HIKARI_CP_FIREBIRD_DRIVER;
+        if(dataSourceType == HIKARI_CP_DATASOURCE)            
             setUpHikariCPDataSource();
-        }
-        else/*if(dataSourceType == C3P0_DATASOURCE)*/ {
-            if(databaseType == MYSQL_DATABASE)
-                driver = C3P0_MYSQL_DRIVER;
-            else/*if((databaseType == FIREBIRD_DATABASE)*/
-                driver = C3P0_FIREBIRD_DRIVER;
-            setUpC3p0DataSource();
-        }            
+        else/*if(dataSourceType == C3P0_DATASOURCE)*/
+            setUpC3p0DataSource();            
         
         logger.info("Database setup data: driver = " + driver + ", url = " + url
                 + ", data source = " + (dataSourceType == HIKARI_CP_DATASOURCE ? "Hikari CP" : 
@@ -680,6 +671,14 @@ public class DatabaseConnector {
         return klant;
     }
     
+    public void setDatabaseChoice(String databaseChoice) {
+        this.databaseChoice = databaseChoice;
+    }
+
+    public String getDatabaseChoice() {
+        return databaseChoice;
+    }
+    
     /**
      * Sets the type of DataSource this DatabaseConnector will use next time it initiates a
      * connection to a database. The codes for DataSource types are defined by the constants
@@ -702,13 +701,13 @@ public class DatabaseConnector {
      * @param dataSourceType the code for the type of Database to be used
      * @throws DatabaseException thrown when parameter value is invalid
      */
-    public void setDatabaseType(byte databaseType) throws DatabaseException {
+    /*public void setDatabaseType(byte databaseType) throws DatabaseException {
         if(databaseType < MYSQL_DATABASE && databaseType > FIREBIRD_DATABASE)
             throw new DatabaseException("Instellen database mislukt.");
         else {
             this.databaseType = databaseType;
         }
-    }
+    }*/
     
     /**
      * Sets the driver that will be used to connect with SQL database.
@@ -736,6 +735,7 @@ public class DatabaseConnector {
         try {
             DataSource unpooledDS = DataSources.unpooledDataSource(url, username, password);
             dataSource = DataSources.pooledDataSource(unpooledDS);
+            testConnection();
         }
         catch(SQLException ex) {
             throw new DatabaseException("Verbinden mislukt.\n"
@@ -750,15 +750,29 @@ public class DatabaseConnector {
         config.setInitializationFailFast(true);
         config.setLeakDetectionThreshold(5000);
         
-        config.setDataSourceClassName(driver);
-        config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet
-        config.addDataSourceProperty("port", "3306");            // eigenlijk info uit de gui
-        config.addDataSourceProperty("databaseName", "mydb");    // gebruikt worden
-        config.addDataSourceProperty("user", username);
-        config.addDataSourceProperty("password", password);
+        if ("MySQL".equals(databaseChoice)) {
+            config.setDataSourceClassName(driver);
+            /*config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet
+            config.addDataSourceProperty("port", "3306");            // eigenlijk info uit de gui
+            config.addDataSourceProperty("databaseName", "mydb");*/    // gebruikt worden
+            config.addDataSourceProperty("url", url);
+            config.addDataSourceProperty("user", username);
+            config.addDataSourceProperty("password", password);
+        }
+        else {
+            config.setDataSourceClassName(driver);
+            /*config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet
+            config.addDataSourceProperty("port", "3050");            // eigenlijk info uit de gui
+            config.addDataSourceProperty("databaseName", "klantdatabase");  */  // gebruikt worden
+            config.addDataSourceProperty("database", url);
+            config.addDataSourceProperty("userName", username);
+            config.addDataSourceProperty("password", password);
+        }        
         
         dataSource = new HikariDataSource(config);
+        logger.info("HikariConfig object is ingesteld en HikariDataSource is aangemaakt.");        
         testConnection();
+        logger.info("HikariDatasource is getest en gaf geen foutmeldingen.");
     }
 
     /**

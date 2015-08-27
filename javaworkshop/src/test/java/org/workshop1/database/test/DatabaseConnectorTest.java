@@ -48,7 +48,7 @@ public class DatabaseConnectorTest {
             dbConnector = new DatabaseConnector();
             dbConnector.setUrl(mySqlUrl);
             dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-            dbConnector.setDatabaseType(DatabaseConnector.MYSQL_DATABASE);
+            dbConnector.setDatabaseChoice("MySQL");
             dbConnector.setUsername(username);
             dbConnector.setPassword(password);
             dbConnector.connectToDatabase();
@@ -67,7 +67,7 @@ public class DatabaseConnectorTest {
             FileNotFoundException {
         Class.forName(mySqlDriver);
         
-        File file = new File("scripts" + File.separator + "KlantDatabase.sql");
+        File file = new File("scripts" + File.separator + "KlantDatabaseMySQL.sql");
         try(Connection con = DriverManager.getConnection(mySqlUrl, username, password);
             Statement statement = con.createStatement()
         ) {

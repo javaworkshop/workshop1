@@ -148,17 +148,39 @@ public class Controller extends Application {
         dbConnector.setUrl(MYSQL_URL); // later nog aan te passen
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
-        try {
-            if(dataSource.equals("Hikari_CP")) {
-                dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);                              
+        try {            
+            if (database.equals("MySQL")) {                
+                dbConnector.setDatabaseChoice("MySQL");
+                dbConnector.setUrl("jdbc:Mysql://localhost/mydb");         
+                
+                if(dataSource.equals("Hikari_CP")) {
+                    dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
+                    dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_MYSQL);
+                }
+                else/*if(dataSource.equals("C3P0"))*/ {
+                    dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
+                    dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_MYSQL);
+                }
+                
+                lblConnectionStatus.setText("Verbonden met MySQL database ");
+            } 
+            else { //if (database.equals("Firebird"))
+                dbConnector.setDatabaseChoice("Firebird");
+                dbConnector.setUrl("//localhost:3050/C:/Documents and Settings/All Users/"
+                        + "Application Data/Firebird/klantdatabase.fdb"); // dit hangt af van path
+                // naar database, stel eventueel in via aliases.conf in firebird installatie map
+                
+                if(dataSource.equals("Hikari_CP")) {
+                    dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
+                    dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_FIREBIRD);
+                }
+                else/*if(dataSource.equals("C3P0"))*/ {
+                    dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
+                    dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_FIREBIRD);
+                }
+                
+                lblConnectionStatus.setText("Verbonden met Firebird database ");               
             }
-            else/*if(dataSource.equals("C3P0"))*/ {
-                dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);          
-            }
-            if(database.equals("MySQL"))
-                dbConnector.setDatabaseType(DatabaseConnector.MYSQL_DATABASE);
-            else/*if(database.equals("Firebird")*/
-                dbConnector.setDatabaseType(DatabaseConnector.FIREBIRD_DATABASE);
             dbConnector.connectToDatabase();
             logger.info("verbonden met database " + dbConnector.getUrl());
         }
@@ -167,9 +189,7 @@ public class Controller extends Application {
         }
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
-        }
-        
-        lblConnectionStatus.setText("Verbonden met database ");        
+        }       
     }    
     
     /**

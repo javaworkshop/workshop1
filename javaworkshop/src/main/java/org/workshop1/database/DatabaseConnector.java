@@ -795,7 +795,7 @@ public class DatabaseConnector {
         try(Connection con = dataSource.getConnection();
                 Statement statement = con.createStatement()
                 ) {
-            statement.execute("SHOW TABLES");
+            //statement.execute("SHOW TABLES");
         }
         catch(SQLException ex) {
             throw new DatabaseException("Verbinden mislukt.\n"

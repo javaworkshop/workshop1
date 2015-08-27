@@ -145,7 +145,6 @@ public class Controller extends Application {
     private void connectToDB() {
         dbConnector.setUsername(tfUsername.getText().trim());
         dbConnector.setPassword(pfPassword.getText().trim());
-        dbConnector.setUrl(MYSQL_URL); // later nog aan te passen
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
         try {            
@@ -161,27 +160,28 @@ public class Controller extends Application {
                     dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_MYSQL);
                 }
-                
-                lblConnectionStatus.setText("Verbonden met MySQL database ");
             } 
             else { //if (database.equals("Firebird"))
-                dbConnector.setDatabaseChoice("Firebird");
-                dbConnector.setUrl("//localhost:3050/C:/Documents and Settings/All Users/"
-                        + "Application Data/Firebird/klantdatabase.fdb"); // dit hangt af van path
-                // naar database, stel eventueel in via aliases.conf in firebird installatie map
+                dbConnector.setDatabaseChoice("Firebird");                
                 
                 if(dataSource.equals("Hikari_CP")) {
+                    dbConnector.setUrl("//localhost:3050/C:/Documents and Settings/All Users/"
+                        + "Application Data/Firebird/klantdatabase.fdb"); // dit hangt af van path
+                    // naar database, stel eventueel in via aliases.conf in firebird installatie map
                     dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_FIREBIRD);
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
+                    dbConnector.setUrl("jdbc:firebirdsql:localhost/3050:C:/Documents and Settings/"
+                        + "All Users/Application Data/Firebird/klantdatabase.fdb"); // dit hangt af 
+                    // van path naar database, stel eventueel in via aliases.conf in firebird 
+                    // installatie map
                     dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_FIREBIRD);
                 }
-                
-                lblConnectionStatus.setText("Verbonden met Firebird database ");               
             }
             dbConnector.connectToDatabase();
+            lblConnectionStatus.setText("Verbonden met " + database + " database.");
             logger.info("verbonden met database " + dbConnector.getUrl());
         }
         catch(SQLException ex){
@@ -189,6 +189,7 @@ public class Controller extends Application {
         }
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
+            ex.printStackTrace();
         }       
     }    
     

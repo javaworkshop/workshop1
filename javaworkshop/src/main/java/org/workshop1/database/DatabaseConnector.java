@@ -178,7 +178,6 @@ public class DatabaseConnector {
     }
     
     // De switch in deze methode is niet zo mooi (erg lang). Misschien is er een betere manier?
-
     /**
      * Retrieves results from the last executed query from rowSet and stores them in a QueryResult
      * object.
@@ -189,7 +188,7 @@ public class DatabaseConnector {
         int columnCount = rowSet.getMetaData().getColumnCount();
         String[] columnNames = new String[columnCount];
         for(int i = 0; i < columnNames.length; i ++)
-            columnNames[i] = rowSet.getMetaData().getColumnName(i + 1);     
+            columnNames[i] = rowSet.getMetaData().getColumnName(i + 1).toLowerCase();
         
         QueryResult queryResult = new QueryResult();
         
@@ -795,7 +794,7 @@ public class DatabaseConnector {
         try(Connection con = dataSource.getConnection();
                 Statement statement = con.createStatement()
                 ) {
-            //statement.execute("SHOW TABLES");
+            statement.execute("SELECT klant_id FROM klant WHERE klant_id = 1");
         }
         catch(SQLException ex) {
             throw new DatabaseException("Verbinden mislukt.\n"

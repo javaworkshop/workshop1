@@ -39,8 +39,11 @@ import org.workshop1.model.QueryResult;
  */
 public class Controller extends Application {
     
-    private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb"; // dit moet nog/weer instelbaar worden via gui
-    //private static final String FIREBIRD_URL = "???";
+    private static final String MYSQL_URL = "jdbc:Mysql://localhost:3306/mydb";
+    private static final String FIREBIRD_URL_HIKARI_CP = "//localhost:3050/klantdatabase";
+    private static final String FIREBIRD_URL_C3P0 = "jdbc:firebirdsql:localhost/3050:klantdatabase";
+    //in firebird installatiefolder aan aliases.conf bestand database lokatie toevoegen, bijv.
+    //klantdatabase=C:/Documents and Settings/All Users/Application Data/Firebird/klantdatabase.fdb
     
     private AddArtikelScreen addArtikelScreen;
     private AddBestellingScreen addBestellingScreen;
@@ -69,7 +72,7 @@ public class Controller extends Application {
     private TextArea taSQLResult = new TextArea();
     private TableView tableView = new TableView();
     private TextArea tasqlCommand = new TextArea();
-    //private TextField tfURL = new TextField(MYSQL_URL);
+    private TextField tfURL = new TextField(MYSQL_URL);
     private TextField tfAantal = new TextField();
     private TextField tfUsername = new TextField();
     
@@ -114,7 +117,6 @@ public class Controller extends Application {
     }
     
     private void addKlant() {
-
         Klant klant = addKlantScreen.getKlantInfo();
 
         if (klant == null) {
@@ -135,7 +137,6 @@ public class Controller extends Application {
 
             addKlantScreen.hide();
         }
-
     }
     
     /**
@@ -145,14 +146,14 @@ public class Controller extends Application {
     private void connectToDB() {
         dbConnector.setUsername(tfUsername.getText().trim());
         dbConnector.setPassword(pfPassword.getText().trim());
+        dbConnector.setUrl(tfURL.getText().trim());
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
         try {            
             if (database.equals("MySQL")) {                
-                dbConnector.setDatabaseChoice("MySQL");
-                dbConnector.setUrl("jdbc:Mysql://localhost/mydb");         
+                dbConnector.setDatabaseChoice("MySQL");      
                 
-                if(dataSource.equals("Hikari_CP")) {
+                if(dataSource.equals("HikariCP")) {
                     dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_MYSQL);
                 }
@@ -164,18 +165,11 @@ public class Controller extends Application {
             else { //if (database.equals("Firebird"))
                 dbConnector.setDatabaseChoice("Firebird");                
                 
-                if(dataSource.equals("Hikari_CP")) {
-                    dbConnector.setUrl("//localhost:3050/C:/Documents and Settings/All Users/"
-                        + "Application Data/Firebird/klantdatabase.fdb"); // dit hangt af van path
-                    // naar database, stel eventueel in via aliases.conf in firebird installatie map
+                if(dataSource.equals("HikariCP")) {
                     dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_FIREBIRD);
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
-                    dbConnector.setUrl("jdbc:firebirdsql:localhost/3050:C:/Documents and Settings/"
-                        + "All Users/Application Data/Firebird/klantdatabase.fdb"); // dit hangt af 
-                    // van path naar database, stel eventueel in via aliases.conf in firebird 
-                    // installatie map
                     dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
                     dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_FIREBIRD);
                 }
@@ -353,6 +347,19 @@ public class Controller extends Application {
         logger.info("tabel ververst");
     }
     
+    private void setTfURL() {
+        String database = cboDatabase.getSelectionModel().getSelectedItem();        
+        if(database.equals("MySQL"))
+            tfURL.setText(MYSQL_URL);
+        else {
+            String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
+            if(dataSource.equals("HikariCP"))
+                tfURL.setText(FIREBIRD_URL_HIKARI_CP);
+            else
+                tfURL.setText(FIREBIRD_URL_C3P0);
+        }            
+    }
+    
     /**
      * Makes errorScreen pop up with the given message. As long as the error screen is open it will 
      * stay in front of the main screen.
@@ -365,23 +372,35 @@ public class Controller extends Application {
     
     @Override
     public void start(Stage primaryStage) {
+        //System.setProperty("FBLog4j", "true"); // firebird logging aanzetten voor debugging
         logger.info("start applicatie");
         
-        cboDataSource.getItems().addAll(FXCollections.observableArrayList("Hikari_CP", "C3P0"));
+        cboDataSource.getItems().addAll(FXCollections.observableArrayList("HikariCP", "C3P0"));
         cboDataSource.getSelectionModel().selectFirst();
+        cboDataSource.valueProperty().addListener((ov, o, n) -> {
+            setTfURL();
+        });
         cboDatabase.getItems().addAll(FXCollections.observableArrayList("MySQL", "Firebird"));
         cboDatabase.getSelectionModel().selectFirst();
+        cboDatabase.valueProperty().addListener((ov, o, n) -> {
+            setTfURL();
+        });
         
         GridPane gridPane = new GridPane();
         
         gridPane.add(cboDatabase, 1, 0);
         gridPane.add(cboDataSource, 1, 1);
+        tfUsername.setPrefColumnCount(22);
         gridPane.add(tfUsername, 1, 2);
+        pfPassword.setPrefColumnCount(22);
         gridPane.add(pfPassword, 1, 3);
         gridPane.add(new Label("Database"), 0, 0);
         gridPane.add(new Label("Datasource"),0, 1);
         gridPane.add(new Label("Gebruikersnaam"), 0, 2);
         gridPane.add(new Label("Wachtwoord"), 0, 3);
+        gridPane.add(new Label("URL"), 0, 4);
+        tfURL.setPrefColumnCount(22);
+        gridPane.add(tfURL, 1, 4);
         gridPane.add(new Label("     Maak random klanten"),2,0);
         gridPane.add(new Label("     Voer aantal in: "), 2, 1);
         gridPane.add(tfAantal, 3, 1);

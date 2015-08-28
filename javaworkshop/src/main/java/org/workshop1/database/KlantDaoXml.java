@@ -10,11 +10,12 @@ import org.workshop1.model.Klant;
 import org.workshop1.model.Adres;
 
 public class KlantDaoXml implements KlantDao {
+    public static final String DEFAULT_LOCATION = "data/xml";
     private File directory;
     private XMLEncoder encoder;
     
     public KlantDaoXml() throws DaoConfigurationException {
-        this("data/xml");
+        this(DEFAULT_LOCATION);
     }
     
     public KlantDaoXml(String location) throws DaoConfigurationException {

@@ -52,12 +52,12 @@ public class DatabaseConnectorTest {
             dbConnector.setUsername(username);
             dbConnector.setPassword(password);
             dbConnector.connectToDatabase();
-            initializeData();
+            initData();
             addData();
             isDatabaseInitialized = true;
         }
         else {
-            initializeData();
+            initData();
             addData();
         }
         
@@ -76,7 +76,7 @@ public class DatabaseConnectorTest {
         }
     }
     
-    private void initializeData() {
+    private void initData() {
         // initialize klant k1
         k1 = new Klant();
         k1.setKlant_id(1);

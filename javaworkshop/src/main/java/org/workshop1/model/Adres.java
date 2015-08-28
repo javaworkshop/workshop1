@@ -4,8 +4,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import java.io.Serializable;
 
-public class Adres /*extends Data*/ {
+public class Adres /*extends Data*/ implements Serializable {
     private final SimpleIntegerProperty huisnummer;
     private final SimpleStringProperty postcode;
     private final SimpleStringProperty straatnaam;

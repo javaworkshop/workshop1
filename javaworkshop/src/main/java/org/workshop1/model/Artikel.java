@@ -1,7 +1,6 @@
-
 package org.workshop1.model;
 
-public class Artikel {
+public class Artikel extends Data {
     int artikel_aantal;
     int artikel_id;
     String artikel_naam;

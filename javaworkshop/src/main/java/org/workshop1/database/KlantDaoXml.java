@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.beans.Introspector;
+import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 import org.workshop1.model.Klant;
+import org.workshop1.model.Adres;
 
 
 public class KlantDaoXml /*implements KlantDao*/ {
@@ -42,7 +45,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
         klantFile = new File(directory.getPath() + "/klant.xml");
         
         xStream.alias("klant", Klant.class);
-        //xStream.alias("adres", Adres.class);
+        xStream.alias("adres", Adres.class);
         xStream.registerConverter(new KlantConverter(), XStream.PRIORITY_VERY_HIGH);
     }
 /*    
@@ -104,6 +107,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
         
     }*/
     
+    // het werkt zo wel, maar misschien is er een meer generieke converter van te maken mbv reflection
     class KlantConverter implements Converter {
         @Override
         public boolean canConvert(Class object) {
@@ -178,9 +182,42 @@ public class KlantDaoXml /*implements KlantDao*/ {
         }
    
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            reader.moveDown();
-            reader.moveUp();
-            return new Klant();
+            Klant klant = new Klant();
+            while(reader.hasMoreChildren()) {
+                reader.moveDown();
+                if(reader.getNodeName().equals("klant_id"))
+                    klant.setKlant_id(Integer.parseInt(reader.getValue()));
+                else if(reader.getNodeName().equals("voornaam") && !(reader.getValue()).equals("NULL"))
+                    klant.setVoornaam(reader.getValue());
+                else if(reader.getNodeName().equals("tussenvoegsel") && !(reader.getValue().equals("NULL")))
+                    klant.setTussenvoegsel(reader.getValue());
+                else if(reader.getNodeName().equals("achternaam") && !(reader.getValue().equals("NULL")))
+                    klant.setAchternaam(reader.getValue());
+                else if(reader.getNodeName().equals("email") && !(reader.getValue().equals("NULL")))
+                    klant.setEmail(reader.getValue());
+                else if(reader.getNodeName().equals("adres")) {
+                    Adres adres = new Adres();
+                    klant.setAdres(adres);
+                    while(reader.hasMoreChildren()) {
+                        reader.moveDown();
+                        String s = reader.getValue();
+                        if(reader.getNodeName().equals("straatnaam") && !(reader.getValue().equals("NULL")))
+                            adres.setStraatnaam(reader.getValue());
+                        else if(reader.getNodeName().equals("huisnummer") && !(reader.getValue().equals("NULL")))
+                            adres.setHuisnummer(Integer.parseInt(reader.getValue()));
+                        else if(reader.getNodeName().equals("toevoeging") && !(reader.getValue().equals("NULL")))
+                            adres.setToevoeging(reader.getValue());
+                        else if(reader.getNodeName().equals("postcode") && !(reader.getValue().equals("NULL")))
+                            adres.setPostcode(reader.getValue());
+                        else if(reader.getNodeName().equals("woonplaats") && !(reader.getValue().equals("NULL")))
+                            adres.setWoonplaats(reader.getValue());
+                        reader.moveUp();
+                    }
+                }
+                reader.moveUp();
+            }
+            
+            return klant;
         }
     }
 }

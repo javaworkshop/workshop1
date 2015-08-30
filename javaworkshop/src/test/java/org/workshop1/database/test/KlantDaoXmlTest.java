@@ -5,11 +5,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.workshop1.database.DaoException;
-import org.workshop1.database.KlantDaoXml;
+import org.workshop1.dao.DaoException;
+import org.workshop1.dao.KlantDaoXml;
+import org.workshop1.model.Data;
 import org.workshop1.model.Klant;
 
 public class KlantDaoXmlTest {
@@ -58,8 +58,8 @@ public class KlantDaoXmlTest {
     public void testRead() {
         ArrayList<Klant> klanten = klantDao.readAll();
         logger.info(klanten.get(0).toString());
-        assertEquals(klanten.get(0), k2);
-    }
+        assertEquals(klanten.get(0), k1);
+    } 
     
     @After
     public void tearDown() {

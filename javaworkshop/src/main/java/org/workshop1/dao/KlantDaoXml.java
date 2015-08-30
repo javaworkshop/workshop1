@@ -1,4 +1,4 @@
-package org.workshop1.database;
+package org.workshop1.dao;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -8,7 +8,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import java.beans.XMLEncoder;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,20 +16,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.beans.Introspector;
-import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+import java.util.Collections;
 import org.workshop1.model.Klant;
 import org.workshop1.model.Adres;
+import org.workshop1.model.Data;
 
 
-public class KlantDaoXml /*implements KlantDao*/ {
-    public static final String DEFAULT_LOCATION = "data/xml";
+public class KlantDaoXml /*implements KlantDao*/ {   
     private File klantFile;
-    private XMLEncoder encoder;
     XStream xStream;
     
     public KlantDaoXml() throws DaoConfigurationException {
-        this(DEFAULT_LOCATION);
+        this(KlantDao.DEFAULT_LOCATION_XML);
     }
     
     public KlantDaoXml(String folder) throws DaoConfigurationException {
@@ -48,28 +45,93 @@ public class KlantDaoXml /*implements KlantDao*/ {
         xStream.alias("adres", Adres.class);
         xStream.registerConverter(new KlantConverter(), XStream.PRIORITY_VERY_HIGH);
     }
-/*    
+  
     public Klant read(int klant_id) throws DaoException {
+        try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
+                new FileInputStream(klantFile))) {            
+            while(true) {
+                Klant k = (Klant)klantInputStream.readObject();
+                if(k.getKlant_id() == klant_id)
+                    return k;
+            }
+        }
+        catch(EOFException ex) {}
+        catch(ClassNotFoundException | IOException ex) {
+            throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
+        }
         
+        return null;
     }
     
     public Klant read(String voornaam) throws DaoException {
+        try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
+                new FileInputStream(klantFile))) {            
+            while(true) {
+                Klant k = (Klant)klantInputStream.readObject();
+                if(k.getVoornaam().equals(voornaam))
+                    return k;
+            }
+        }
+        catch(EOFException ex) {}
+        catch(ClassNotFoundException | IOException ex) {
+            throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
+        }
         
+        return null;
     }
     
     public Klant read(String voornaam, String achternaam) throws DaoException {
+        try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
+                new FileInputStream(klantFile))) {            
+            while(true) {
+                Klant k = (Klant)klantInputStream.readObject();
+                if(k.getVoornaam().equals(voornaam) && k.getAchternaam().equals(achternaam))
+                    return k;
+            }
+        }
+        catch(EOFException ex) {}
+        catch(ClassNotFoundException | IOException ex) {
+            throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
+        }
         
+        return null;
     }
     
     public Klant read(Adres adres) throws DaoException {
-    
+        try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
+                new FileInputStream(klantFile))) {            
+            while(true) {
+                Klant k = (Klant)klantInputStream.readObject();
+                if(k.getAdres().equals(adres))
+                    return k;
+            }
+        }
+        catch(EOFException ex) {}
+        catch(ClassNotFoundException | IOException ex) {
+            throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
+        }
+        
+        return null;
     }
     
     public Klant read(String postcode, int huisnummer) throws DaoException {
+        try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
+                new FileInputStream(klantFile))) {            
+            while(true) {
+                Klant k = (Klant)klantInputStream.readObject();
+                if(k.getAdres().getPostcode().equals(postcode) 
+                        && k.getAdres().getHuisnummer() == huisnummer)
+                    return k;
+            }
+        }
+        catch(EOFException ex) {}
+        catch(ClassNotFoundException | IOException ex) {
+            throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
+        }
         
+        return null;
     }
-*/  
-    // werkt niet (o.a. omdat unmarshal methode onderaan nog niet is geimplementeerd
+
     public ArrayList<Klant> readAll() throws DaoException {
         ArrayList<Klant> klanten = new ArrayList<>();
         
@@ -89,25 +151,59 @@ public class KlantDaoXml /*implements KlantDao*/ {
     }
     
     public void add(Klant klant) throws DaoException {
+        if(klantFile.exists()) {
+            ArrayList<Klant> klanten = readAll();
+            Collections.sort(klanten);
+            if(Data.indexOfPrimaryKey(klanten, klant) < 0) {
+                klanten.add(klant);
+                write(klanten);
+            }
+        }
+        else
+            write(klant);        
+    }
+  
+    public void update(Klant klant) throws DaoException {
+        ArrayList<Klant> klanten = readAll();
+        int index = Data.indexOfPrimaryKey(klanten, klant);
+        if(index > -1) {
+            klanten.set(index, klant);
+            write(klanten);
+        }
+    }
+    
+    public void delete(Klant klant) throws DaoException {
+        ArrayList<Klant> klanten = readAll();
+        int index = klanten.indexOf(klant);
+        if(index > -1) {
+            klanten.remove(index);
+            write(klanten);
+        }
+    }   
+    
+    private void write(ArrayList<Klant> klanten) {
         try(ObjectOutputStream klantOutputStream = xStream.createObjectOutputStream(
                 new PrettyPrintWriter(new FileWriter(klantFile)), "klanten")) {
-            klantOutputStream.writeObject(klant);
-            // overschrijft bij iedere nieuwe klant het hele bestand
+            for(Klant k : klanten) {
+                klantOutputStream.writeObject(k);
+            }
         }
         catch(IOException ex) {
             throw new DaoException("Schrijven naar " + klantFile + " is mislukt", ex);
         }
     }
-/*    
-    public void update(Klant klant) throws DaoException {
-        add(klant);
+    
+    private void write(Klant klant) {
+        try(ObjectOutputStream klantOutputStream = xStream.createObjectOutputStream(
+                new PrettyPrintWriter(new FileWriter(klantFile)), "klanten")) {
+            klantOutputStream.writeObject(klant);
+        }
+        catch(IOException ex) {
+            throw new DaoException("Schrijven naar " + klantFile + " is mislukt", ex);
+        }
     }
     
-    public void delete(Klant klant) throws DaoException {
-        
-    }*/
-    
-    // het werkt zo wel, maar misschien is er een meer generieke converter van te maken mbv reflection
+    // het werkt zo wel, maar misschien is er een meer generieke converter van te maken mbv reflection (DataConverter)
     class KlantConverter implements Converter {
         @Override
         public boolean canConvert(Class object) {
@@ -181,6 +277,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
             writer.endNode();
         }
    
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             Klant klant = new Klant();
             while(reader.hasMoreChildren()) {

@@ -1,5 +1,19 @@
 <klanten>
   <klant>
+    <klant__id>1</klant__id>
+    <voornaam>Henk</voornaam>
+    <tussenvoegsel>NULL</tussenvoegsel>
+    <achternaam>Man</achternaam>
+    <email>hm85@hotmail.com</email>
+    <adres>
+      <straatnaam>De Straat</straatnaam>
+      <huisnummer>45</huisnummer>
+      <toevoeging>NULL</toevoeging>
+      <postcode>1234AB</postcode>
+      <woonplaats>De Plaats</woonplaats>
+    </adres>
+  </klant>
+  <klant>
     <klant__id>2</klant__id>
     <voornaam>Piet</voornaam>
     <tussenvoegsel>NULL</tussenvoegsel>

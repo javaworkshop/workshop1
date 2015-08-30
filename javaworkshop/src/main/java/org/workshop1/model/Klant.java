@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
 /**
  * Class to store data from the klant table.
  */
-public class Klant extends Data {
+public class Klant extends Data implements Comparable<Klant> {
     private Adres adres;
     private final SimpleStringProperty achternaam;
     private final SimpleStringProperty email;
@@ -25,6 +25,16 @@ public class Klant extends Data {
     public StringProperty achternaamProperty() {
         return achternaam;
     }
+
+    @Override
+    public int compareTo(Klant k) {
+        if(k.getKlant_id() < this.getKlant_id())
+            return 1;
+        else if(k.getKlant_id() > this.getKlant_id())
+            return -1;
+        else
+            return 0;
+    }
     
     public StringProperty emailProperty() {
         return email;
@@ -38,8 +48,7 @@ public class Klant extends Data {
             return false;
         
         Klant k = (Klant)obj;
-        return  k.getKlant_id() == this.getKlant_id() &&
-                k.getHuisnummer() == this.getHuisnummer() &&
+        return  k.getKlant_id() == this.getKlant_id() &&                
                 (k.getVoornaam() == null && this.getVoornaam() == null ||
                 k.getVoornaam().equals(this.getVoornaam())) &&
                 (k.getTussenvoegsel() == null && this.getTussenvoegsel() == null ||
@@ -48,14 +57,7 @@ public class Klant extends Data {
                 k.getAchternaam().equals(this.getAchternaam())) &&
                 (k.getEmail() == null && this.getEmail() == null ||
                 k.getEmail().equals(this.getEmail())) &&
-                (k.getStraatnaam() == null && this.getStraatnaam() == null ||
-                k.getStraatnaam().equals(this.getStraatnaam())) &&
-                (k.getToevoeging() == null && this.getToevoeging() == null ||
-                k.getToevoeging().equals(this.getToevoeging())) &&
-                (k.getPostcode() == null && this.getPostcode() == null ||
-                k.getPostcode().equals(this.getPostcode())) &&
-                (k.getWoonplaats() == null && this.getWoonplaats() == null ||
-                k.getWoonplaats().equals(this.getWoonplaats()));
+                k.getAdres().equals(this.getAdres());
     }
     
     public String getAchternaam() {

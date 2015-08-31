@@ -38,7 +38,7 @@ public class DatabaseConnector {
    
     private DataSource dataSource;    
     
-     private String databaseChoice;
+    private String databaseChoice;
     private byte dataSourceType;
     private byte databaseType;
     private String driver;

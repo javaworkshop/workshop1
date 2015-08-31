@@ -43,7 +43,7 @@ public class KlantDaoXml implements KlantDao {
         
         xStream.alias("klant", Klant.class);
         xStream.alias("adres", Adres.class);
-        xStream.registerConverter(new KlantConverter(), XStream.PRIORITY_VERY_HIGH);
+        xStream.registerConverter(new DataConverter(), XStream.PRIORITY_VERY_HIGH);
     }
   
     @Override

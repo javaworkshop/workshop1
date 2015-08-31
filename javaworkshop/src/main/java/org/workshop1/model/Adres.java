@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Adres /*extends Data*/ {
+public class Adres extends Data {
     private final SimpleIntegerProperty huisnummer;
     private final SimpleStringProperty postcode;
     private final SimpleStringProperty straatnaam;

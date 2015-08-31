@@ -231,7 +231,7 @@ public class KlantDaoXml implements KlantDao {
         @Override
         public boolean canConvert(Class object) {
             return object.equals(Klant.class);
-   }
+        }
    
         @Override
         public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {

@@ -8,10 +8,10 @@ public interface KlantDao {
     public static final String DEFAULT_LOCATION_XML = "data/xml";
     
     public Klant read(int klant_id) throws DaoException;
-    public Klant read(String voornaam) throws DaoException;
-    public Klant read(String voornaam, String achternaam) throws DaoException;
-    public Klant read(Adres adres) throws DaoException;
-    public Klant read(String postcode, int huisnummer) throws DaoException;
+    public ArrayList<Klant> read(String voornaam) throws DaoException;
+    public ArrayList<Klant> read(String voornaam, String achternaam) throws DaoException;
+    public ArrayList<Klant> read(Adres adres) throws DaoException;
+    public ArrayList<Klant> read(String postcode, int huisnummer) throws DaoException;
     public ArrayList<Klant> readAll() throws DaoException;
     
     public void add(Klant klant) throws DaoException;

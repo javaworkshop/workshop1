@@ -21,6 +21,14 @@ public abstract class Data implements Serializable {
         return -1;
     }
     
+    public static int indexOfPrimaryKey(ArrayList<? extends Data> dataList, int primaryKey) {
+        for(int i = 0; i < dataList.size(); i++) {
+            if(dataList.get(i).getPrimaryKey() == primaryKey)
+                return i;
+        }
+        return -1;
+    }
+    
     protected Data() {
         primaryKey = new SimpleIntegerProperty(0);
     }

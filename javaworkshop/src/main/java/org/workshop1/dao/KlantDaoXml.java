@@ -22,7 +22,7 @@ import org.workshop1.model.Adres;
 import org.workshop1.model.Data;
 
 
-public class KlantDaoXml /*implements KlantDao*/ {   
+public class KlantDaoXml implements KlantDao {   
     private File klantFile;
     XStream xStream;
     
@@ -46,6 +46,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
         xStream.registerConverter(new KlantConverter(), XStream.PRIORITY_VERY_HIGH);
     }
   
+    @Override
     public Klant read(int klant_id) throws DaoException {
         try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
                 new FileInputStream(klantFile))) {            
@@ -63,13 +64,15 @@ public class KlantDaoXml /*implements KlantDao*/ {
         return null;
     }
     
-    public Klant read(String voornaam) throws DaoException {
+    @Override
+    public ArrayList<Klant> read(String voornaam) throws DaoException {
+        ArrayList<Klant> klanten = new ArrayList<>();
         try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
                 new FileInputStream(klantFile))) {            
             while(true) {
                 Klant k = (Klant)klantInputStream.readObject();
                 if(k.getVoornaam().equals(voornaam))
-                    return k;
+                    klanten.add(k);
             }
         }
         catch(EOFException ex) {}
@@ -77,16 +80,18 @@ public class KlantDaoXml /*implements KlantDao*/ {
             throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
         }
         
-        return null;
+        return klanten;
     }
     
-    public Klant read(String voornaam, String achternaam) throws DaoException {
+    @Override
+    public ArrayList<Klant> read(String voornaam, String achternaam) throws DaoException {
+        ArrayList<Klant> klanten = new ArrayList<>();
         try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
                 new FileInputStream(klantFile))) {            
             while(true) {
                 Klant k = (Klant)klantInputStream.readObject();
                 if(k.getVoornaam().equals(voornaam) && k.getAchternaam().equals(achternaam))
-                    return k;
+                    klanten.add(k);
             }
         }
         catch(EOFException ex) {}
@@ -94,16 +99,18 @@ public class KlantDaoXml /*implements KlantDao*/ {
             throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
         }
         
-        return null;
+        return klanten;
     }
     
-    public Klant read(Adres adres) throws DaoException {
+    @Override
+    public ArrayList<Klant> read(Adres adres) throws DaoException {
+        ArrayList<Klant> klanten = new ArrayList<>();
         try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
                 new FileInputStream(klantFile))) {            
             while(true) {
                 Klant k = (Klant)klantInputStream.readObject();
                 if(k.getAdres().equals(adres))
-                    return k;
+                    klanten.add(k);
             }
         }
         catch(EOFException ex) {}
@@ -111,17 +118,19 @@ public class KlantDaoXml /*implements KlantDao*/ {
             throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
         }
         
-        return null;
+        return klanten;
     }
     
-    public Klant read(String postcode, int huisnummer) throws DaoException {
+    @Override
+    public ArrayList<Klant> read(String postcode, int huisnummer) throws DaoException {
+        ArrayList<Klant> klanten = new ArrayList<>();
         try(ObjectInputStream klantInputStream = xStream.createObjectInputStream(
                 new FileInputStream(klantFile))) {            
             while(true) {
                 Klant k = (Klant)klantInputStream.readObject();
                 if(k.getAdres().getPostcode().equals(postcode) 
                         && k.getAdres().getHuisnummer() == huisnummer)
-                    return k;
+                    klanten.add(k);
             }
         }
         catch(EOFException ex) {}
@@ -129,9 +138,10 @@ public class KlantDaoXml /*implements KlantDao*/ {
             throw new DaoException("Lezen van " + klantFile + " is mislukt", ex);
         }
         
-        return null;
+        return klanten;
     }
 
+    @Override
     public ArrayList<Klant> readAll() throws DaoException {
         ArrayList<Klant> klanten = new ArrayList<>();
         
@@ -150,6 +160,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
         return klanten;
     }
     
+    @Override
     public void add(Klant klant) throws DaoException {
         if(klantFile.exists()) {
             ArrayList<Klant> klanten = readAll();
@@ -163,6 +174,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
             write(klant);        
     }
   
+    @Override
     public void update(Klant klant) throws DaoException {
         ArrayList<Klant> klanten = readAll();
         int index = Data.indexOfPrimaryKey(klanten, klant);
@@ -172,6 +184,17 @@ public class KlantDaoXml /*implements KlantDao*/ {
         }
     }
     
+    @Override
+    public void delete(int klant_id) throws DaoException {
+        ArrayList<Klant> klanten = readAll();
+        int index = Data.indexOfPrimaryKey(klanten, klant_id);
+        if(index > -1) {
+            klanten.remove(index);
+            write(klanten);
+        }
+    }
+    
+    @Override
     public void delete(Klant klant) throws DaoException {
         ArrayList<Klant> klanten = readAll();
         int index = klanten.indexOf(klant);
@@ -179,7 +202,7 @@ public class KlantDaoXml /*implements KlantDao*/ {
             klanten.remove(index);
             write(klanten);
         }
-    }   
+    }
     
     private void write(ArrayList<Klant> klanten) {
         try(ObjectOutputStream klantOutputStream = xStream.createObjectOutputStream(

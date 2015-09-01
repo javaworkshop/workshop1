@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import org.workshop1.model.Klant;
 import org.workshop1.model.Adres;
 
-public interface KlantDao {
+public interface KlantDao extends AutoCloseable {
     public static final String DEFAULT_LOCATION_XML = "data/xml";
     
     public Klant read(int klant_id) throws DaoException;
@@ -20,4 +20,7 @@ public interface KlantDao {
     
     public void delete (int klant_id) throws DaoException;
     public void delete(Klant klant) throws DaoException;
+    
+    @Override
+    public void close() throws Exception;
 }

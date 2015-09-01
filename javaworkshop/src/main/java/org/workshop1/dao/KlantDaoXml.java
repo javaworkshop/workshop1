@@ -165,7 +165,7 @@ public class KlantDaoXml implements KlantDao {
         if(klantFile.exists()) {
             ArrayList<Klant> klanten = readAll();
             Collections.sort(klanten);
-            if(Data.indexOfPrimaryKey(klanten, klant) < 0) {
+            if(Data.indexOfPrimaryKey(klanten, klant.getKlant_id()) < 0) {
                 klanten.add(klant);
                 write(klanten);
             }
@@ -177,7 +177,7 @@ public class KlantDaoXml implements KlantDao {
     @Override
     public void update(Klant klant) throws DaoException {
         ArrayList<Klant> klanten = readAll();
-        int index = Data.indexOfPrimaryKey(klanten, klant);
+        int index = Data.indexOfPrimaryKey(klanten, klant.getKlant_id());
         if(index > -1) {
             klanten.set(index, klant);
             write(klanten);
@@ -197,7 +197,7 @@ public class KlantDaoXml implements KlantDao {
     @Override
     public void delete(Klant klant) throws DaoException {
         ArrayList<Klant> klanten = readAll();
-        int index = klanten.indexOf(klant);
+        int index = klanten.indexOf(klant.getKlant_id());
         if(index > -1) {
             klanten.remove(index);
             write(klanten);

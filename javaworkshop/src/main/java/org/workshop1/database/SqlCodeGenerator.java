@@ -1,6 +1,11 @@
 
 package org.workshop1.database;
 
+import java.lang.reflect.Field;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import org.workshop1.model.Artikel;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Klant;
@@ -12,6 +17,235 @@ import org.workshop1.model.Klant;
 class SqlCodeGenerator {
     
     private SqlCodeGenerator(){}
+    
+        public static String createTable(Object object){
+        String sqlTableName = "";
+        if (object.getClass().isAnnotationPresent(Table.class) 
+                && object.getClass().getAnnotation(Table.class).name().length() > 0 ){
+            sqlTableName = object.getClass().getAnnotation(Table.class).name();
+        }
+        else {
+            sqlTableName = object.getClass().getSimpleName();
+        }
+        int variableToInsert = 0;
+        String buildSqlStatement = "CREATE TABLE " + sqlTableName + "(";
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+       for (Field field : declaredFields){
+            try{
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(Column.class)){
+                    variableToInsert++;
+                    if (variableToInsert > 1){
+                        buildSqlStatement += ", ";
+                    }
+                    if (field.getAnnotation(Column.class).name().length() > 0 ){
+                        buildSqlStatement += field.getAnnotation(Column.class).name();
+                    }
+                    else{
+                        buildSqlStatement += field.getName();
+                    }
+                    if (field.get(object) instanceof SimpleStringProperty || field.get(object) instanceof String) {
+                        buildSqlStatement += " VARCHAR(" + field.getAnnotation(Column.class).length() + ")";
+                    }
+                    else if (field.get(object) instanceof SimpleIntegerProperty || field.get(object) instanceof Integer){
+                        buildSqlStatement += " INT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                    }
+                    else if (field.get(object) instanceof SimpleLongProperty || field.get(object) instanceof Long){
+                        buildSqlStatement += " BIGINT(" + field.getAnnotation(Column.class).length() + ") UNSIGNED";
+                    }
+                    else{
+                        System.out.println("Data type not supported");
+                    }
+                }
+                else if (field.isAnnotationPresent(Id.class)){
+                    variableToInsert++;
+                    if (variableToInsert > 1){
+                        buildSqlStatement += ", ";
+                    }
+                    buildSqlStatement += "PRIMARY KEY(" + field.getAnnotation(Id.class).name() + ")";
+                }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+            e.printStackTrace();
+            }
+        }
+        return buildSqlStatement + ")";
+    }
+    
+    //methode die gebruik maakt van annotation
+    public static String buildAnnotationInsertStatement(Object object){
+        String sqlTableName = "";
+        if (object.getClass().isAnnotationPresent(Table.class) 
+                && object.getClass().getAnnotation(Table.class).name().length() > 0 ){
+            sqlTableName = object.getClass().getAnnotation(Table.class).name();
+        }
+        else {
+            sqlTableName = object.getClass().getSimpleName();
+        }
+        int variableToInsert = 0;
+        String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
+        String valueFieldEnd = "VALUES (";
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+           for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    Object variable = field.get(object);
+                    if (variable != null && !isPrimitiveZero(variable)){
+                        if (field.isAnnotationPresent(Column.class)){
+                            variableToInsert++;
+                            if (variableToInsert > 1){
+                                buildSqlStatement += ", ";
+                                valueFieldEnd += ", ";
+                            }
+                            if (field.getAnnotation(Column.class).name().length() > 0 ){
+                                buildSqlStatement += field.getAnnotation(Column.class).name();
+                            }
+                            else{
+                                buildSqlStatement += field.getName();
+                            }
+                            if (variable instanceof SimpleStringProperty) {
+                                valueFieldEnd += "\'" + ((SimpleStringProperty)variable).get() + "\'";
+                            }
+                            else if (variable instanceof SimpleIntegerProperty){
+                                valueFieldEnd += ((SimpleIntegerProperty)variable).get();
+                            }
+                            else if (variable instanceof SimpleLongProperty){
+                                valueFieldEnd += ((SimpleLongProperty)variable).get();
+                            }
+                            else if (variable instanceof Long || variable instanceof String || variable instanceof Integer){
+                                valueFieldEnd += variable;
+                            }
+                            else{
+                                System.out.println("Datatype not supported");
+                            }
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
+    }
+    
+    //methode die gebruikt maakt van reflection en alle typen objecten accepteert
+    public static String buildInsertStatement(Object object){
+        int variableToInsert = 0;
+        String sqlTableName = object.getClass().getSimpleName().toUpperCase();
+        String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; 
+        String valueFieldEnd = "values (";
+        Field[] declaredFields = object.getClass().getDeclaredFields();
+        
+        for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        variableToInsert++;
+                        if (variableToInsert > 1){
+                            buildSqlStatement += ", ";
+                            valueFieldEnd += ", ";
+                        }
+                        buildSqlStatement += field.getName();
+                        if (field.get(object) instanceof SimpleStringProperty) {
+                            valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                        }
+                        else if (field.get(object) instanceof SimpleIntegerProperty){
+                            valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                        }
+                        else if (field.get(object) instanceof SimpleDoubleProperty){
+                            valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
+                        }
+                        else{
+                            valueFieldEnd += field.get(object);
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
+    }
+    
+    
+    //methode die gebruikt maakt van reflection    
+    public static String buildInsertStatementKlant(Klant object){
+        int variableToInsert = 0;
+        String sqlTableName = Klant.class.getSimpleName().toUpperCase();
+        String buildSqlStatement = "INSERT INTO " + sqlTableName + "("; String valueFieldEnd = "values (";
+        Field[] declaredFields = Klant.class.getDeclaredFields();
+        
+        for (Field field : declaredFields){
+            try{
+                    field.setAccessible(true);
+                    if (field.get(object) != null && !isPrimitiveZero(field.get(object))){
+                        variableToInsert++;
+                        if (variableToInsert > 1){
+                            buildSqlStatement += ", ";
+                            valueFieldEnd += ", ";
+                        }
+                        buildSqlStatement += field.getName();
+                        if (field.get(object) instanceof SimpleStringProperty) {
+                            valueFieldEnd += "\'" + ((SimpleStringProperty)field.get(object)).get() + "\'";
+                        }
+                        else if (field.get(object) instanceof SimpleIntegerProperty){
+                            valueFieldEnd += ((SimpleIntegerProperty)field.get(object)).get();
+                        }
+                        else if (field.get(object) instanceof SimpleDoubleProperty){
+                            valueFieldEnd += ((SimpleDoubleProperty)field.get(object)).get();
+                        }
+                        else{
+                            valueFieldEnd += field.get(object);
+                        }
+                    }
+            }
+            catch (IllegalArgumentException | IllegalAccessException | SecurityException e){
+                e.printStackTrace();
+            }
+        }
+           return buildSqlStatement + ") " + valueFieldEnd + ")";
+    }
+    
+    private static boolean isPrimitiveZero(Object object) { 
+    boolean isPrimitiveZero = false; 
+    if (object instanceof Long) {
+        if ((Long) object == 0) { 
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Integer) {
+        if ((Integer) object == 0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Float) {
+        if ((Float) object == 0.0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof Double) {
+        if ((Double) object == 0.0) {
+            isPrimitiveZero = true; 
+        }
+    }
+    else if (object instanceof SimpleIntegerProperty){
+        if (((SimpleIntegerProperty)object).get() == 0){
+            isPrimitiveZero = true;
+        }
+    }
+        else if (object instanceof SimpleLongProperty){
+        if (((SimpleLongProperty)object).get() == 0){
+            isPrimitiveZero = true;
+        }
+    }
+        else if (object instanceof SimpleDoubleProperty){
+        if (((SimpleDoubleProperty)object).get() == 0.0){
+            isPrimitiveZero = true;
+        }
+    }
+    
+    return isPrimitiveZero;
+    }    
     
     /**
      * Generates sql code to insert the given klant into the database.

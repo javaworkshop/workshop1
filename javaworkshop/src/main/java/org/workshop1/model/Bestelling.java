@@ -10,7 +10,9 @@ import javafx.beans.property.StringProperty;
 /**
  * Class to store data from the bestelling table.
  */
-public class Bestelling extends Data {
+public class Bestelling implements Data {
+    private final SimpleIntegerProperty bestelling_id;
+    private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
     private final SimpleIntegerProperty artikel_aantal1; 
     private final SimpleIntegerProperty artikel_aantal2;
     private final SimpleIntegerProperty artikel_aantal3;
@@ -22,10 +24,10 @@ public class Bestelling extends Data {
     private final SimpleStringProperty artikel_naam3;
     private final SimpleDoubleProperty artikel_prijs1;
     private final SimpleDoubleProperty artikel_prijs2;
-    private final SimpleDoubleProperty artikel_prijs3;
-    private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
+    private final SimpleDoubleProperty artikel_prijs3;    
     
     public Bestelling() {
+        bestelling_id = new SimpleIntegerProperty(0);
         klant_id = new SimpleIntegerProperty(0);
         artikel_id1 = new SimpleIntegerProperty(0);
         artikel_id2 = new SimpleIntegerProperty(0);
@@ -90,7 +92,7 @@ public class Bestelling extends Data {
     }
 
     public IntegerProperty bestelling_idProperty() {
-        return super.primaryKeyProperty();
+        return bestelling_idProperty();
     }
 
     @Override
@@ -169,7 +171,7 @@ public class Bestelling extends Data {
     }
     
     public int getBestelling_id() {
-        return super.getPrimaryKey();
+        return bestelling_id.getValue();
     }
 
     public int getKlant_id() {
@@ -251,7 +253,7 @@ public class Bestelling extends Data {
     }
 
     public void setBestelling_id(int id) {
-        super.setPrimaryKey(id);
+        bestelling_id.setValue(id);
     }
     
     public void setKlant_id(int klant_id) {
@@ -260,7 +262,7 @@ public class Bestelling extends Data {
 
     @Override
     public String toString() {
-        return "Bestelling{" + "bestelling_id=" + super.getPrimaryKey() + "klant_id=" + klant_id
+        return "Bestelling{" + "bestelling_id=" + bestelling_id + "klant_id=" + klant_id
                 + ", artikel_id1=" + artikel_id1 + ", artikel_id2=" + artikel_id2 +
                 ", artikel_id3=" + artikel_id3 + ", artikel_naam1=" + artikel_naam1 + 
                 ", artikel_naam2=" + artikel_naam2 + ", artikel_naam3=" + artikel_naam3 + 

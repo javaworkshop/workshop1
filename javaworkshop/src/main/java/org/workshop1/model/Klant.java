@@ -1,20 +1,30 @@
 package org.workshop1.model;
 
+import org.workshop1.database.Column;
+import org.workshop1.database.Entity;
+import org.workshop1.database.Id;
+import org.workshop1.database.Table;
+import javax.persistence.Embedded;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
  * Class to store data from the klant table.
  */
-public class Klant extends Data implements Comparable<Klant> {
-    private Adres adres;
-    private final SimpleStringProperty achternaam;
-    private final SimpleStringProperty email;
-    private final SimpleStringProperty tussenvoegsel;
-    private final SimpleStringProperty voornaam;
+@Entity
+@Table(name = "klanten")
+public class Klant implements Data, Comparable<Klant> {
+    @Id(name = "klant_id", length = 10) private final SimpleIntegerProperty klant_id;
+    @Column(name = "voornaam", length = 50) private final SimpleStringProperty voornaam;
+    @Column(name = "tussenvoegsel", length = 20) private final SimpleStringProperty tussenvoegsel;
+    @Column(name = "achternaam", length = 51) private final SimpleStringProperty achternaam;
+    @Column(name = "email", length = 320) private final SimpleStringProperty email;
+    @Embedded private Adres adres;    
 
     public Klant() {
+        klant_id = new SimpleIntegerProperty(0);
         adres = new Adres();
         voornaam = new SimpleStringProperty(null);
         tussenvoegsel = new SimpleStringProperty(null);
@@ -73,7 +83,7 @@ public class Klant extends Data implements Comparable<Klant> {
     }
     
     public int getKlant_id() {
-        return super.getPrimaryKey();
+        return klant_id.getValue();
     }
     
     public String getPostcode() {
@@ -122,7 +132,7 @@ public class Klant extends Data implements Comparable<Klant> {
     }
     
     public IntegerProperty klant_idProperty() {
-        return super.primaryKeyProperty();
+        return klant_id;
     }
 
     public StringProperty postcodeProperty() {
@@ -142,7 +152,7 @@ public class Klant extends Data implements Comparable<Klant> {
     }
     
     public void setKlant_id(int id) {
-        super.setPrimaryKey(id);
+        klant_id.setValue(id);
     }
 
     public void setPostcode(String postcode) {
@@ -175,7 +185,7 @@ public class Klant extends Data implements Comparable<Klant> {
 
     @Override
     public String toString() {
-        return "Klant{" + "klant_id=" + super.primaryKeyProperty() + ", voornaam=" + voornaam +
+        return "Klant{" + "klant_id=" + klant_id + ", voornaam=" + voornaam +
                 ", tussenvoegsel=" + tussenvoegsel + ", achternaam=" + achternaam +
                 ", email=" + email + ", straatnaam=" + adres.getStraatnaam() + ", huisnummer=" + 
                 adres.getHuisnummer() + ", toevoeging=" + adres.getToevoeging() + ", postcode=" + 

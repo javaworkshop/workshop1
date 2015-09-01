@@ -1,12 +1,14 @@
 package org.workshop1.model;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Adres extends Data {
+@Embeddable // krijgt als het goed is eigen tabel...
+public class Adres implements Data {
     private final SimpleIntegerProperty huisnummer;
     private final SimpleStringProperty postcode;
     private final SimpleStringProperty straatnaam;

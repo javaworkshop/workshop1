@@ -1,30 +1,28 @@
 <klanten>
   <klant>
-    <klant__id>1</klant__id>
-    <voornaam>Henk</voornaam>
-    <tussenvoegsel>NULL</tussenvoegsel>
-    <achternaam>Man</achternaam>
-    <email>hm85@hotmail.com</email>
     <adres>
-      <straatnaam>De Straat</straatnaam>
       <huisnummer>45</huisnummer>
-      <toevoeging>NULL</toevoeging>
       <postcode>1234AB</postcode>
+      <straatnaam>De Straat</straatnaam>
+      <toevoeging></toevoeging>
       <woonplaats>De Plaats</woonplaats>
     </adres>
+    <achternaam>Man</achternaam>
+    <email>hm85@hotmail.com</email>
+    <tussenvoegsel></tussenvoegsel>
+    <voornaam>Henk</voornaam>
   </klant>
   <klant>
-    <klant__id>2</klant__id>
-    <voornaam>Piet</voornaam>
-    <tussenvoegsel>NULL</tussenvoegsel>
-    <achternaam>Prutser</achternaam>
-    <email>pprutser73@gmail.com</email>
     <adres>
-      <straatnaam>Straat in het Dorp</straatnaam>
       <huisnummer>22</huisnummer>
-      <toevoeging>NULL</toevoeging>
       <postcode>4567DH</postcode>
+      <straatnaam>Straat in het Dorp</straatnaam>
+      <toevoeging></toevoeging>
       <woonplaats>Het Dorp</woonplaats>
     </adres>
+    <achternaam>Prutser</achternaam>
+    <email>pprutser73@gmail.com</email>
+    <tussenvoegsel></tussenvoegsel>
+    <voornaam>Piet</voornaam>
   </klant>
 </klanten>

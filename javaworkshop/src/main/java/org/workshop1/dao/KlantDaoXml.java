@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.io.xml.QNameMap;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +31,7 @@ public class KlantDaoXml implements KlantDao {
         this(KlantDao.DEFAULT_LOCATION_XML);
     }
     
-    public KlantDaoXml(String folder) throws DaoConfigurationException {
+    public KlantDaoXml(String folder) throws DaoConfigurationException {        
         xStream = new XStream(new StaxDriver());
         
         File directory = new File(folder);
@@ -42,7 +43,6 @@ public class KlantDaoXml implements KlantDao {
         klantFile = new File(directory.getPath() + "/klant.xml");
         
         xStream.alias("klant", Klant.class);
-        xStream.alias("adres", Adres.class);
         xStream.registerConverter(new DataConverter(), XStream.PRIORITY_VERY_HIGH);
     }
   

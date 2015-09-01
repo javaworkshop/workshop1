@@ -20,10 +20,10 @@ public class DaoFactory {
     public static BestellingDao getBestellingDao(int type, Connection con) throws DaoConfigurationException {
         if(type == MY_SQL)
             return new BestellingDaoMySql(con);
-        else if(type == JSON)
+        else if(type == FIREBIRD)
             return new BestellingDaoFirebird(con);
         else
-            throw new DaoConfigurationException("Ongeldig type");
+            return getBestellingDao(type);
     }
     
     public static KlantDao getKlantDao(int type) {
@@ -41,6 +41,6 @@ public class DaoFactory {
         else if(type == FIREBIRD)
             return new KlantDaoFirebird(con);
         else
-            throw new DaoConfigurationException("Ongeldig type");
+            return getKlantDao(type);
     }
 }

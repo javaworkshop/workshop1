@@ -45,12 +45,13 @@ public class DatabaseConnectorTest {
             FileNotFoundException {
         if(!isDatabaseInitialized) {
             initMySqlDatabase();
-            dbConnector = new DatabaseConnector();
-            dbConnector.setUrl(mySqlUrl);
-            dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-            dbConnector.setDatabaseChoice("MySQL");
-            dbConnector.setUsername(username);
-            dbConnector.setPassword(password);
+            dbConnector = new DatabaseConnector.Builder()
+                    .url(mySqlUrl)
+                    .username(username)
+                    .password(password)
+                    .storageType(DatabaseConnector.STORAGE_MYSQL)
+                    .dataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE)
+                    .build();
             dbConnector.connectToDatabase();
             initData();
             addData();

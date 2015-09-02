@@ -6,25 +6,31 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.workshop1.database.Column;
+import org.workshop1.database.Entity;
+import org.workshop1.database.Id;
+import org.workshop1.database.Table;
 
 /**
  * Class to store data from the bestelling table.
  */
+@Entity()
+@Table(name = "bestellingen")
 public class Bestelling implements Data, Comparable<Bestelling> {
-    private final SimpleIntegerProperty bestelling_id;
-    private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
-    private final SimpleIntegerProperty artikel_aantal1; 
-    private final SimpleIntegerProperty artikel_aantal2;
-    private final SimpleIntegerProperty artikel_aantal3;
-    private final SimpleIntegerProperty artikel_id1;
-    private final SimpleIntegerProperty artikel_id2;
-    private final SimpleIntegerProperty artikel_id3;
-    private final SimpleStringProperty artikel_naam1;
-    private final SimpleStringProperty artikel_naam2;
-    private final SimpleStringProperty artikel_naam3;
-    private final SimpleDoubleProperty artikel_prijs1;
-    private final SimpleDoubleProperty artikel_prijs2;
-    private final SimpleDoubleProperty artikel_prijs3;    
+    @Id(name = "bestelling_id", length = 10) private final SimpleIntegerProperty bestelling_id;
+    @Column(name = "klant_id", length = 10) private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
+    @Column(name = "artikel_id1", length = 10) private final SimpleIntegerProperty artikel_id1;
+    @Column(name = "artikel_id2", length = 10) private final SimpleIntegerProperty artikel_id2;
+    @Column(name = "artikel_id3", length = 10) private final SimpleIntegerProperty artikel_id3;
+    @Column(name = "artikel_naam1", length = 45) private final SimpleStringProperty artikel_naam1;
+    @Column(name = "artikel_naam2", length = 45) private final SimpleStringProperty artikel_naam2;
+    @Column(name = "artikel_naam3", length = 45) private final SimpleStringProperty artikel_naam3;
+    @Column(name = "artikel_aantal1", length = 10) private final SimpleIntegerProperty artikel_aantal1;
+    @Column(name = "artikel_aantal2", length = 10) private final SimpleIntegerProperty artikel_aantal2;
+    @Column(name = "artikel_aantal3", length = 10) private final SimpleIntegerProperty artikel_aantal3;
+    @Column(name = "artikel_prijs1", length = 10) private final SimpleDoubleProperty artikel_prijs1;
+    @Column(name = "artikel_prijs2", length = 10) private final SimpleDoubleProperty artikel_prijs2;
+    @Column(name = "artikel_prijs3", length = 10) private final SimpleDoubleProperty artikel_prijs3;
     
     public Bestelling() {
         bestelling_id = new SimpleIntegerProperty(0);

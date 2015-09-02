@@ -1,0 +1,28 @@
+<klanten>
+  <klant>
+    <adres>
+      <huisnummer>45</huisnummer>
+      <postcode>1234AB</postcode>
+      <straatnaam>De Straat</straatnaam>
+      <toevoeging></toevoeging>
+      <woonplaats>De Plaats</woonplaats>
+    </adres>
+    <achternaam>Man</achternaam>
+    <email>hm85@hotmail.com</email>
+    <tussenvoegsel></tussenvoegsel>
+    <voornaam>Henk</voornaam>
+  </klant>
+  <klant>
+    <adres>
+      <huisnummer>22</huisnummer>
+      <postcode>4567DH</postcode>
+      <straatnaam>Straat in het Dorp</straatnaam>
+      <toevoeging></toevoeging>
+      <woonplaats>Het Dorp</woonplaats>
+    </adres>
+    <achternaam>Prutser</achternaam>
+    <email>pprutser73@gmail.com</email>
+    <tussenvoegsel></tussenvoegsel>
+    <voornaam>Piet</voornaam>
+  </klant>
+</klanten>

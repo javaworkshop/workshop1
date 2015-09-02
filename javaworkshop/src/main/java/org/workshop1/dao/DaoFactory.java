@@ -21,7 +21,7 @@ public class DaoFactory {
         if(type == MY_SQL)
             return new BestellingDaoMySql(con);
         else if(type == FIREBIRD)
-            return new BestellingDaoFirebird(con);
+            return new BestellingDaoMySql(con);
         else
             return getBestellingDao(type);
     }
@@ -39,7 +39,7 @@ public class DaoFactory {
         if(type == MY_SQL)
             return new KlantDaoMySql(con);
         else if(type == FIREBIRD)
-            return new KlantDaoFirebird(con);
+            return new KlantDaoMySql(con);
         else
             return getKlantDao(type);
     }

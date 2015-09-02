@@ -10,7 +10,7 @@ import javafx.beans.property.StringProperty;
 /**
  * Class to store data from the bestelling table.
  */
-public class Bestelling implements Data {
+public class Bestelling implements Data, Comparable<Bestelling> {
     private final SimpleIntegerProperty bestelling_id;
     private final SimpleIntegerProperty klant_id; // De klant die de bestelling gedaan heeft
     private final SimpleIntegerProperty artikel_aantal1; 
@@ -41,6 +41,16 @@ public class Bestelling implements Data {
         artikel_prijs1 = new SimpleDoubleProperty(0);
         artikel_prijs2 = new SimpleDoubleProperty(0);
         artikel_prijs3 = new SimpleDoubleProperty(0);
+    }
+    
+    @Override
+    public int compareTo(Bestelling b) {
+        if(b.getBestelling_id() < this.getBestelling_id())
+            return 1;
+        else if(b.getBestelling_id() > this.getBestelling_id())
+            return -1;
+        else
+            return 0;
     }
     
     public IntegerProperty artikel_aantal1Property() {

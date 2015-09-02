@@ -1,14 +1,8 @@
 package org.workshop1.dao;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import com.thoughtworks.xstream.io.xml.QNameMap;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,17 +12,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.workshop1.model.Klant;
 import org.workshop1.model.Adres;
 import org.workshop1.model.Data;
-
+import org.workshop1.model.Klant;
 
 public class KlantDaoXml implements KlantDao {   
     private File klantFile;
     XStream xStream;
     
     public KlantDaoXml() throws DaoConfigurationException {
-        this(KlantDao.DEFAULT_LOCATION_XML);
+        this(Dao.DEFAULT_LOCATION_XML);
     }
     
     public KlantDaoXml(String folder) throws DaoConfigurationException {        
@@ -196,13 +189,16 @@ public class KlantDaoXml implements KlantDao {
     
     @Override
     public void delete(Klant klant) throws DaoException {
-        ArrayList<Klant> klanten = readAll();
-        int index = klanten.indexOf(klant.getKlant_id());
-        if(index > -1) {
-            klanten.remove(index);
-            write(klanten);
-        }
+        delete(klant.getKlant_id());
+        
     }
+    
+    @Override
+    public void close() {
+        // nothing happens...
+    }
+    
+    // Helpers -------------------------------------------------------------------------------------
     
     private void write(ArrayList<Klant> klanten) {
         try(ObjectOutputStream klantOutputStream = xStream.createObjectOutputStream(
@@ -224,10 +220,5 @@ public class KlantDaoXml implements KlantDao {
         catch(IOException ex) {
             throw new DaoException("Schrijven naar " + klantFile + " is mislukt", ex);
         }
-    }
-    
-    @Override
-    public void close() {
-        // nothing happens...
-    }
+    }    
 }

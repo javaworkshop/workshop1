@@ -63,7 +63,7 @@ public class Controller extends Application {
     private Button btVoegBestelling = new Button("Voeg Bestelling Toe");
     private ComboBox<String> cboDataSource = new ComboBox<>();
     private ComboBox<String> cboDatabase = new ComboBox<>();
-    private DatabaseConnector dbConnector = new DatabaseConnector();
+    private DatabaseConnector dbConnector;
     private ErrorScreen errorScreen;
     private String lastExecutedQuery = "";
     private Label lblConnectionStatus = new Label("Geen verbinding ");
@@ -144,34 +144,50 @@ public class Controller extends Application {
      * and username and password textfields to initate database connection.
      */
     private void connectToDB() {
-        dbConnector.setUsername(tfUsername.getText().trim());
-        dbConnector.setPassword(pfPassword.getText().trim());
-        dbConnector.setUrl(tfURL.getText().trim());
+        String userName = tfUsername.getText().trim();
+        String password = pfPassword.getText().trim();
+        String url = tfURL.getText().trim();
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
         try {            
             if (database.equals("MySQL")) {                
-                dbConnector.setDatabaseChoice("MySQL");      
-                
                 if(dataSource.equals("HikariCP")) {
-                    dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-                    dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_MYSQL);
+                    dbConnector = new DatabaseConnector.Builder()
+                            .username(userName)
+                            .password(password)
+                            .url(url)
+                            .storageType(DatabaseConnector.STORAGE_MYSQL)
+                            .dataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE)
+                            .build();
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
-                    dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
-                    dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_MYSQL);
+                    dbConnector = new DatabaseConnector.Builder()
+                            .username(userName)
+                            .password(password)
+                            .url(url)
+                            .storageType(DatabaseConnector.STORAGE_MYSQL)
+                            .dataSourceType(DatabaseConnector.C3P0_DATASOURCE)
+                            .build();
                 }
             } 
-            else { //if (database.equals("Firebird"))
-                dbConnector.setDatabaseChoice("Firebird");                
-                
+            else { //if (database.equals("Firebird"))                
                 if(dataSource.equals("HikariCP")) {
-                    dbConnector.setDataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE);
-                    dbConnector.setDriver(DatabaseConnector.HIKARI_CP_DRIVER_FIREBIRD);
+                    dbConnector = new DatabaseConnector.Builder()
+                            .username(userName)
+                            .password(password)
+                            .url(url)
+                            .storageType(DatabaseConnector.STORAGE_FIREBIRD)
+                            .dataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE)
+                            .build();
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
-                    dbConnector.setDataSourceType(DatabaseConnector.C3P0_DATASOURCE);
-                    dbConnector.setDriver(DatabaseConnector.C3P0_DRIVER_FIREBIRD);
+                    dbConnector = new DatabaseConnector.Builder()
+                            .username(userName)
+                            .password(password)
+                            .url(url)
+                            .storageType(DatabaseConnector.STORAGE_FIREBIRD)
+                            .dataSourceType(DatabaseConnector.C3P0_DATASOURCE)
+                            .build();
                 }
             }
             dbConnector.connectToDatabase();
@@ -183,7 +199,6 @@ public class Controller extends Application {
         }
         catch (DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
-            ex.printStackTrace();
         }       
     }    
     

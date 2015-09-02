@@ -2,9 +2,6 @@ package org.workshop1.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Objects;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * Marker interface for all classes that represent storage entities.

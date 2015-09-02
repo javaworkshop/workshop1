@@ -28,30 +28,26 @@ public class DatabaseConnector {
     public static final byte C3P0_DATASOURCE = 2;
     public static final String C3P0_DRIVER_FIREBIRD = "org.firebirdsql.jdbc.FBDriver";
     public static final String C3P0_DRIVER_MYSQL = "com.mysql.jdbc.Driver";
-    public static final byte FIREBIRD_DATABASE = 2;
+    public static final byte STORAGE_MYSQL = 1;
+    public static final byte STORAGE_FIREBIRD = 2;
+    public static final byte STORAGE_XML = 3; // nodig in deze klasse?
+    public static final byte STORAGE_JSON = 4;// nodig in deze klasse?
     public static final byte HIKARI_CP_DATASOURCE = 1;
     public static final String HIKARI_CP_DRIVER_FIREBIRD = 
             "org.firebirdsql.pool.FBSimpleDataSource";
     public static final String HIKARI_CP_DRIVER_MYSQL = 
-            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
-      
+            "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";        
    
     private DataSource dataSource;    
     
-    private String databaseChoice;
+    private byte storageType;
     private byte dataSourceType;
-    private byte databaseType;
     private String driver;
     private boolean isInitialized;
     private final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
     private String password;
     private String url;
-    private String username;
-    
-    public DatabaseConnector() {        
-        dataSource = null;
-        isInitialized = false;
-    }
+    private String username;    
     
     /**
      * Adds the given artikel to the database. It is stored as part of the bestelling that has the
@@ -479,8 +475,8 @@ public class DatabaseConnector {
      * contained in this class.
      * @return the code for the type of Database
      */
-    public byte getDatabaseType() {
-        return databaseType;
+    public byte getStorageType() {
+        return storageType;
     }
     
     /**
@@ -669,62 +665,13 @@ public class DatabaseConnector {
         
         return klant;
     }
-    
-    public void setDatabaseChoice(String databaseChoice) {
-        this.databaseChoice = databaseChoice;
-    }
-
-    public String getDatabaseChoice() {
-        return databaseChoice;
-    }
-    
-    /**
-     * Sets the type of DataSource this DatabaseConnector will use next time it initiates a
-     * connection to a database. The codes for DataSource types are defined by the constants
-     * contained in this class.
-     * @param dataSourceType the code for the type of DataSource to be used
-     * @throws DatabaseException thrown when parameter value is invalid
-     */
-    public void setDataSourceType(byte dataSourceType) throws DatabaseException {
-        if(dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
-            throw new DatabaseException("Instellen data source mislukt.");
-        else {
-            this.dataSourceType = dataSourceType;
-        }
-    }
-    
-    /**
-     * Sets the type of Database this DatabaseConnector will use next time it initiates a
-     * connection to a database. The codes for Database types are defined by the constants 
-     * contained in this class.
-     * @param dataSourceType the code for the type of Database to be used
-     * @throws DatabaseException thrown when parameter value is invalid
-     */
-    /*public void setDatabaseType(byte databaseType) throws DatabaseException {
-        if(databaseType < MYSQL_DATABASE && databaseType > FIREBIRD_DATABASE)
-            throw new DatabaseException("Instellen database mislukt.");
-        else {
-            this.databaseType = databaseType;
-        }
-    }*/
-    
-    /**
-     * Sets the driver that will be used to connect with SQL database.
-     * @param driver a String with driver name
-     */
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
-    
-    /**
-     * Sets the password that will be used to connect with SQL database.
-     * @param password a String with the password
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     private void setUpC3p0DataSource() throws DatabaseException, SQLException {
+        if(storageType == STORAGE_MYSQL)
+            driver = C3P0_DRIVER_MYSQL;
+        else
+            driver = C3P0_DRIVER_FIREBIRD;
+        
         try {
             Class.forName(driver);
         } catch (Exception ex) {
@@ -749,7 +696,8 @@ public class DatabaseConnector {
         config.setInitializationFailFast(true);
         config.setLeakDetectionThreshold(5000);
         
-        if ("MySQL".equals(databaseChoice)) {
+        if (storageType == STORAGE_MYSQL) {
+            driver = HIKARI_CP_DRIVER_MYSQL;
             config.setDataSourceClassName(driver);
             /*config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet
             config.addDataSourceProperty("port", "3306");            // eigenlijk info uit de gui
@@ -758,7 +706,8 @@ public class DatabaseConnector {
             config.addDataSourceProperty("user", username);
             config.addDataSourceProperty("password", password);
         }
-        else {
+        else /*if (storageType == STORAGE_FIREBIRD)*/ {
+            driver = HIKARI_CP_DRIVER_FIREBIRD;
             config.setDataSourceClassName(driver);
             /*config.addDataSourceProperty("serverName", "localhost"); // voor deze attributen moet
             config.addDataSourceProperty("port", "3050");            // eigenlijk info uit de gui
@@ -772,22 +721,6 @@ public class DatabaseConnector {
         logger.info("HikariConfig object is ingesteld en HikariDataSource is aangemaakt.");        
         testConnection();
         logger.info("HikariDatasource is getest en gaf geen foutmeldingen.");
-    }
-
-    /**
-     * Sets the database url that will be used to connect with SQL database.
-     * @param url a String with database url
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * Sets the username that will be used to connect with SQL database.
-     * @param username a String with the username
-     */
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     private void testConnection() throws DatabaseException {
@@ -844,4 +777,56 @@ public class DatabaseConnector {
         return false;
     }
     
+    public static class Builder {
+	private byte dataSourceType;
+        private byte storageType;
+	private String url;
+	private String username;
+	private String password;
+                
+	public Builder dataSourceType(byte dataSourceType) throws DatabaseException {
+            if (dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
+                throw new DatabaseException("Instellen data source mislukt.");
+            else {
+		this.dataSourceType = dataSourceType;
+            }			
+            return this;
+	}
+                
+        public Builder storageType(byte storageType) throws DatabaseException {
+            if (storageType < STORAGE_MYSQL && dataSourceType > STORAGE_JSON)
+                throw new DatabaseException("Instellen storage type mislukt.");
+            else {
+		this.storageType = storageType;
+            }			
+            return this;
+	}
+
+	public Builder url(String url) {
+            this.url = url;
+            return this;
+	}
+
+	public Builder username(String username) {
+            this.username = username;
+            return this;
+	}
+
+	public Builder password(String password) {
+            this.password = password;
+            return this;
+	}
+
+	public DatabaseConnector build() {
+            return new DatabaseConnector(this);
+	}
+    }
+
+    private DatabaseConnector(Builder builder) {
+        this.dataSourceType = builder.dataSourceType;
+        this.storageType = builder.storageType;
+        this.url = builder.url;
+        this.username = builder.username;
+        this.password = builder.password;
+    }    
 }

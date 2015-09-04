@@ -513,15 +513,27 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-        }); //nog te implementeren
+            waitOnThread(th);
+        });
         btUpdate.setOnAction(e -> {
             Thread th = new Thread(() -> update());
             th.setUncaughtExceptionHandler((t, ex) -> {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
+            waitOnThread(th);
         });
         btRefresh.setOnAction(e -> refresh());
+    }
+    
+    private void waitOnThread(Thread th) {
+        try {
+            th.join();
+        }
+        catch(InterruptedException ex) {
+            showExceptionPopUp("Fout tijdens updaten.");
+        }
+        refresh();
     }
     
     private void update() {
@@ -542,7 +554,5 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
-        // Dit gaat niet helemaal goed
-        refresh();
     }
 }

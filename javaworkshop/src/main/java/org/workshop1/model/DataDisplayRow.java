@@ -7,6 +7,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.util.converter.NumberStringConverter;
+import javafx.beans.binding.Bindings;
 
 /**
  * Class meant to make editing and displaying data in a TableView easier. Also contains
@@ -23,16 +24,16 @@ public class DataDisplayRow {
     private SimpleStringProperty artikel_prijs1;
     private SimpleStringProperty artikel_prijs2;
     private SimpleStringProperty artikel_prijs3;
-    Bestelling bestelling;
+    private Bestelling bestelling;
     // and editing in a TableView.
     // bestelling properties
     private SimpleStringProperty bestelling_id;
-    SimpleBooleanProperty delete;
+    private SimpleBooleanProperty delete;
     private SimpleStringProperty huisnummer; // to String properties to support easy display
-    Klant klant;
+    private Klant klant;
     // klant properties
     private SimpleStringProperty klant_id; // Integer and double properties are converted
-    SimpleBooleanProperty update;
+    private SimpleBooleanProperty update;
     
     public DataDisplayRow(QueryResultRow queryResultRow) {
         klant = queryResultRow.getKlant();       

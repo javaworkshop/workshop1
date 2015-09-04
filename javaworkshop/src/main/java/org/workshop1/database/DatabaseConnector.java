@@ -119,8 +119,8 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         try(Connection con = dataSource.getConnection();
-                Statement statement = con.createStatement()
-                ) {
+            Statement statement = con.createStatement()
+        ) {
             for(Data d : data) {
                 if(d instanceof Klant) {
                     if(((Klant)d).getKlant_id() != 0)
@@ -436,7 +436,7 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         try(Connection con = dataSource.getConnection();
-                Statement statement = con.createStatement()
+            Statement statement = con.createStatement()
         ) {
             statement.execute(command);        
         }

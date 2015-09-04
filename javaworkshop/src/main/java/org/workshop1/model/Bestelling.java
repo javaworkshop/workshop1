@@ -108,7 +108,7 @@ public class Bestelling implements Data, Comparable<Bestelling> {
     }
 
     public IntegerProperty bestelling_idProperty() {
-        return bestelling_idProperty();
+        return bestelling_id;
     }
 
     @Override

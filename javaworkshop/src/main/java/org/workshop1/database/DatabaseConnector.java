@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.workshop1.model.Artikel;
@@ -19,6 +21,8 @@ import org.workshop1.model.Data;
 import org.workshop1.model.Klant;
 import org.workshop1.model.QueryResult;
 import org.workshop1.model.QueryResultRow;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
@@ -38,7 +42,8 @@ public class DatabaseConnector {
     public static final String HIKARI_CP_DRIVER_MYSQL = 
             "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";        
    
-    private DataSource dataSource;    
+    private DataSource dataSource;
+    private SessionFactory sessionFactory;
     
     private byte storageType;
     private byte dataSourceType;
@@ -47,7 +52,8 @@ public class DatabaseConnector {
     private final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
     private String password;
     private String url;
-    private String username;    
+    private String username;
+    private boolean hibernate;
     
     /**
      * Adds the given artikel to the database. It is stored as part of the bestelling that has the
@@ -161,8 +167,24 @@ public class DatabaseConnector {
      * @throws SQLException
      */
     public void connectToDatabase() throws DatabaseException, SQLException {
-        if(dataSourceType == HIKARI_CP_DATASOURCE)            
-            setUpHikariCPDataSource();
+        if(dataSourceType == HIKARI_CP_DATASOURCE) {
+            if(hibernate) {
+                Configuration cfg = new Configuration()
+                        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                        .setProperty("hibernate.connection.driver_class", HIKARI_CP_DRIVER_MYSQL) // Misschien moet dit de driver zijn en niet de datasource
+                        .setProperty("hibernate.connection.url", url)
+                        .setProperty("hibernate.connection.username", username)
+                        .setProperty("hibernate.connection.password", password)
+                        .setProperty("hibernate.connection.provider_class", 
+                                "org.hibernate.hikaricp.internal.HikariCPConnectionProvider"); // Alternatief: com.zaxxer.hikari.hibernate.HikariConnectionProvider
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(cfg.getProperties()).build();
+                sessionFactory = cfg.buildSessionFactory(serviceRegistry);
+                // Het wordt veel te complex (en ranzig) om hibernate op deze manier in de huidige applicatie te integreren...
+            }                        
+            else 
+                setUpHikariCPDataSource();
+        }
         else/*if(dataSourceType == C3P0_DATASOURCE)*/
             setUpC3p0DataSource();            
         
@@ -783,6 +805,7 @@ public class DatabaseConnector {
 	private String url;
 	private String username;
 	private String password;
+        private boolean hibernate;
                 
 	public Builder dataSourceType(byte dataSourceType) throws DatabaseException {
             if (dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
@@ -816,6 +839,11 @@ public class DatabaseConnector {
             this.password = password;
             return this;
 	}
+        
+        public Builder hibernate(boolean hibernate) {
+            this.hibernate = hibernate;
+            return this;
+        }
 
 	public DatabaseConnector build() {
             return new DatabaseConnector(this);
@@ -828,5 +856,6 @@ public class DatabaseConnector {
         this.url = builder.url;
         this.username = builder.username;
         this.password = builder.password;
+        this.hibernate = builder.hibernate;
     }    
 }

@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -61,6 +62,7 @@ public class Controller extends Application {
     private Button btUpdate = new Button("Update");
     private Button btVoegArtikel = new Button("Voeg Artikel Toe");
     private Button btVoegBestelling = new Button("Voeg Bestelling Toe");
+    private CheckBox cbHibernate = new CheckBox();
     private ComboBox<String> cboDataSource = new ComboBox<>();
     private ComboBox<String> cboDatabase = new ComboBox<>();
     private DatabaseConnector dbConnector;
@@ -149,6 +151,7 @@ public class Controller extends Application {
         String url = tfURL.getText().trim();
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
+        boolean useHibernate = cbHibernate.isSelected();
         try {            
             if (database.equals("MySQL")) {                
                 if(dataSource.equals("HikariCP")) {
@@ -158,6 +161,7 @@ public class Controller extends Application {
                             .url(url)
                             .storageType(DatabaseConnector.STORAGE_MYSQL)
                             .dataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE)
+                            .hibernate(useHibernate)
                             .build();
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
@@ -167,6 +171,7 @@ public class Controller extends Application {
                             .url(url)
                             .storageType(DatabaseConnector.STORAGE_MYSQL)
                             .dataSourceType(DatabaseConnector.C3P0_DATASOURCE)
+                            .hibernate(useHibernate)
                             .build();
                 }
             } 
@@ -414,6 +419,8 @@ public class Controller extends Application {
         gridPane.add(new Label("Gebruikersnaam"), 0, 2);
         gridPane.add(new Label("Wachtwoord"), 0, 3);
         gridPane.add(new Label("URL"), 0, 4);
+        gridPane.add(new Label("Hibernate"), 0, 5);
+        gridPane.add(cbHibernate, 1, 5);
         tfURL.setPrefColumnCount(22);
         gridPane.add(tfURL, 1, 4);
         gridPane.add(new Label("     Maak random klanten"),2,0);

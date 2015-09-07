@@ -520,7 +520,8 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-            waitOnThread(th);
+            waitForThread(th);
+            refresh();
         });
         btUpdate.setOnAction(e -> {
             Thread th = new Thread(() -> update());
@@ -528,19 +529,19 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-            waitOnThread(th);
+            waitForThread(th);
+            refresh();
         });
         btRefresh.setOnAction(e -> refresh());
     }
     
-    private void waitOnThread(Thread th) {
+    private void waitForThread(Thread th) {
         try {
             th.join();
         }
         catch(InterruptedException ex) {
             showExceptionPopUp("Fout tijdens updaten.");
-        }
-        refresh();
+        }        
     }
     
     private void update() {

@@ -6,34 +6,46 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.util.converter.NumberStringConverter;
-import javafx.beans.binding.Bindings;
 
 /**
  * Class meant to make editing and displaying data in a TableView easier. Also contains
  * BooleanProperties to keep track of the state of the update and delete checkboxes.
  */
 public class DataDisplayRow {
-    private SimpleStringProperty artikel_aantal1;
-    private SimpleStringProperty artikel_aantal2;
+    // klant properties
+    private SimpleStringProperty klant_id;
+    private SimpleStringProperty voornaam;
+    private SimpleStringProperty tussenvoegsel;
+    private SimpleStringProperty achternaam;
+    private SimpleStringProperty email;
+    private SimpleStringProperty huisnummer;
+    private SimpleStringProperty postcode;
+    private SimpleStringProperty straatnaam;
+    private SimpleStringProperty toevoeging;
+    private SimpleStringProperty woonplaats;    
+    private Klant klant;
     
-    private SimpleStringProperty artikel_aantal3;
+    // bestelling properties
+    private SimpleStringProperty bestelling_id;
     private SimpleStringProperty artikel_id1;
     private SimpleStringProperty artikel_id2;
     private SimpleStringProperty artikel_id3;
+    private SimpleStringProperty artikel_naam1;
+    private SimpleStringProperty artikel_naam2;
+    private SimpleStringProperty artikel_naam3;
+    private SimpleStringProperty artikel_aantal1;
+    private SimpleStringProperty artikel_aantal2;    
+    private SimpleStringProperty artikel_aantal3;
     private SimpleStringProperty artikel_prijs1;
     private SimpleStringProperty artikel_prijs2;
     private SimpleStringProperty artikel_prijs3;
-    private Bestelling bestelling;
-    // and editing in a TableView.
-    // bestelling properties
-    private SimpleStringProperty bestelling_id;
-    private SimpleBooleanProperty delete;
-    private SimpleStringProperty huisnummer; // to String properties to support easy display
-    private Klant klant;
-    // klant properties
-    private SimpleStringProperty klant_id; // Integer and double properties are converted
+    private Bestelling bestelling;    
+    
+    // checkbox properties
     private SimpleBooleanProperty update;
+    private SimpleBooleanProperty delete;
+
+    
     
     public DataDisplayRow(QueryResultRow queryResultRow) {
         klant = queryResultRow.getKlant();       
@@ -54,7 +66,7 @@ public class DataDisplayRow {
     }
 
     public StringProperty achternaamProperty() {
-        return klant.achternaamProperty();
+        return achternaam;
     }
 
     public StringProperty artikel_aantal1Property() {
@@ -82,15 +94,15 @@ public class DataDisplayRow {
     }
     
     public StringProperty artikel_naam1Property() {
-        return bestelling.artikel_naam1Property();
+        return artikel_naam1Property();
     }
     
     public StringProperty artikel_naam2Property() {
-        return bestelling.artikel_naam2Property();
+        return artikel_naam2Property();
     }
     
     public StringProperty artikel_naam3Property() {
-        return bestelling.artikel_naam3Property();
+        return artikel_naam3Property();
     }
     
     public StringProperty artikel_prijs1Property() {
@@ -114,7 +126,7 @@ public class DataDisplayRow {
     }
     
     public StringProperty emailProperty() {
-        return klant.emailProperty();
+        return email;
     }
     
     @Override
@@ -170,44 +182,111 @@ public class DataDisplayRow {
      */
     private void initBestellingProperties() {
         bestelling_id = new SimpleStringProperty(bestelling.getBestelling_id() + "");
-        bestelling_id.bindBidirectional(bestelling.bestelling_idProperty(),
-                new NumberStringConverter());
         
         artikel_id1 = new SimpleStringProperty(bestelling.getArtikel_id1() + "");
-        artikel_id1.bindBidirectional(bestelling.artikel_id1Property(),
-                new NumberStringConverter());
+        artikel_id1.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_id1(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_id1.setValue(o);
+            }
+        });
         
         artikel_id2 = new SimpleStringProperty(bestelling.getArtikel_id2() + "");
-        artikel_id2.bindBidirectional(bestelling.artikel_id2Property(),
-                new NumberStringConverter());
+        artikel_id2.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_id2(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_id2.setValue(o);
+            }
+        });
         
         artikel_id3 = new SimpleStringProperty(bestelling.getArtikel_id3() + "");
-        artikel_id3.bindBidirectional(bestelling.artikel_id3Property(),
-                new NumberStringConverter());
+        artikel_id3.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_id3(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_id3.setValue(o);
+            }
+        });
+        
+        artikel_naam1 = new SimpleStringProperty(bestelling.getArtikel_naam1());
+        artikel_naam1.addListener((ov, o, n) -> {
+            bestelling.setArtikel_naam1(n);
+        });
+        
+        artikel_naam2 = new SimpleStringProperty(bestelling.getArtikel_naam2());
+        artikel_naam2.addListener((ov, o, n) -> {
+            bestelling.setArtikel_naam2(n);
+        });
+        
+        artikel_naam3 = new SimpleStringProperty(bestelling.getArtikel_naam3());
+        artikel_naam3.addListener((ov, o, n) -> {
+            bestelling.setArtikel_naam3(n);
+        });
         
         artikel_aantal1 = new SimpleStringProperty(bestelling.getArtikel_aantal1() + "");
-        artikel_aantal1.bindBidirectional(bestelling.artikel_aantal1Property(),
-                new NumberStringConverter());
+        artikel_aantal1.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_aantal1(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_aantal1.setValue(o);
+            }
+        });
         
         artikel_aantal2 = new SimpleStringProperty(bestelling.getArtikel_aantal2() + "");
-        artikel_aantal2.bindBidirectional(bestelling.artikel_aantal2Property(),
-                new NumberStringConverter());
+        artikel_aantal2.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_aantal2(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_aantal2.setValue(o);
+            }
+        });
         
         artikel_aantal3 = new SimpleStringProperty(bestelling.getArtikel_aantal3() + "");
-        artikel_aantal3.bindBidirectional(bestelling.artikel_aantal3Property(),
-                new NumberStringConverter());
+        artikel_aantal3.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_aantal3(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_aantal3.setValue(o);
+            }
+        });
         
         artikel_prijs1 = new SimpleStringProperty(bestelling.getArtikel_prijs1() + "");
-        artikel_prijs1.bindBidirectional(bestelling.artikel_prijs1Property(),
-                new NumberStringConverter());
+        artikel_prijs1.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_prijs1(Double.parseDouble(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_prijs1.setValue(o);
+            }
+        });
         
         artikel_prijs2 = new SimpleStringProperty(bestelling.getArtikel_prijs2() + "");
-        artikel_prijs2.bindBidirectional(bestelling.artikel_prijs2Property(),
-                new NumberStringConverter());
+        artikel_prijs2.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_prijs2(Double.parseDouble(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_prijs2.setValue(o);
+            }
+        });
         
         artikel_prijs3 = new SimpleStringProperty(bestelling.getArtikel_prijs3() + "");
-        artikel_prijs3.bindBidirectional(bestelling.artikel_prijs3Property(),
-                new NumberStringConverter());
+        artikel_prijs3.addListener((ov, o, n) -> {
+            try {
+                bestelling.setArtikel_prijs3(Double.parseDouble(n));
+            }
+            catch(NumberFormatException ex) {
+                artikel_prijs3.setValue(o);
+            }
+        });
     }
 
     /**
@@ -220,17 +299,61 @@ public class DataDisplayRow {
     }
     
     /**
-     * Declare klant properties and bind them bidirectionally to the corresponding properties in
-     * klant so changes made to the TableView will be reflected in klant and vice versa.
+     * Declare klant properties and bind them to the corresponding properties in
+     * klant so changes made to the TableView will be reflected in klant.
      */
     private void initKlantProperties() {
         klant_id = new SimpleStringProperty(klant.getKlant_id() + "");
-        klant_id.bindBidirectional(klant.klant_idProperty(),
-                new NumberStringConverter());
         
-        huisnummer = new SimpleStringProperty(klant.getHuisnummer() + "");
-        huisnummer.bindBidirectional(klant.huisnummerProperty(),
-                new NumberStringConverter());
+        voornaam = new SimpleStringProperty(klant.getVoornaam() + "");
+        email.addListener((ov, o, n) -> {
+            klant.setVoornaam(n);
+        });
+        
+        tussenvoegsel = new SimpleStringProperty(klant.getTussenvoegsel());
+        tussenvoegsel.addListener((ov, o, n) -> {
+            klant.setTussenvoegsel(n);
+        });
+        
+        achternaam = new SimpleStringProperty(klant.getAchternaam() + "");
+        email.addListener((ov, o, n) -> {
+            klant.setAchternaam(n);
+        });
+        
+        email = new SimpleStringProperty(klant.getEmail());
+        email.addListener((ov, o, n) -> {
+            klant.setEmail(n);
+        });
+        
+        huisnummer = new SimpleStringProperty(klant.getAdres().getHuisnummer() + "");
+        huisnummer.addListener((ov, o, n) -> {
+            try {
+                klant.getAdres().setHuisnummer(Integer.parseInt(n));
+            }
+            catch(NumberFormatException ex) {
+                huisnummer.setValue(o);
+            }
+        });
+        
+        postcode = new SimpleStringProperty(klant.getAdres().getPostcode());
+        postcode.addListener((ov, o, n) -> {
+            klant.getAdres().setPostcode(n);
+        });
+        
+        straatnaam = new SimpleStringProperty(klant.getAdres().getStraatnaam());
+        straatnaam.addListener((ov, o, n) -> {
+            klant.getAdres().setStraatnaam(n);
+        });
+        
+        toevoeging = new SimpleStringProperty(klant.getAdres().getToevoeging());
+        toevoeging.addListener((ov, o, n) -> {
+            klant.getAdres().setToevoeging(n);
+        });
+        
+        woonplaats = new SimpleStringProperty(klant.getAdres().getWoonplaats());
+        woonplaats.addListener((ov, o, n) -> {
+            klant.getAdres().setWoonplaats(n);
+        });
     }
     
     public StringProperty klant_idProperty() {
@@ -262,7 +385,7 @@ public class DataDisplayRow {
     }
     
     public StringProperty postcodeProperty() {
-        return klant.postcodeProperty();
+        return postcode;
     }
     
     public void setBestelling(Bestelling bestelling) {
@@ -284,7 +407,7 @@ public class DataDisplayRow {
     }
     
     public StringProperty straatnaamProperty() {
-        return klant.straatnaamProperty();
+        return straatnaam;
     }
     
     @Override
@@ -294,11 +417,11 @@ public class DataDisplayRow {
     }
     
     public StringProperty toevoegingProperty() {
-        return klant.toevoegingProperty();
+        return toevoeging;
     }
     
     public StringProperty tussenvoegselProperty() {
-        return klant.tussenvoegselProperty();
+        return tussenvoegsel;
     }
     
     public BooleanProperty updateProperty() {
@@ -306,10 +429,10 @@ public class DataDisplayRow {
     }
     
     public StringProperty voornaamProperty() {
-        return klant.voornaamProperty();
+        return voornaam;
     }
     
     public StringProperty woonplaatsProperty() {
-        return klant.woonplaatsProperty();
+        return woonplaats;
     }
 }

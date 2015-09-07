@@ -9,77 +9,57 @@ import javafx.beans.property.StringProperty;
 
 @Embeddable // krijgt als het goed is eigen tabel...
 public class Adres implements Data {
-    private final SimpleIntegerProperty huisnummer;
-    private final SimpleStringProperty postcode;
-    private final SimpleStringProperty straatnaam;
-    private final SimpleStringProperty toevoeging;
-    private final SimpleStringProperty woonplaats;
+    private int huisnummer;
+    private String postcode;
+    private String straatnaam;
+    private String toevoeging;
+    private String woonplaats;
     
     public Adres() {
-        straatnaam = new SimpleStringProperty(null);
-        huisnummer = new SimpleIntegerProperty(0);
-        toevoeging = new SimpleStringProperty(null);
-        postcode = new SimpleStringProperty(null);
-        woonplaats= new SimpleStringProperty(null);
+        straatnaam = null;
+        huisnummer = 0;
+        toevoeging = null;
+        postcode = null;
+        woonplaats= null;
     }
     
     public void setHuisnummer(int huisnummer) {
-        this.huisnummer.setValue(huisnummer);
+        this.huisnummer = huisnummer;
     }
     
     public void setPostcode(String postcode) {
-        this.postcode.setValue(postcode);
+        this.postcode = postcode;
     }
 
     public void setStraatnaam(String straatnaam) {
-        this.straatnaam.setValue(straatnaam);
+        this.straatnaam = straatnaam;
     }
     
     public void setToevoeging(String toevoeging) {
-        this.toevoeging.setValue(toevoeging);
+        this.toevoeging = toevoeging;
     }
    
     public void setWoonplaats(String woonplaats) {
-        this.woonplaats.setValue(woonplaats);
+        this.woonplaats = woonplaats;
     }
     
     public int getHuisnummer() {
-        return huisnummer.getValue();
+        return huisnummer;
     }
     
     public String getPostcode() {
-        return postcode.getValue();
+        return postcode;
     }
     
     public String getStraatnaam() {
-        return straatnaam.getValue();
-    }
-
-    public String getToevoeging() {
-        return toevoeging.getValue();
-    }
-
-    public String getWoonplaats() {
-        return woonplaats.getValue();
-    }
-
-    public IntegerProperty huisnummerProperty() {
-        return huisnummer;
-    }
-
-    public StringProperty postcodeProperty() {
-        return postcode;
-    }
-
-    public StringProperty straatnaamProperty() {
         return straatnaam;
     }
 
-    public StringProperty toevoegingProperty() {
+    public String getToevoeging() {
         return toevoeging;
     }
 
-    public StringProperty woonplaatsProperty() {
+    public String getWoonplaats() {
         return woonplaats;
     }
     

@@ -6,6 +6,10 @@ import org.workshop1.model.Adres;
 import org.workshop1.model.Klant;
 
 public class KlantDaoHibernate implements KlantDao {
+    
+    public KlantDaoHibernate() throws DaoConfigurationException {
+        
+    }
 
     @Override
     public Klant read(int klant_id) throws DaoException {
@@ -58,7 +62,7 @@ public class KlantDaoHibernate implements KlantDao {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws DaoException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -33,6 +34,7 @@ import org.workshop1.model.Data;
 import org.workshop1.model.DataDisplayRow;
 import org.workshop1.model.Klant;
 import org.workshop1.model.QueryResult;
+import org.workshop1.model.QueryResultRow;
 
 /**
  * Class from which the program runs. User input is processed through this class.
@@ -56,11 +58,14 @@ public class Controller extends Application {
     private Button btDelete = new Button("Delete");
     private Button btExecuteSQL = new Button("Voer SQL Commando Uit");
     private Button btMaakKlanten = new Button("Maak Klanten Aan");
+    private Button btLeesKlant = new Button("Lees Klant");
+    private Button btLeesBestelling = new Button("Lees Bestelling");
     private Button btNieuweKlant = new Button("Maak Nieuwe Klant");
     private Button btRefresh = new Button("Ververs Tabel");
     private Button btUpdate = new Button("Update");
     private Button btVoegArtikel = new Button("Voeg Artikel Toe");
     private Button btVoegBestelling = new Button("Voeg Bestelling Toe");
+    private CheckBox cbHibernate = new CheckBox();
     private ComboBox<String> cboDataSource = new ComboBox<>();
     private ComboBox<String> cboDatabase = new ComboBox<>();
     private DatabaseConnector dbConnector;
@@ -75,6 +80,7 @@ public class Controller extends Application {
     private TextField tfURL = new TextField(MYSQL_URL);
     private TextField tfAantal = new TextField();
     private TextField tfUsername = new TextField();
+    private TextField tfId = new TextField();
     
     public static void main(String[] args) {
         launch(args);
@@ -149,6 +155,7 @@ public class Controller extends Application {
         String url = tfURL.getText().trim();
         String database = cboDatabase.getSelectionModel().getSelectedItem();
         String dataSource = cboDataSource.getSelectionModel().getSelectedItem();
+        boolean useHibernate = cbHibernate.isSelected();
         try {            
             if (database.equals("MySQL")) {                
                 if(dataSource.equals("HikariCP")) {
@@ -158,6 +165,7 @@ public class Controller extends Application {
                             .url(url)
                             .storageType(DatabaseConnector.STORAGE_MYSQL)
                             .dataSourceType(DatabaseConnector.HIKARI_CP_DATASOURCE)
+                            .hibernate(useHibernate)
                             .build();
                 }
                 else/*if(dataSource.equals("C3P0"))*/ {
@@ -167,6 +175,7 @@ public class Controller extends Application {
                             .url(url)
                             .storageType(DatabaseConnector.STORAGE_MYSQL)
                             .dataSourceType(DatabaseConnector.C3P0_DATASOURCE)
+                            .hibernate(useHibernate)
                             .build();
                 }
             } 
@@ -414,12 +423,18 @@ public class Controller extends Application {
         gridPane.add(new Label("Gebruikersnaam"), 0, 2);
         gridPane.add(new Label("Wachtwoord"), 0, 3);
         gridPane.add(new Label("URL"), 0, 4);
+        gridPane.add(new Label("Hibernate"), 0, 5);
+        gridPane.add(cbHibernate, 1, 5);
         tfURL.setPrefColumnCount(22);
         gridPane.add(tfURL, 1, 4);
         gridPane.add(new Label("     Maak random klanten"),2,0);
         gridPane.add(new Label("     Voer aantal in: "), 2, 1);
         gridPane.add(tfAantal, 3, 1);
         gridPane.add(btMaakKlanten, 2, 2);
+        gridPane.add(new Label("     id:"), 2, 3);
+        gridPane.add(tfId, 3, 3);
+        gridPane.add(btLeesKlant, 2, 4);
+        gridPane.add(btLeesBestelling, 3, 4);
         HBox hBoxUpdate = new HBox();
         hBoxUpdate.getChildren().addAll(btRefresh, btNieuweKlant, btVoegArtikel, btVoegBestelling);
         
@@ -489,6 +504,12 @@ public class Controller extends Application {
             });
             th.start();
         });
+        btLeesKlant.setOnAction(e -> {
+            leesKlant();
+        });
+        btLeesBestelling.setOnAction(e -> {
+            leesBestelling();
+        });
         btVoegBestelling.setOnAction(e -> {
             if(dbConnector.isInitialized())
                 addBestellingScreen.show();
@@ -513,15 +534,78 @@ public class Controller extends Application {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
-        }); //nog te implementeren
+            waitForThread(th);
+            refresh();
+        });
         btUpdate.setOnAction(e -> {
             Thread th = new Thread(() -> update());
             th.setUncaughtExceptionHandler((t, ex) -> {
                 taSQLResult.setText("Geen verbinding met database.");
             });
             th.start();
+            waitForThread(th);
+            refresh();
         });
         btRefresh.setOnAction(e -> refresh());
+    }
+    
+    private void waitForThread(Thread th) {
+        try {
+            th.join();
+        }
+        catch(InterruptedException ex) {
+            showExceptionPopUp("Fout tijdens updaten.");
+        }        
+    }
+    
+    private void leesKlant() {
+        try {
+            Klant klant = dbConnector.readKlant(Integer.parseInt(tfId.getText()));
+            // Het is een beetje ranzig om hier een queryresult aan te maken, maar eigenlijk is dit
+            // alleen maar om snel dao methodes te kunnen testen via de gui.
+            QueryResultRow qrr = new QueryResultRow();
+            qrr.setKlant(klant);
+            QueryResult qr = new QueryResult();
+            qr.addRow(qrr);
+            qr.addColumnNames(new String[]{"klant_id", "voornaam", "tussenvoegsel", "achternaam",
+                    "email", "straatnaam", "huisnummer", "toevoeging", "postcode", "woonplaats"});
+            populateTableView(qr);
+        }
+        catch(SQLException ex) {
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voer een geheel getal in.");
+        }
+    }
+    
+    private void leesBestelling() {
+        try {
+            Bestelling bestelling = dbConnector.readBestelling(Integer.parseInt(tfId.getText()));
+            // Het is een beetje ranzig om hier een queryresult aan te maken, maar eigenlijk is dit
+            // alleen maar om snel dao methodes te kunnen testen via de gui.
+            QueryResultRow qrr = new QueryResultRow();
+            qrr.setBestelling(bestelling);
+            QueryResult qr = new QueryResult();
+            qr.addRow(qrr);
+            qr.addColumnNames(new String[]{"bestelling_id", "klant_id", 
+                    "artikel_id1", "artikel_naam1", "artikel_aantal1", "artikel_prijs1",
+                    "artikel_id2", "artikel_naam2", "artikel_aantal2", "artikel_prijs2",
+                    "artikel_id3", "artikel_naam3", "artikel_aantal3", "artikel_prijs3",});
+            populateTableView(qr);
+        }
+        catch(SQLException ex) {
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voer een geheel getal in.");
+        }
     }
     
     private void update() {
@@ -542,7 +626,5 @@ public class Controller extends Application {
         catch(DatabaseException ex) {
             showExceptionPopUp(ex.getMessage());
         }
-        // Dit gaat niet helemaal goed
-        refresh();
     }
 }

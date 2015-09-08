@@ -1,14 +1,12 @@
 package org.workshop1.model;
 
-import org.workshop1.database.Column;
-import org.workshop1.database.Entity;
-import org.workshop1.database.Id;
-import org.workshop1.database.Table;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Class to store data from the klant table.
@@ -16,24 +14,28 @@ import javafx.beans.property.StringProperty;
 @Entity
 @Table(name = "klanten")
 public class Klant implements Data, Comparable<Klant> {
-    @Id(name = "klant_id", length = 10) private final SimpleIntegerProperty klant_id;
-    @Column(name = "voornaam", length = 50) private final SimpleStringProperty voornaam;
-    @Column(name = "tussenvoegsel", length = 20) private final SimpleStringProperty tussenvoegsel;
-    @Column(name = "achternaam", length = 51) private final SimpleStringProperty achternaam;
-    @Column(name = "email", length = 320) private final SimpleStringProperty email;
-    @Embedded private Adres adres;    
+    @Id
+    @Column(name="klant_id")
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private int klant_id;
+    @Column(name = "voornaam", length = 50)
+    private String voornaam;
+    @Column(name = "tussenvoegsel", length = 20)
+    private String tussenvoegsel;
+    @Column(name = "achternaam", length = 51)
+    private String achternaam;
+    @Column(name = "email", length = 320)
+    private String email;
+    @Embedded // Later @ManyToMany
+    private Adres adres;    
 
     public Klant() {
-        klant_id = new SimpleIntegerProperty(0);
+        klant_id = 0;
         adres = new Adres();
-        voornaam = new SimpleStringProperty(null);
-        tussenvoegsel = new SimpleStringProperty(null);
-        achternaam = new SimpleStringProperty(null);
-        email = new SimpleStringProperty(null);
-    }
-    
-    public StringProperty achternaamProperty() {
-        return achternaam;
+        voornaam = null;
+        tussenvoegsel = null;
+        achternaam = null;
+        email = null;
     }
 
     @Override
@@ -44,10 +46,6 @@ public class Klant implements Data, Comparable<Klant> {
             return -1;
         else
             return 0;
-    }
-    
-    public StringProperty emailProperty() {
-        return email;
     }
     
     @Override
@@ -71,19 +69,19 @@ public class Klant implements Data, Comparable<Klant> {
     }
     
     public String getAchternaam() {
-        return achternaam.getValue();
+        return achternaam;
     }
     
     public String getEmail() {
-        return email.getValue();
+        return email;
     }
     
     public int getHuisnummer() {
         return adres.getHuisnummer();
-    }
+    }    
     
     public int getKlant_id() {
-        return klant_id.getValue();
+        return klant_id;
     }
     
     public String getPostcode() {
@@ -96,14 +94,14 @@ public class Klant implements Data, Comparable<Klant> {
 
     public String getToevoeging() {
         return adres.getToevoeging();
-    }
-
+    }    
+    
     public String getTussenvoegsel() {
-        return tussenvoegsel.getValue();
-    }
+        return tussenvoegsel;
+    }    
     
     public String getVoornaam() {
-        return voornaam.getValue();
+        return voornaam;
     }
 
     public String getWoonplaats() {
@@ -127,24 +125,12 @@ public class Klant implements Data, Comparable<Klant> {
                 getWoonplaats().hashCode();
     }
     
-    public IntegerProperty huisnummerProperty() {
-        return adres.huisnummerProperty();
-    }
-    
-    public IntegerProperty klant_idProperty() {
-        return klant_id;
-    }
-
-    public StringProperty postcodeProperty() {
-        return adres.postcodeProperty();
-    }
-    
     public void setAchternaam(String achternaam) {
-        this.achternaam.setValue(achternaam);
+        this.achternaam = achternaam;
     }
 
     public void setEmail(String email) {
-        this.email.setValue(email);
+        this.email = email;
     }
 
     public void setHuisnummer(int huisnummer) {
@@ -152,7 +138,7 @@ public class Klant implements Data, Comparable<Klant> {
     }
     
     public void setKlant_id(int id) {
-        klant_id.setValue(id);
+        klant_id = id;
     }
 
     public void setPostcode(String postcode) {
@@ -168,21 +154,17 @@ public class Klant implements Data, Comparable<Klant> {
     }
 
     public void setTussenvoegsel(String tussenvoegsel) {
-        this.tussenvoegsel.setValue(tussenvoegsel);
+        this.tussenvoegsel = tussenvoegsel;
     }
 
     public void setVoornaam(String voornaam) {
-        this.voornaam.setValue(voornaam);
+        this.voornaam = voornaam;
     }
     
     public void setWoonplaats(String woonplaats) {
         adres.setWoonplaats(woonplaats);
     }
-
-    public StringProperty straatnaamProperty() {
-        return adres.straatnaamProperty();
-    }
-
+    
     @Override
     public String toString() {
         return "Klant{" + "klant_id=" + klant_id + ", voornaam=" + voornaam +
@@ -190,22 +172,6 @@ public class Klant implements Data, Comparable<Klant> {
                 ", email=" + email + ", straatnaam=" + adres.getStraatnaam() + ", huisnummer=" + 
                 adres.getHuisnummer() + ", toevoeging=" + adres.getToevoeging() + ", postcode=" + 
                 adres.getPostcode() + ", woonplaats=" + adres.getWoonplaats() + '}';
-    }
-    
-    public StringProperty toevoegingProperty() {
-        return adres.toevoegingProperty();
-    }
-    
-    public StringProperty tussenvoegselProperty() {
-        return tussenvoegsel;
-    }
-    
-    public StringProperty voornaamProperty() {
-        return voornaam;
-    }
-
-    public StringProperty woonplaatsProperty() {
-        return adres.woonplaatsProperty();
     }
     
     public Adres getAdres() {

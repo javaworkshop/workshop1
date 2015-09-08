@@ -11,8 +11,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.workshop1.dao.BestellingDao;
+import org.workshop1.dao.DaoConfigurationException;
+import org.workshop1.dao.DaoException;
+import org.workshop1.dao.DaoFactory;
+import org.workshop1.dao.KlantDao;
 import org.workshop1.model.Artikel;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Data;
@@ -38,7 +45,8 @@ public class DatabaseConnector {
     public static final String HIKARI_CP_DRIVER_MYSQL = 
             "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";        
    
-    private DataSource dataSource;    
+    private DataSource dataSource = null;
+    private SessionFactory sessionFactory;
     
     private byte storageType;
     private byte dataSourceType;
@@ -47,7 +55,8 @@ public class DatabaseConnector {
     private final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
     private String password;
     private String url;
-    private String username;    
+    private String username;
+    private boolean hibernate;
     
     /**
      * Adds the given artikel to the database. It is stored as part of the bestelling that has the
@@ -70,9 +79,20 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
-        String bestellingInsertionCode = SqlCodeGenerator.generateBestellingInsertionCode(b);
-        logger.debug(bestellingInsertionCode);
-        executeCommand(bestellingInsertionCode);
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(BestellingDao bDao = createBestellingDao(connection)) {
+            bDao.add(b);
+            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Bestelling toevoegen mislukt.", ex);
+        }
     }
     
     /**
@@ -83,9 +103,19 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
-        String klantInsertionCode = SqlCodeGenerator.generateKlantInsertionCode(k);
-        logger.debug(klantInsertionCode);
-        executeCommand(klantInsertionCode);
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(KlantDao kDao = createKlantDao(connection)) {
+            kDao.add(k);            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Klant toevoegen mislukt.", ex);
+        }
     }
     
     /**
@@ -119,8 +149,8 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         try(Connection con = dataSource.getConnection();
-                Statement statement = con.createStatement()
-                ) {
+            Statement statement = con.createStatement()
+        ) {
             for(Data d : data) {
                 if(d instanceof Klant) {
                     if(((Klant)d).getKlant_id() != 0)
@@ -161,8 +191,21 @@ public class DatabaseConnector {
      * @throws SQLException
      */
     public void connectToDatabase() throws DatabaseException, SQLException {
-        if(dataSourceType == HIKARI_CP_DATASOURCE)            
-            setUpHikariCPDataSource();
+        if(dataSourceType == HIKARI_CP_DATASOURCE) {
+            if(hibernate) {
+                Configuration cfg = new Configuration()
+                        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                        .setProperty("hibernate.connection.driver_class", HIKARI_CP_DRIVER_MYSQL) // Misschien moet dit de driver zijn en niet de datasource
+                        .setProperty("hibernate.connection.url", url)
+                        .setProperty("hibernate.connection.username", username)
+                        .setProperty("hibernate.connection.password", password)
+                        .setProperty("hibernate.connection.provider_class", 
+                                "org.hibernate.hikaricp.internal.HikariCPConnectionProvider"); // Alternatief: com.zaxxer.hikari.hibernate.HikariConnectionProvider
+                SessionManager.initialize(cfg);
+            }                        
+            else 
+                setUpHikariCPDataSource();
+        }
         else/*if(dataSourceType == C3P0_DATASOURCE)*/
             setUpC3p0DataSource();            
         
@@ -436,7 +479,7 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         try(Connection con = dataSource.getConnection();
-                Statement statement = con.createStatement()
+            Statement statement = con.createStatement()
         ) {
             statement.execute(command);        
         }
@@ -577,16 +620,17 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Bestelling bestelling;
-        try(RowSet rowSet = createRowSet("SELECT * FROM bestelling WHERE bestelling_id = "
-                + bestelling_id)) {
-            if(rowSet.next())
-                bestelling = retrieveBestelling(rowSet);           
-            else
-                return null;
-        }
+        Connection connection = null;
+            if(dataSource != null)
+                connection = dataSource.getConnection();
         
-        return bestelling;
+        try(BestellingDao bDao = createBestellingDao(connection)) {
+            return bDao.read(bestelling_id);
+            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Bestelling lezen mislukt.", ex);
+        }
     }
     
     /**
@@ -601,15 +645,16 @@ public class DatabaseConnector {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        Klant klant;
-        try(RowSet rowSet = createRowSet("SELECT * FROM klant WHERE klant_id = " + klant_id)) {
-            if(rowSet.next())
-                klant = retrieveKlant(rowSet);
-            else 
-                return null;
-        }
+        Connection connection = null;
+            if(dataSource != null)
+                connection = dataSource.getConnection();
         
-        return klant;
+        try(KlantDao kDao = createKlantDao(connection)) {
+            return kDao.read(klant_id);            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Klant lezen mislukt.", ex);
+        }
     }
     
     /**
@@ -737,44 +782,77 @@ public class DatabaseConnector {
 
     /**
      * Updates the given klant in the database based on the klant id contained in the Klant object.
-     * If the klant id of the given klant is equal to 0, this method will not do anything, in which
-     * case it will return false. When klant data has been succesfully updated, this method will
-     * return true.
+     * If the klant id of the given klant is equal to 0, this method will not do anything.
      * @param k                     klant data to be updated
-     * @return                      true if update was successful, false when nothing was updated
      * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public boolean update(Klant k) throws SQLException, DatabaseException {
+    public void update(Klant k) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        if(k.getKlant_id() != 0) {
-            executeCommand(SqlCodeGenerator.generateKlantUpdateCode(k));
-            return true;
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(KlantDao kDao = createKlantDao(connection)) {
+            kDao.update(k);
+            
         }
-        return false;
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Bestelling updaten mislukt.", ex);
+        }
     }
     
     /**
      * Updates the given bestelling in the database based on the bestelling id contained in the
      * Bestelling object. If the Bestelling id of the given bestelling is equal to 0, this method
-     * will not do anything, in which case it will return false. When bestelling data has been
-     * succesfully updated, this method will return true.
+     * will not do anything.
      * @param b                     bestelling data to be updated
-     * @return                      true if update was successful, false when nothing was updated
      * @throws SQLException
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
-    public boolean update(Bestelling b) throws SQLException, DatabaseException {
+    public void update(Bestelling b) throws SQLException, DatabaseException {
         if(!isInitialized)
             throw new DatabaseException("Geen verbinding met database.");
         
-        if(b.getBestelling_id() != 0) {
-            executeCommand(SqlCodeGenerator.generateBestellingUpdateCode(b));
-            return true;
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(BestellingDao bDao = createBestellingDao(connection)) {
+            bDao.update(b);
+            
         }
-        return false;
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Bestelling updaten mislukt.", ex);
+        }
+    }
+    
+    private KlantDao createKlantDao(Connection con) {
+        if(hibernate)
+            return DaoFactory.getKlantDao(DaoFactory.HIBERNATE);
+        else if(storageType == STORAGE_MYSQL)
+            return DaoFactory.getKlantDao(DaoFactory.MY_SQL, con);
+        else if(storageType == STORAGE_FIREBIRD)
+            return DaoFactory.getKlantDao(DaoFactory.FIREBIRD, con);
+        else if(storageType == STORAGE_XML)
+            return DaoFactory.getKlantDao(DaoFactory.XML);
+        else/*if(storageType == STORAGE_JSON)*/
+            return DaoFactory.getKlantDao(DaoFactory.JSON);
+    }
+    
+    private BestellingDao createBestellingDao(Connection con) {
+        if(hibernate)
+            return DaoFactory.getBestellingDao(DaoFactory.HIBERNATE);
+        else if(storageType == STORAGE_MYSQL)
+            return DaoFactory.getBestellingDao(DaoFactory.MY_SQL, con);
+        else if(storageType == STORAGE_FIREBIRD)
+            return DaoFactory.getBestellingDao(DaoFactory.FIREBIRD, con);
+        else if(storageType == STORAGE_XML)
+            return DaoFactory.getBestellingDao(DaoFactory.XML);
+        else/*if(storageType == STORAGE_JSON)*/
+            return DaoFactory.getBestellingDao(DaoFactory.JSON);
     }
     
     public static class Builder {
@@ -783,6 +861,7 @@ public class DatabaseConnector {
 	private String url;
 	private String username;
 	private String password;
+        private boolean hibernate;
                 
 	public Builder dataSourceType(byte dataSourceType) throws DatabaseException {
             if (dataSourceType < HIKARI_CP_DATASOURCE && dataSourceType > C3P0_DATASOURCE)
@@ -816,6 +895,11 @@ public class DatabaseConnector {
             this.password = password;
             return this;
 	}
+        
+        public Builder hibernate(boolean hibernate) {
+            this.hibernate = hibernate;
+            return this;
+        }
 
 	public DatabaseConnector build() {
             return new DatabaseConnector(this);
@@ -828,5 +912,6 @@ public class DatabaseConnector {
         this.url = builder.url;
         this.username = builder.username;
         this.password = builder.password;
+        this.hibernate = builder.hibernate;
     }    
 }

@@ -38,6 +38,7 @@ class DataConverter implements Converter {
                 else {
                     Object obj = getAttributeMethod.invoke(value, null);
                     if(obj == null || obj.equals(0)) {
+                        writer.addAttribute("value", "null");
                         writer.setValue("");
                     }
                     else
@@ -61,15 +62,16 @@ class DataConverter implements Converter {
             // move reader down to child node
             reader.moveDown();
             
-            String attributeName = reader.getNodeName();
-            String setAttribute = "set" + Character.toUpperCase(attributeName.charAt(0)) 
-                    + attributeName.substring(1);
-            String value = reader.getValue();
-            if(value.equals("")) {
+            if(reader.getAttributeCount() > 0 && reader.getAttribute("value").equals("null")) {
                 // move reader up to parent node, cursor moves forward
                 reader.moveUp();
                 continue;
             }
+            
+            String attributeName = reader.getNodeName();
+            String setAttribute = "set" + Character.toUpperCase(attributeName.charAt(0)) 
+                    + attributeName.substring(1);
+            String value = reader.getValue();            
              
             try {           
                 Method setAttributeMethod;

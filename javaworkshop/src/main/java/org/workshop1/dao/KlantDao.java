@@ -18,7 +18,4 @@ public interface KlantDao extends Dao {
     
     public void delete(int klant_id) throws DaoException;
     public void delete(Klant klant) throws DaoException;
-    
-    @Override
-    public void close() throws Exception;
 }

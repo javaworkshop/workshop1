@@ -12,20 +12,20 @@ import java.util.ArrayList;
 import javax.sql.DataSource;
 import javax.sql.RowSet;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.workshop1.dao.BestellingDao;
+import org.workshop1.dao.DaoConfigurationException;
+import org.workshop1.dao.DaoException;
+import org.workshop1.dao.DaoFactory;
+import org.workshop1.dao.KlantDao;
 import org.workshop1.model.Artikel;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Data;
 import org.workshop1.model.Klant;
 import org.workshop1.model.QueryResult;
 import org.workshop1.model.QueryResultRow;
-import org.hibernate.cfg.Configuration;
-import org.workshop1.dao.BestellingDao;
-import org.workshop1.dao.DaoConfigurationException;
-import org.workshop1.dao.DaoException;
-import org.workshop1.dao.DaoFactory;
-import org.workshop1.dao.KlantDao;
 
 /**
  * Class that establishes and maintains a connection with the database and through which all sql
@@ -79,9 +79,20 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addBestelling(Bestelling b) throws SQLException, DatabaseException {
-        String bestellingInsertionCode = SqlCodeGenerator.generateBestellingInsertionCode(b);
-        logger.debug(bestellingInsertionCode);
-        executeCommand(bestellingInsertionCode);
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(BestellingDao bDao = createBestellingDao(connection)) {
+            bDao.add(b);
+            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Bestelling toevoegen mislukt.", ex);
+        }
     }
     
     /**
@@ -92,9 +103,19 @@ public class DatabaseConnector {
      * @throws DatabaseException    thrown if database connection has not been initialized yet
      */
     public void addKlant(Klant k) throws SQLException, DatabaseException {
-        String klantInsertionCode = SqlCodeGenerator.generateKlantInsertionCode(k);
-        logger.debug(klantInsertionCode);
-        executeCommand(klantInsertionCode);
+        if(!isInitialized)
+            throw new DatabaseException("Geen verbinding met database.");
+        
+        Connection connection = null;
+        if(dataSource != null)
+            connection = dataSource.getConnection();
+        
+        try(KlantDao kDao = createKlantDao(connection)) {
+            kDao.add(k);            
+        }
+        catch(DaoException | DaoConfigurationException ex) {
+            throw new DatabaseException("Klant toevoegen mislukt.", ex);
+        }
     }
     
     /**
@@ -608,7 +629,7 @@ public class DatabaseConnector {
             
         }
         catch(DaoException | DaoConfigurationException ex) {
-            throw new DatabaseException("Bestelling updaten mislukt.", ex);
+            throw new DatabaseException("Bestelling lezen mislukt.", ex);
         }
     }
     
@@ -632,7 +653,7 @@ public class DatabaseConnector {
             return kDao.read(klant_id);            
         }
         catch(DaoException | DaoConfigurationException ex) {
-            throw new DatabaseException("Bestelling updaten mislukt.", ex);
+            throw new DatabaseException("Klant lezen mislukt.", ex);
         }
     }
     
@@ -771,8 +792,8 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         Connection connection = null;
-            if(dataSource != null)
-                connection = dataSource.getConnection();
+        if(dataSource != null)
+            connection = dataSource.getConnection();
         
         try(KlantDao kDao = createKlantDao(connection)) {
             kDao.update(k);
@@ -796,8 +817,8 @@ public class DatabaseConnector {
             throw new DatabaseException("Geen verbinding met database.");
         
         Connection connection = null;
-            if(dataSource != null)
-                connection = dataSource.getConnection();
+        if(dataSource != null)
+            connection = dataSource.getConnection();
         
         try(BestellingDao bDao = createBestellingDao(connection)) {
             bDao.update(b);

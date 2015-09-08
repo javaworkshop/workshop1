@@ -1,6 +1,7 @@
 package org.workshop1.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 
@@ -23,6 +24,10 @@ public class QueryResult {
     
     public void addColumnName(String name) {
         columnNames.add(name);
+    }
+    
+    public void addColumnNames(String[] names) {
+        columnNames.addAll(Arrays.asList(names));
     }
     
     public void addRow(QueryResultRow qrr) {

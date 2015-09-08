@@ -2,14 +2,13 @@ package org.workshop1.database.test;
 
 import java.util.ArrayList;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.workshop1.dao.DaoException;
 import org.workshop1.dao.KlantDaoXml;
-import org.workshop1.model.Data;
 import org.workshop1.model.Klant;
 
 public class KlantDaoXmlTest {
@@ -52,14 +51,11 @@ public class KlantDaoXmlTest {
     public void testAdd() throws DaoException {
         klantDao.add(k1);
         klantDao.add(k2);
-    }
-            
-    @Test
-    /*public void testRead() {
+        assertEquals(k1, klantDao.read(k1.getAdres()).get(0));
         ArrayList<Klant> klanten = klantDao.readAll();
-        logger.info(klanten.get(0).toString());
-        assertEquals(klanten.get(0), k1);
-    } */
+        assertEquals(k1, klanten.get(0));
+        assertEquals(k2, klanten.get(1));
+    }
     
     @After
     public void tearDown() {

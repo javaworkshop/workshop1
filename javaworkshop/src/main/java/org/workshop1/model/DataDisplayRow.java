@@ -306,7 +306,7 @@ public class DataDisplayRow {
         klant_id = new SimpleStringProperty(klant.getKlant_id() + "");
         
         voornaam = new SimpleStringProperty(klant.getVoornaam() + "");
-        email.addListener((ov, o, n) -> {
+        voornaam.addListener((ov, o, n) -> {
             klant.setVoornaam(n);
         });
         
@@ -316,7 +316,7 @@ public class DataDisplayRow {
         });
         
         achternaam = new SimpleStringProperty(klant.getAchternaam() + "");
-        email.addListener((ov, o, n) -> {
+        achternaam.addListener((ov, o, n) -> {
             klant.setAchternaam(n);
         });
         

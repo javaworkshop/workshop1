@@ -10,7 +10,7 @@ import org.workshop1.model.Bestelling;
 public class BestellingDaoMySql implements BestellingDao {
     
     private static final String SQL_FIND_BY_ID = 
-            "SELECT FROM Bestelling WHERE bestelling_id = ?";
+            "SELECT * FROM Bestelling WHERE bestelling_id = ?";
     private static final String SQL_INSERT = 
             "INSERT INTO Bestelling"
             + " (klant_id, artikel_id1, artikel_id2, artikel_id3, artikel_naam1, artikel_naam2, artikel_naam3,"
@@ -183,6 +183,7 @@ public class BestellingDaoMySql implements BestellingDao {
     private Bestelling map (ResultSet resultSet) throws SQLException{
         Bestelling bestelling = new Bestelling();
         
+        bestelling.setBestelling_id(resultSet.getInt("bestelling_id"));
         bestelling.setKlant_id(resultSet.getInt("klant_id"));
         bestelling.setArtikel_id1(resultSet.getInt("artikel_id1"));
         bestelling.setArtikel_id2(resultSet.getInt("artikel_id2"));
@@ -193,9 +194,9 @@ public class BestellingDaoMySql implements BestellingDao {
         bestelling.setArtikel_aantal1(resultSet.getInt("artikel_aantal1"));
         bestelling.setArtikel_aantal2(resultSet.getInt("artikel_aantal2"));
         bestelling.setArtikel_aantal3(resultSet.getInt("artikel_aantal3"));
-        bestelling.setArtikel_prijs1(resultSet.getInt("artikel_prijs1"));
-        bestelling.setArtikel_prijs2(resultSet.getInt("artikel_prijs2"));
-        bestelling.setArtikel_prijs3(resultSet.getInt("artikel_prijs3"));
+        bestelling.setArtikel_prijs1(resultSet.getDouble("artikel_prijs1"));
+        bestelling.setArtikel_prijs2(resultSet.getDouble("artikel_prijs2"));
+        bestelling.setArtikel_prijs3(resultSet.getDouble("artikel_prijs3"));
         
         return bestelling;
     }

@@ -34,6 +34,7 @@ import org.workshop1.model.Data;
 import org.workshop1.model.DataDisplayRow;
 import org.workshop1.model.Klant;
 import org.workshop1.model.QueryResult;
+import org.workshop1.model.QueryResultRow;
 
 /**
  * Class from which the program runs. User input is processed through this class.
@@ -57,6 +58,8 @@ public class Controller extends Application {
     private Button btDelete = new Button("Delete");
     private Button btExecuteSQL = new Button("Voer SQL Commando Uit");
     private Button btMaakKlanten = new Button("Maak Klanten Aan");
+    private Button btLeesKlant = new Button("Lees Klant");
+    private Button btLeesBestelling = new Button("Lees Bestelling");
     private Button btNieuweKlant = new Button("Maak Nieuwe Klant");
     private Button btRefresh = new Button("Ververs Tabel");
     private Button btUpdate = new Button("Update");
@@ -77,6 +80,7 @@ public class Controller extends Application {
     private TextField tfURL = new TextField(MYSQL_URL);
     private TextField tfAantal = new TextField();
     private TextField tfUsername = new TextField();
+    private TextField tfId = new TextField();
     
     public static void main(String[] args) {
         launch(args);
@@ -427,6 +431,10 @@ public class Controller extends Application {
         gridPane.add(new Label("     Voer aantal in: "), 2, 1);
         gridPane.add(tfAantal, 3, 1);
         gridPane.add(btMaakKlanten, 2, 2);
+        gridPane.add(new Label("     id:"), 2, 3);
+        gridPane.add(tfId, 3, 3);
+        gridPane.add(btLeesKlant, 2, 4);
+        gridPane.add(btLeesBestelling, 3, 4);
         HBox hBoxUpdate = new HBox();
         hBoxUpdate.getChildren().addAll(btRefresh, btNieuweKlant, btVoegArtikel, btVoegBestelling);
         
@@ -496,6 +504,12 @@ public class Controller extends Application {
             });
             th.start();
         });
+        btLeesKlant.setOnAction(e -> {
+            leesKlant();
+        });
+        btLeesBestelling.setOnAction(e -> {
+            leesBestelling();
+        });
         btVoegBestelling.setOnAction(e -> {
             if(dbConnector.isInitialized())
                 addBestellingScreen.show();
@@ -542,6 +556,56 @@ public class Controller extends Application {
         catch(InterruptedException ex) {
             showExceptionPopUp("Fout tijdens updaten.");
         }        
+    }
+    
+    private void leesKlant() {
+        try {
+            Klant klant = dbConnector.readKlant(Integer.parseInt(tfId.getText()));
+            // Het is een beetje ranzig om hier een queryresult aan te maken, maar eigenlijk is dit
+            // alleen maar om snel dao methodes te kunnen testen via de gui.
+            QueryResultRow qrr = new QueryResultRow();
+            qrr.setKlant(klant);
+            QueryResult qr = new QueryResult();
+            qr.addRow(qrr);
+            qr.addColumnNames(new String[]{"klant_id", "voornaam", "tussenvoegsel", "achternaam",
+                    "email", "straatnaam", "huisnummer", "toevoeging", "postcode", "woonplaats"});
+            populateTableView(qr);
+        }
+        catch(SQLException ex) {
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voer een geheel getal in.");
+        }
+    }
+    
+    private void leesBestelling() {
+        try {
+            Bestelling bestelling = dbConnector.readBestelling(Integer.parseInt(tfId.getText()));
+            // Het is een beetje ranzig om hier een queryresult aan te maken, maar eigenlijk is dit
+            // alleen maar om snel dao methodes te kunnen testen via de gui.
+            QueryResultRow qrr = new QueryResultRow();
+            qrr.setBestelling(bestelling);
+            QueryResult qr = new QueryResult();
+            qr.addRow(qrr);
+            qr.addColumnNames(new String[]{"bestelling_id", "klant_id", 
+                    "artikel_id1", "artikel_naam1", "artikel_aantal1", "artikel_prijs1",
+                    "artikel_id2", "artikel_naam2", "artikel_aantal2", "artikel_prijs2",
+                    "artikel_id3", "artikel_naam3", "artikel_aantal3", "artikel_prijs3",});
+            populateTableView(qr);
+        }
+        catch(SQLException ex) {
+            showExceptionPopUp("SQL error!\nErrorcode: " + ex.getErrorCode());
+        }
+        catch (DatabaseException ex) {
+            showExceptionPopUp(ex.getMessage());
+        }
+        catch(NumberFormatException ex) {
+            showExceptionPopUp("Voer een geheel getal in.");
+        }
     }
     
     private void update() {

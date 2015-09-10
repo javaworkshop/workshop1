@@ -15,7 +15,7 @@ public class DaoFactory {
         else if(type == JSON)
             throw new UnsupportedOperationException("Not supported yet.");
         else if(type == HIBERNATE)
-            throw new UnsupportedOperationException("Not supported yet.");
+            return new BestellingDaoHibernate();
         else
             throw new DaoConfigurationException("Ongeldig type");
     }

@@ -195,7 +195,7 @@ public class DatabaseConnector {
             if(hibernate) {
                 Configuration cfg = new Configuration()
                         .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
-                        .setProperty("hibernate.connection.driver_class", HIKARI_CP_DRIVER_MYSQL) // Misschien moet dit de driver zijn en niet de datasource
+                        .setProperty("hibernate.connection.driver_class", C3P0_DRIVER_MYSQL) // Misschien moet dit de driver zijn en niet de datasource
                         .setProperty("hibernate.connection.url", url)
                         .setProperty("hibernate.connection.username", username)
                         .setProperty("hibernate.connection.password", password)
@@ -238,7 +238,6 @@ public class DatabaseConnector {
                     // klant kolommen
                     case "klant_id":
                         row.getKlant().setKlant_id(rowSet.getInt(i));
-                        row.getBestelling().setKlant_id(rowSet.getInt(i));
                         queryResult.addColumnName("klant_id");
                         break;
                     case "voornaam":
@@ -667,23 +666,22 @@ public class DatabaseConnector {
      */
     private Bestelling retrieveBestelling(RowSet rowSet) throws SQLException {
         Bestelling bestelling = new Bestelling();
-        bestelling.setBestelling_id(rowSet.getInt(1));
-        bestelling.setKlant_id(rowSet.getInt(2));
+        bestelling.setBestelling_id(rowSet.getInt("bestelling_id"));
         
-        bestelling.setArtikel_id1(rowSet.getInt(3));        
-        bestelling.setArtikel_naam1(rowSet.getString(4));
-        bestelling.setArtikel_aantal1(rowSet.getInt(5));
-        bestelling.setArtikel_prijs1(rowSet.getDouble(6));
+        bestelling.setArtikel_id1(rowSet.getInt("artikel_id1"));        
+        bestelling.setArtikel_naam1(rowSet.getString("artikel_naam1"));
+        bestelling.setArtikel_aantal1(rowSet.getInt("artikel_aantal1"));
+        bestelling.setArtikel_prijs1(rowSet.getDouble("artikel_prijs1"));
         
-        bestelling.setArtikel_id2(rowSet.getInt(7));
-        bestelling.setArtikel_naam2(rowSet.getString(8));
-        bestelling.setArtikel_aantal2(rowSet.getInt(9));
-        bestelling.setArtikel_prijs2(rowSet.getDouble(10));
+        bestelling.setArtikel_id2(rowSet.getInt("artikel_id2"));
+        bestelling.setArtikel_naam2(rowSet.getString("artikel_naam2"));
+        bestelling.setArtikel_aantal2(rowSet.getInt("artikel_aantal2"));
+        bestelling.setArtikel_prijs2(rowSet.getDouble("artikel_prijs3"));
         
-        bestelling.setArtikel_id3(rowSet.getInt(11));
-        bestelling.setArtikel_naam3(rowSet.getString(12));
-        bestelling.setArtikel_aantal3(rowSet.getInt(13));
-        bestelling.setArtikel_prijs3(rowSet.getDouble(14));
+        bestelling.setArtikel_id3(rowSet.getInt("artikel_id3"));
+        bestelling.setArtikel_naam3(rowSet.getString("artikel_naam3"));
+        bestelling.setArtikel_aantal3(rowSet.getInt("artikel_aantal3"));
+        bestelling.setArtikel_prijs3(rowSet.getDouble("artikel_prijs3"));
         
         return bestelling;
     }
@@ -697,16 +695,16 @@ public class DatabaseConnector {
      */
     private Klant retrieveKlant(RowSet rowSet) throws SQLException {
         Klant klant = new Klant();
-        klant.setKlant_id(rowSet.getInt(1));
-        klant.setVoornaam(rowSet.getString(2));
-        klant.setTussenvoegsel(rowSet.getString(3));
-        klant.setAchternaam(rowSet.getString(4));
-        klant.setEmail(rowSet.getString(5));
-        klant.setStraatnaam(rowSet.getString(6));
-        klant.setHuisnummer(rowSet.getInt(7));
-        klant.setToevoeging(rowSet.getString(8));
-        klant.setPostcode(rowSet.getString(9));
-        klant.setWoonplaats(rowSet.getString(10));
+        klant.setKlant_id(rowSet.getInt("klant_id"));
+        klant.setVoornaam(rowSet.getString("voornaam"));
+        klant.setTussenvoegsel(rowSet.getString("tussenvoegsel"));
+        klant.setAchternaam(rowSet.getString("achternaam"));
+        klant.setEmail(rowSet.getString("email"));
+        klant.setStraatnaam(rowSet.getString("straatnaam"));
+        klant.setHuisnummer(rowSet.getInt("huisnummer"));
+        klant.setToevoeging(rowSet.getString("toevoeging"));
+        klant.setPostcode(rowSet.getString("postcode"));
+        klant.setWoonplaats(rowSet.getString("woonplaats"));
         
         return klant;
     }

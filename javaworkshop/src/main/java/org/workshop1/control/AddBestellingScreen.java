@@ -43,9 +43,7 @@ public class AddBestellingScreen extends Stage{
                 makeArtikel3GUI(), btVoegToe, btCancel);       
     }
         
-    public void processTextFields(Bestelling bestelling){           
-        bestelling.setKlant_id(Integer.parseInt(tfKlantId.getText()));
-            
+    public void processTextFields(Bestelling bestelling){            
         try{
             processArtikelInfo(bestelling, Integer.parseInt(tfArtikel1Id.getText()),
                     tfArtikel1Naam.getText(), Integer.parseInt(tfArtikel1Aantal.getText()),

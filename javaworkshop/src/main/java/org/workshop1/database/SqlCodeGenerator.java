@@ -356,8 +356,6 @@ class SqlCodeGenerator {
     static String generateBestellingUpdateCode(Bestelling bestelling) {
         String sqlCode = "UPDATE bestelling SET ";
         
-        sqlCode += (bestelling.getKlant_id() == 0) ? "" : "klant_id = " + 
-            bestelling.getKlant_id() + ", ";
         sqlCode += (bestelling.getArtikel_id1() == 0) ? "" : "artikel_id1 = " + 
             bestelling.getArtikel_id1() + ", ";
         sqlCode += (bestelling.getArtikel_naam1()== null) ? "" : "artikel_naam1 = '" + 
@@ -394,8 +392,6 @@ class SqlCodeGenerator {
     public static String generateBestellingInsertionCode(Bestelling bestelling) {
         String sqlCode = "INSERT INTO bestelling VALUES(NULL, ";
         
-        sqlCode += (bestelling.getKlant_id() == 0) ? "NULL, " : 
-            bestelling.getKlant_id()+ ", ";
         sqlCode += (bestelling.getArtikel_id1() == 0) ? "NULL, " : 
             bestelling.getArtikel_id1()+ ", ";
         sqlCode += (bestelling.getArtikel_naam1()== null) ? "NULL, " : "'" + 

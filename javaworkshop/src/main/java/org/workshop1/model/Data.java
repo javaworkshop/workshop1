@@ -16,7 +16,7 @@ public interface Data extends Serializable {
         }
         else if(dataList.get(0) instanceof Bestelling) {
             for(int i = 0; i < dataList.size(); i++) {
-                if(((Bestelling)dataList.get(i)).getKlant_id() == id)
+                if(((Bestelling)dataList.get(i)).getBestelling_id() == id)
                     return i;
             }
         }

@@ -74,7 +74,6 @@ public class BestellingDaoMySql implements BestellingDao {
         }
 
         Object[] values = {
-            bestelling.getKlant_id(),
             bestelling.getArtikel_id1(),
             bestelling.getArtikel_id2(),
             bestelling.getArtikel_id3(),
@@ -116,7 +115,6 @@ public class BestellingDaoMySql implements BestellingDao {
         }
 
         Object[] values = {
-            bestelling.getKlant_id(),
             bestelling.getArtikel_id1(),
             bestelling.getArtikel_id2(),
             bestelling.getArtikel_id3(),
@@ -184,7 +182,6 @@ public class BestellingDaoMySql implements BestellingDao {
         Bestelling bestelling = new Bestelling();
         
         bestelling.setBestelling_id(resultSet.getInt("bestelling_id"));
-        bestelling.setKlant_id(resultSet.getInt("klant_id"));
         bestelling.setArtikel_id1(resultSet.getInt("artikel_id1"));
         bestelling.setArtikel_id2(resultSet.getInt("artikel_id2"));
         bestelling.setArtikel_id3(resultSet.getInt("artikel_id3"));

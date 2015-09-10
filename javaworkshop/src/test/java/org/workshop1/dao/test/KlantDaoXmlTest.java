@@ -1,4 +1,4 @@
-package org.workshop1.database.test;
+package org.workshop1.dao.test;
 
 import java.util.ArrayList;
 import org.junit.After;

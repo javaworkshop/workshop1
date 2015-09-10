@@ -102,7 +102,6 @@ public class DatabaseConnectorTest {
         
         // initialize bestelling b1
         b1 = new Bestelling();
-        b1.setKlant_id(1);
         b1.setBestelling_id(1);
         b1.setArtikel_aantal1(3);
         b1.setArtikel_id1(456);
@@ -111,7 +110,6 @@ public class DatabaseConnectorTest {
         
         // initialize bestelling b2
         b2 = new Bestelling();
-        b2.setKlant_id(1);
         b2.setBestelling_id(2);
         b2.setArtikel_aantal1(1);
         b2.setArtikel_id1(23);
@@ -120,7 +118,6 @@ public class DatabaseConnectorTest {
         
         // initialize bestelling b3
         b3 = new Bestelling();
-        b3.setKlant_id(2);
         b3.setBestelling_id(3);
         b3.setArtikel_aantal1(100);
         b3.setArtikel_id1(689);

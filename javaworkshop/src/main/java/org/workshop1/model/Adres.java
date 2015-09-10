@@ -2,17 +2,19 @@ package org.workshop1.model;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javax.persistence.Column;
 
 @Embeddable // krijgt als het goed is eigen tabel...
 public class Adres implements Data {
+    @Column
     private int huisnummer;
+    @Column
     private String postcode;
+    @Column
     private String straatnaam;
+    @Column
     private String toevoeging;
+    @Column
     private String woonplaats;
     
     public Adres() {

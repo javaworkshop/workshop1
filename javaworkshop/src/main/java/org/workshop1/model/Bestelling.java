@@ -1,15 +1,12 @@
 package org.workshop1.model;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -18,13 +15,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "bestelling")
 public class Bestelling implements Data, Comparable<Bestelling> {
-    @javax.persistence.Id
-    @javax.persistence.Column(name="klant_id")
+    @Id
+    @Column(name="bestelling_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int bestelling_id;
-    @Column(name = "klant_id", length = 10) 
-    private int klant_id; // Dit moet nog veranderen, zodat het werkt met Hibernate
-    @Column(name = "artikel_id1", length = 10) 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    Klant klant;  
+    @Column(name = "artikel_id1", length = 10)
     private int artikel_id1;
     @Column(name = "artikel_id2", length = 10) 
     private int artikel_id2;
@@ -51,7 +48,6 @@ public class Bestelling implements Data, Comparable<Bestelling> {
     
     public Bestelling() {
         bestelling_id = 0;
-        klant_id = 0;
         artikel_id1 = 0;
         artikel_id2 = 0;
         artikel_id3 = 0;
@@ -85,7 +81,6 @@ public class Bestelling implements Data, Comparable<Bestelling> {
         
         Bestelling b = (Bestelling)obj;
         return  b.getBestelling_id() == this.getBestelling_id() &&
-                b.getKlant_id() == this.getKlant_id() &&
                 b.getArtikel_id1() == this.getArtikel_id1() &&
                 b.getArtikel_id2() == this.getArtikel_id2() &&
                 b.getArtikel_id3() == this.getArtikel_id3() &&
@@ -154,9 +149,13 @@ public class Bestelling implements Data, Comparable<Bestelling> {
     public int getBestelling_id() {
         return bestelling_id;
     }
+    
+     public Klant getKlant() {
+        return klant;
+    }
 
-    public int getKlant_id() {
-        return klant_id;
+    public void setKlant(Klant klant) {
+        this.klant = klant;
     }
 
     @Override
@@ -166,7 +165,6 @@ public class Bestelling implements Data, Comparable<Bestelling> {
         
         return  multiplier * hash + 
                 getBestelling_id() +
-                getKlant_id() +
                 getArtikel_id1() +
                 getArtikel_id2() +
                 getArtikel_id3() +
@@ -233,14 +231,10 @@ public class Bestelling implements Data, Comparable<Bestelling> {
         bestelling_id = id;
     }
     
-    public void setKlant_id(int klant_id) {
-        this.klant_id = klant_id;
-    }
-
     @Override
     public String toString() {
-        return "Bestelling{" + "bestelling_id=" + bestelling_id + "klant_id=" + klant_id
-                + ", artikel_id1=" + artikel_id1 + ", artikel_id2=" + artikel_id2 +
+        return "Bestelling{" + "bestelling_id=" + bestelling_id + "klant_id=" +
+                ", artikel_id1=" + artikel_id1 + ", artikel_id2=" + artikel_id2 +
                 ", artikel_id3=" + artikel_id3 + ", artikel_naam1=" + artikel_naam1 + 
                 ", artikel_naam2=" + artikel_naam2 + ", artikel_naam3=" + artikel_naam3 + 
                 ", artikel_aantal1=" + artikel_aantal1 + ", artikel_aantal2=" + artikel_aantal2 + 

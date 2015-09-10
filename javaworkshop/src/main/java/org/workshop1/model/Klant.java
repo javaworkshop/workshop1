@@ -26,7 +26,7 @@ public class Klant implements Data, Comparable<Klant> {
     private String achternaam;
     @Column(name = "email", length = 320)
     private String email;
-    @Embedded // Later @ManyToMany
+    @Embedded // Later List<Adres> en @ManyToMany
     private Adres adres;    
 
     public Klant() {

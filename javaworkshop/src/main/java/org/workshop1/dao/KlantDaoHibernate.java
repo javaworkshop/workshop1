@@ -1,7 +1,9 @@
 package org.workshop1.dao;
 
 import java.util.ArrayList;
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
+import org.workshop1.database.SessionManager;
+import org.hibernate.Transaction;
 import org.workshop1.model.Adres;
 import org.workshop1.model.Klant;
 
@@ -13,7 +15,12 @@ public class KlantDaoHibernate implements KlantDao {
 
     @Override
     public Klant read(int klant_id) throws DaoException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try(Session session = SessionManager.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            Klant klant = (Klant) session.byId(Klant.class).load(klant_id);
+            tx.commit();
+            return klant;
+        }
     }
 
     @Override
@@ -43,7 +50,11 @@ public class KlantDaoHibernate implements KlantDao {
 
     @Override
     public void add(Klant klant) throws DaoException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try (Session session = SessionManager.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.persist(klant);
+            tx.commit();
+        }
     }
 
     @Override

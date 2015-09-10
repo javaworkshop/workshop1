@@ -4,19 +4,27 @@
 	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- MySQL Configuration -->
+		<!-- MySQL Configuration -->		
+		<!-- In huidige applicatie worden veel van deze instellingen geprogrammeerd -->
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		<!-- In huidige applicatie worden deze instellingen geprogrammeerd
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <!--<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:Mysql://localhost:3306/mydb</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">qwerty</property> -->
+        <property name="hibernate.connection.password">qwerty</property>-->
         <property name="javax.persistence.validation.mode">none</property>
+		<property name="hibernate.discriminator.ignore_explicit_for_joined">true</property>
         <!-- SQL Configuration -->
         <property name="show_sql">true</property>
 		<property name="format_sql">true</property>
         <!-- Connection Pool -->
-        <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
+        <property name="hibernate.connection.provider_class">org.hibernate.hikaricp.internal.HikariCPConnectionProvider</property>
+		<property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
+		<property name="hibernate.hikari.dataSource.url">jdbc:Mysql://localhost:3306/mydb</property>
+		<property name="hibernate.hikari.dataSource.user">root</property>
+		<property name="hibernate.hikari.dataSource.password">qwerty</property>
+		<property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
+		<property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
+		<property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
 		<!-- Mapping info -->
 		<mapping class="org.workshop1.model.Klant"/>
 		<mapping class="org.workshop1.model.Bestelling"/>

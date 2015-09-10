@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`KLANT_ADRES` (
     REFERENCES `mydb`.`KLANT` (`klant_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
+  CONSTRAINT `adres_constraint` 
+    UNIQUE (huisnummer, toevoeging, postcode),
   CONSTRAINT `adres_id`
     FOREIGN KEY (`adres_id`)
     REFERENCES `mydb`.`ADRES` (`adres_id`)

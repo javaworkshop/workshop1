@@ -10,6 +10,7 @@ import org.workshop1.dao.BestellingDao;
 import org.workshop1.dao.DaoFactory;
 import org.workshop1.dao.KlantDao;
 import org.workshop1.database.SessionManager;
+import org.workshop1.model.Adres;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Klant;
 
@@ -28,13 +29,18 @@ public class KlantDaoHibernateTest {
     @BeforeClass
     public static void setUp() {       
         Configuration cfg = new Configuration().configure();
-        cfg     .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+        /*cfg     .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
                 .setProperty("hibernate.connection.driver_class", mySqlDriver) // Misschien moet dit de driver zijn en niet de datasource
                 .setProperty("hibernate.connection.url", mySqlUrl)
                 .setProperty("hibernate.connection.username", username)
                 .setProperty("hibernate.connection.password", password)
                 .setProperty("hibernate.connection.provider_class", 
-                        "org.hibernate.hikaricp.internal.HikariCPConnectionProvider"); // Alternatief: com.zaxxer.hikari.hibernate.HikariConnectionProvider
+                        "com.zaxxer.hikari.hibernate.HikariConnectionProvider") // Opties: com.zaxxer.hikari.hibernate.HikariConnectionProvider, org.hibernate.hikaricp.internal.HikariCPConnectionProvider
+                .setProperty("show_sql", "true")
+                .setProperty("format_sql", "true");
+        cfg.addAnnotatedClass(Klant.class);
+        cfg.addAnnotatedClass(Adres.class);
+        cfg.addAnnotatedClass(Bestelling.class);*/
         SessionManager.initialize(cfg);
         initData();
     }
@@ -42,7 +48,7 @@ public class KlantDaoHibernateTest {
     private static void initData() {
         // initialize klant k1
         k1 = new Klant();
-        k1.setKlant_id(1);
+        //k1.setKlant_id(1);
         k1.setVoornaam("Henk");
         k1.setAchternaam("Man");
         k1.setWoonplaats("De Plaats");
@@ -53,7 +59,7 @@ public class KlantDaoHibernateTest {
         
         // initialize klant k2
         k2 = new Klant();
-        k2.setKlant_id(2);
+        //k2.setKlant_id(2);
         k2.setVoornaam("Piet");
         k2.setAchternaam("Prutser");
         k2.setWoonplaats("Het Dorp");
@@ -64,7 +70,7 @@ public class KlantDaoHibernateTest {
         
         // initialize bestelling b1
         b1 = new Bestelling();
-        b1.setBestelling_id(1);
+        //b1.setBestelling_id(1);
         b1.setArtikel_aantal1(3);
         b1.setArtikel_id1(456);
         b1.setArtikel_naam1("lamp");
@@ -73,7 +79,7 @@ public class KlantDaoHibernateTest {
         
         // initialize bestelling b2
         b2 = new Bestelling();
-        b2.setBestelling_id(2);
+        //b2.setBestelling_id(2);
         b2.setArtikel_aantal1(1);
         b2.setArtikel_id1(23);
         b2.setArtikel_naam1("deur");
@@ -82,7 +88,7 @@ public class KlantDaoHibernateTest {
         
         // initialize bestelling b3
         b3 = new Bestelling();
-        b3.setBestelling_id(3);
+        //b3.setBestelling_id(3);
         b3.setArtikel_aantal1(100);
         b3.setArtikel_id1(689);
         b3.setArtikel_naam1("neusdruppels");
@@ -111,6 +117,11 @@ public class KlantDaoHibernateTest {
             Bestelling bestelling3 = (Bestelling) session.byId(Bestelling.class)
                     .load(b3.getBestelling_id());
             
+            k1.setKlant_id(1);
+            k2.setKlant_id(2);
+            b1.setBestelling_id(1);
+            b2.setBestelling_id(2);
+            b3.setBestelling_id(3);
             assertEquals(k1, klant1);
             assertEquals(k2, klant2);
             assertEquals(b1, bestelling1);

@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -17,9 +18,10 @@ import javax.persistence.Table;
 public class Bestelling implements Data, Comparable<Bestelling> {
     @Id
     @Column(name="bestelling_id")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int bestelling_id;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="klant_id")
     Klant klant;  
     @Column(name = "artikel_id1", length = 10)
     private int artikel_id1;

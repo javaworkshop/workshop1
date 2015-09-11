@@ -4,27 +4,37 @@
 	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- MySQL Configuration -->		
-		<!-- In huidige applicatie worden veel van deze instellingen geprogrammeerd -->
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <!--<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:Mysql://localhost:3306/mydb</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">qwerty</property>-->
+		<property name="hibernate.hbm2ddl.auto">create</property>
         <property name="javax.persistence.validation.mode">none</property>
 		<property name="hibernate.discriminator.ignore_explicit_for_joined">true</property>
+		<property name="hibernate.generate_statistics">true</property>
+		<!-- MySQL Configuration -->
+		<!-- In huidige applicatie worden veel van deze instellingen geprogrammeerd -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>		
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:Mysql://localhost:3306/mydb</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">qwerty</property>
         <!-- SQL Configuration -->
         <property name="show_sql">true</property>
 		<property name="format_sql">true</property>
         <!-- Connection Pool -->
-        <property name="hibernate.connection.provider_class">org.hibernate.hikaricp.internal.HikariCPConnectionProvider</property>
+		<!-- HikariCP -->
+        <!-- <property name="hibernate.connection.provider_class">org.hibernate.hikaricp.internal.HikariCPConnectionProvider</property>
 		<property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
 		<property name="hibernate.hikari.dataSource.url">jdbc:Mysql://localhost:3306/mydb</property>
 		<property name="hibernate.hikari.dataSource.user">root</property>
 		<property name="hibernate.hikari.dataSource.password">qwerty</property>
 		<property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
 		<property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
-		<property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
+		<property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property> -->
+		<!-- C3P0 -->
+		<property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property> <!-- Deze wordt automatisch gebruikt als C3P0 properties zijn geconfigureerd -->
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.max_size">20</property>
+		<property name="hibernate.c3p0.timeout">300</property>
+		<property name="hibernate.c3p0.max_statements">50</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
 		<!-- Mapping info -->
 		<mapping class="org.workshop1.model.Klant"/>
 		<mapping class="org.workshop1.model.Bestelling"/>

@@ -12,11 +12,11 @@ import javax.persistence.Table;
  * Class to store data from the klant table.
  */
 @Entity
-@Table(name = "klanten")
+@Table(name = "klant")
 public class Klant implements Data, Comparable<Klant> {
     @Id
-    @Column(name="klant_id")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="klant_id")    
     private int klant_id;
     @Column(name = "voornaam", length = 50)
     private String voornaam;

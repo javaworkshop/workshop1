@@ -29,18 +29,18 @@ public class KlantDaoHibernateTest {
     @BeforeClass
     public static void setUp() {       
         Configuration cfg = new Configuration().configure();
-        /*cfg     .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
-                .setProperty("hibernate.connection.driver_class", mySqlDriver) // Misschien moet dit de driver zijn en niet de datasource
+        /*cfg   .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                .setProperty("hibernate.connection.driver_class", mySqlDriver)
                 .setProperty("hibernate.connection.url", mySqlUrl)
                 .setProperty("hibernate.connection.username", username)
                 .setProperty("hibernate.connection.password", password)
                 .setProperty("hibernate.connection.provider_class", 
                         "com.zaxxer.hikari.hibernate.HikariConnectionProvider") // Opties: com.zaxxer.hikari.hibernate.HikariConnectionProvider, org.hibernate.hikaricp.internal.HikariCPConnectionProvider
                 .setProperty("show_sql", "true")
-                .setProperty("format_sql", "true");
+                .setProperty("format_sql", "true");*/
         cfg.addAnnotatedClass(Klant.class);
         cfg.addAnnotatedClass(Adres.class);
-        cfg.addAnnotatedClass(Bestelling.class);*/
+        cfg.addAnnotatedClass(Bestelling.class);
         SessionManager.initialize(cfg);
         initData();
     }

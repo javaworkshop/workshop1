@@ -5,13 +5,16 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.workshop1.database.SessionManager;
 import org.workshop1.model.Bestelling;
+import org.workshop1.model.Klant;
 
 public class BestellingDaoHibernate implements BestellingDao {
 
     @Override
     public void add(Bestelling bestelling) throws DaoException {
         try (Session session = SessionManager.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            Transaction tx = session.beginTransaction();            
+            session.load(bestelling.getKlant(), bestelling.getKlant().getKlant_id());
+            //bestelling.setKlant((Klant)session.merge(bestelling.getKlant())); Dit kan ook ipv regel hierboven
             session.persist(bestelling);
             tx.commit();
         }

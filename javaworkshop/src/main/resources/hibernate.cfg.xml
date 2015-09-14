@@ -8,6 +8,7 @@
         <property name="javax.persistence.validation.mode">none</property>
 		<property name="hibernate.discriminator.ignore_explicit_for_joined">true</property>
 		<property name="hibernate.generate_statistics">true</property>
+		
 		<!-- MySQL Configuration -->
 		<!-- In huidige applicatie worden veel van deze instellingen geprogrammeerd -->
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>		
@@ -15,9 +16,14 @@
         <property name="hibernate.connection.url">jdbc:Mysql://localhost:3306/mydb</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">qwerty</property>
+		
         <!-- SQL Configuration -->
         <property name="show_sql">true</property>
 		<property name="format_sql">true</property>
+		
+		<!-- Disable the second-level cache  -->
+        <property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		
         <!-- Connection Pool -->
 		<!-- HikariCP -->
         <!-- <property name="hibernate.connection.provider_class">org.hibernate.hikaricp.internal.HikariCPConnectionProvider</property>
@@ -35,6 +41,7 @@
 		<property name="hibernate.c3p0.timeout">300</property>
 		<property name="hibernate.c3p0.max_statements">50</property>
 		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		
 		<!-- Mapping info -->
 		<mapping class="org.workshop1.model.Klant"/>
 		<mapping class="org.workshop1.model.Bestelling"/>

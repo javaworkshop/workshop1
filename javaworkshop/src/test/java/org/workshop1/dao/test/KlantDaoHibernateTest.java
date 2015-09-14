@@ -1,5 +1,7 @@
 package org.workshop1.dao.test;
 
+import javax.persistence.EntityManager;
+import org.hibernate.MappingException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
@@ -10,7 +12,6 @@ import org.workshop1.dao.BestellingDao;
 import org.workshop1.dao.DaoFactory;
 import org.workshop1.dao.KlantDao;
 import org.workshop1.database.SessionManager;
-import org.workshop1.model.Adres;
 import org.workshop1.model.Bestelling;
 import org.workshop1.model.Klant;
 
@@ -38,9 +39,9 @@ public class KlantDaoHibernateTest {
                         "com.zaxxer.hikari.hibernate.HikariConnectionProvider") // Opties: com.zaxxer.hikari.hibernate.HikariConnectionProvider, org.hibernate.hikaricp.internal.HikariCPConnectionProvider
                 .setProperty("show_sql", "true")
                 .setProperty("format_sql", "true");*/
-        cfg.addAnnotatedClass(Klant.class);
-        cfg.addAnnotatedClass(Adres.class);
-        cfg.addAnnotatedClass(Bestelling.class);
+        //cfg.addAnnotatedClass(Klant.class);
+        //cfg.addAnnotatedClass(Adres.class);
+        //cfg.addAnnotatedClass(Bestelling.class);
         SessionManager.initialize(cfg);
         initData();
     }
@@ -100,11 +101,18 @@ public class KlantDaoHibernateTest {
     public void testAdd() {
         KlantDao kDao = DaoFactory.getKlantDao(DaoFactory.HIBERNATE);
         BestellingDao bDao = DaoFactory.getBestellingDao(DaoFactory.HIBERNATE);
-        kDao.add(k1);
-        kDao.add(k2);
-        bDao.add(b1);
-        bDao.add(b2);
-        bDao.add(b3);
+        try {
+            kDao.add(k1);
+            kDao.add(k2);
+            bDao.add(b1);
+            bDao.add(b2);
+            bDao.add(b3);
+        }
+        catch(MappingException ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        }
         
         try (Session session = SessionManager.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -128,5 +136,30 @@ public class KlantDaoHibernateTest {
             assertEquals(b2, bestelling2);
             assertEquals(b3, bestelling3);
         }
+    }
+    
+    @Test
+    public void testEntityManager() {
+        EntityManager em = SessionManager.getEntityManagerFactory().createEntityManager();
+        
+        em.getTransaction().begin();
+        em.persist(k2);
+        em.persist(b3);
+        em.getTransaction().commit();
+        em.close();
+        
+        em = SessionManager.getEntityManagerFactory().createEntityManager();
+        em.getTransaction().begin();
+        Klant klant1 = em.find(Klant.class, 1);
+        klant1.setVoornaam("Klaas");
+        em.getTransaction().commit();
+        em.close();
+        
+        em = SessionManager.getEntityManagerFactory().createEntityManager();
+        em.getTransaction().begin();
+        Klant klant1Updated = em.find(Klant.class, 1);
+        em.close();
+        
+        assertEquals(klant1, klant1Updated);
     }
 }

@@ -1,0 +1,48 @@
+<persistence 	xmlns="http://java.sun.com/xml/ns/persistence"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemalocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+				version="2.0">
+	<persistence_unit name="workshop1" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+	
+		<class>org.workshop1.model.Klant</class>
+		<class>org.workshop1.model.Adres</class>
+		<class>org.workshop1.model.Bestelling</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:Mysql://localhost:3306/mydb"/>
+			<property name="javax.persistence.jdbc.user" value="root"/>
+			<property name="javax.persistence.jdbc.password" value="qwerty"/>
+			
+			<!-- auto-detect @entity classes and hbm files -->
+			<!-- <property name="hibernate.archive.autodetection" value="class, hbm"/> -->
+			
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="create"/>
+			<property name="hibernate.show_sql" value="true"/>
+			
+			<!-- C3P0 connectionprovider configuration -->
+			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider"/>
+			<property name="hibernate.c3p0.max_size" value="20" />
+			<property name="hibernate.c3p0.min_size" value="5" />
+			<property name="hibernate.c3p0.idle_test_period" value="3000" />
+			<property name="hibernate.c3p0.max_statements" value="50" />
+			<property name="hibernate.c3p0.timeout" value="300" />
+			
+			<!-- HikariCP connectionprovider configuration -->
+			<!-- <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+            <property name="hibernate.hikari.minimumIdle" value="5" />
+            <property name="hibernate.hikari.maximumPoolSize" value="20" />
+            <property name="hibernate.hikari.idleTimeout" value="3000" />
+            <property name="hibernate.hikari.dataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" />
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:Mysql://localhost:3306/mydb" />
+            <property name="hibernate.hikari.username" value="root" />
+            <property name="hibernate.hikari.password" value="qwerty" /> -->
+			
+			<!-- Disable the second-level cache  -->
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+		</properties>
+	</persistence_unit>
+</persistence>

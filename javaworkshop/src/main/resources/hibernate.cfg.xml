@@ -10,7 +10,6 @@
 		<property name="hibernate.generate_statistics">true</property>
 		
 		<!-- MySQL Configuration -->
-		<!-- In huidige applicatie worden veel van deze instellingen geprogrammeerd -->
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>		
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:Mysql://localhost:3306/mydb</property>
@@ -43,6 +42,7 @@
 		<property name="hibernate.c3p0.idle_test_period">3000</property>
 		
 		<!-- Mapping info -->
+		<mapping package="org.workshop1.model"/>
 		<mapping class="org.workshop1.model.Klant"/>
 		<mapping class="org.workshop1.model.Bestelling"/>
 		<mapping class="org.workshop1.model.Adres"/>

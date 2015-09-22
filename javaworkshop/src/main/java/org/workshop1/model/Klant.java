@@ -6,11 +6,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
  * Class to store data from the klant table.
  */
+@NamedQueries({
+    @NamedQuery(
+    name="Klant.byNaam", 
+    query="from Klant where voornaam = ? and tussenvoegsel = ? and achternaam = ?"
+    )
+})
 @Entity
 @Table(name = "klant")
 public class Klant implements Data, Comparable<Klant> {

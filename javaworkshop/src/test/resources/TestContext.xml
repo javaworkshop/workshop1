@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:aop="http://www.springframework.org/schema/aop"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xmlns:tx="http://www.springframework.org/schema/tx"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context-3.0.xsd
+ http://www.springframework.org/schema/tx
+ http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+	<!-- Exception translation bean post processor -->
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>    
+	
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="poolName" value="springHikariCP"/>
+		<property name="connectionTestQuery" value="SELECT 1"/>
+		<property name="dataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlDataSource"/>
+		<property name="dataSourceProperties">
+			<props>
+				<prop key="url">jdbc:Mysql://localhost:3306/mydb</prop>
+				<prop key="user">root</prop>
+				<prop key="password">qwerty</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig" />
+	</bean>
+	
+	<bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="showSql" value="true"/>
+		<property name="database" value="HSQL" />
+		<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+	</bean>
+	
+	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+	
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceXmlLocation" value="classpath:persistence.xml"/>
+		<property name="persistenceUnitName" value="workshop1test"/>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+		<property name="jpaDialect" ref="jpaDialect"/>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaDialect" ref="jpaDialect" />
+	</bean> 
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!--<bean id="klantDao" class="org.workshop1.dao.GenericKlantDaoJpa"/>-->
+	
+	<!-- Adres van klant1 -->
+    <bean id="adres1" class="org.workshop1.model.Adres">
+        <property name="straatnaam">
+            <value>De Straat</value>        
+        </property>
+        <property name="huisnummer">
+            <value>45</value>
+        </property>
+        <property name="postcode">
+            <value>1234AB</value>    
+        </property>
+        <property name="woonplaats">
+            <value>De Plaats</value>        
+        </property>
+    </bean>
+	
+	<!-- Adres van klant2 -->
+    <bean id="adres2" class="org.workshop1.model.Adres">
+        <property name="straatnaam">
+            <value>Straat in het Dorp</value>        
+        </property>
+        <property name="huisnummer">
+            <value>22</value>
+        </property>
+        <property name="postcode">
+            <value>4567DH</value>    
+        </property>
+        <property name="woonplaats">
+            <value>Het Dorp</value>        
+        </property>
+    </bean>
+	
+	<bean id="klant1" class="org.workshop1.model.Klant">
+        <property name="voornaam">
+            <value>Henk</value>        
+        </property>        
+		<property name="achternaam">
+			<value>Man</value>
+		</property>
+		<property name="email">
+			<value>hm85@hotmail.com</value>
+		</property>
+        <property name="adres" ref="adres1"/>
+    </bean>
+	
+    <bean id="klant2" class="org.workshop1.model.Klant">
+        <property name="voornaam">
+            <value>Piet</value>        
+        </property>
+        <property name="tussenvoegsel">
+            <value>de</value>
+        </property>
+		<property name="achternaam">
+			<value>Prutser</value>
+		</property>
+		<property name="email">
+			<value>pprutser73@gmail.com</value>
+		</property>
+        <property name="adres" ref="adres2"/>
+    </bean>
+	
+	<bean id="bestelling1" class="org.workshop1.model.Bestelling">
+        <property name="artikel_id1">
+            <value>456</value>        
+        </property>
+		<property name="artikel_aantal1">
+			<value>3</value>
+		</property>
+		<property name="artikel_naam1">
+			<value>lamp</value>
+		</property>
+		<property name="artikel_prijs1">
+			<value>1.50</value>
+		</property>
+        <property name="klant" ref="klant1"/>
+    </bean>
+	
+	<bean id="bestelling2" class="org.workshop1.model.Bestelling">
+        <property name="artikel_id1">
+            <value>23</value>        
+        </property>
+		<property name="artikel_aantal1">
+			<value>1</value>
+		</property>
+		<property name="artikel_naam1">
+			<value>deur</value>
+		</property>
+		<property name="artikel_prijs1">
+			<value>32.25</value>
+		</property>
+        <property name="klant" ref="klant1"/>
+    </bean>
+	
+	<bean id="bestelling3" class="org.workshop1.model.Bestelling">
+        <property name="artikel_id1">
+            <value>689</value>        
+        </property>
+		<property name="artikel_aantal1">
+			<value>100</value>
+		</property>
+		<property name="artikel_naam1">
+			<value>neusdruppels</value>
+		</property>
+		<property name="artikel_prijs1">
+			<value>5.95</value>
+		</property>
+        <property name="klant" ref="klant2"/>
+    </bean>
+
+</beans>
